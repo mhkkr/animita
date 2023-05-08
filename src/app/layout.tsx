@@ -1,6 +1,18 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
 
+import { ApolloProvider } from '@apollo/client';
+import { HttpLink } from '@apollo/client/link/http';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+
+const httpLink = new HttpLink({
+  uri: 'http://localhost:3000/graphql',
+});
+const client = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache(),
+});
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
@@ -14,8 +26,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <ApolloProvider client={client}>
+      <html lang="ja">
+        <body className={inter.className}>{children}</body>
+      </html>
+    </ApolloProvider>
   )
 }
