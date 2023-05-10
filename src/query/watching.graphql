@@ -1,0 +1,30 @@
+query {
+  viewer {
+    libraryEntries(
+      states: [WATCHING]
+    ) {
+      nodes {
+        work {
+          annictId
+          title
+          image {
+            facebookOgImageUrl
+            copyright
+          }
+        }
+        nextProgram {
+          channel {
+            name
+          }
+          startedAt
+          episode {
+            number
+            numberText
+            title
+          }
+        }
+        note
+      }
+    }
+  }
+}
