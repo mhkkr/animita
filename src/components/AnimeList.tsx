@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { useQuery } from '@apollo/client';
-import { LibraryEntries_WATCHING } from '~/features/apollo/gql/LibraryEntries_WATCHING';
-import type { LibraryEntries_WatchingQuery, LibraryEntry } from '~/features/apollo/generated-types';
+import { LibraryEntriesWatching } from '~/features/apollo/gql/LibraryEntriesWatching';
+import type { LibraryEntriesWatchingQuery, LibraryEntry } from '~/features/apollo/generated-types';
 
-export default function WatchAnimeList() {
-  const { data, loading, error } = useQuery<LibraryEntries_WatchingQuery>(LibraryEntries_WATCHING);
+export default function AnimeList() {
+  const { data, loading, error } = useQuery<LibraryEntriesWatchingQuery>(LibraryEntriesWatching);
   if (loading) return <div>リスト取得中</div>;
   if (error) return <div>{error.message}</div>;
 
@@ -52,7 +52,7 @@ export default function WatchAnimeList() {
   // console.log(animeList);
 
   return (
-    <div>
+    <>
       <h1 className="text-center my-4 text-xl font-bold">見てる</h1>
       <div>
         {animeList.filter(entry => entry.list.length).map((entry, i) => {
@@ -93,6 +93,6 @@ export default function WatchAnimeList() {
           );
         })}
       </div>
-    </div>
+    </>
   );
 }

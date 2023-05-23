@@ -1,4 +1,5 @@
-import Sidebar from './Sidebar';
+import Header from './Header';
+import Footer from './Footer';
 
 export default function LayoutContainer({
   children,
@@ -6,11 +7,12 @@ export default function LayoutContainer({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex">
-      <Sidebar />
-      <main className="max-w-5xl mx-auto">
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1">
         {children}
       </main>
+      <Footer />
     </div>
   );
 }

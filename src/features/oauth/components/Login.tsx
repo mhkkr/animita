@@ -1,12 +1,13 @@
 'use client';
 
+import Image from 'next/image';
+
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 
 import { RingSpinner } from '~/components/spinners/Spinner';
 
 import Mitabit from 'public/mitabit.svg';
-import Image from 'next/image';
 
 const Loading = () => {
   return (

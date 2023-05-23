@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
 
-export const LibraryEntries_WATCHING = gql`
-  query LibraryEntries_WATCHING {
+export const LibraryEntriesOnHold = gql`
+  query LibraryEntriesOnHold {
     viewer {
       libraryEntries(
-        states: [WATCHING]
+        states: [ON_HOLD]
       ) {
         nodes {
           work {
