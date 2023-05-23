@@ -1,7 +1,7 @@
 schema:
   - https://api.annict.com/graphql:
       headers:
-        "Authorization": "Bearer FM9fYDfYSkIf1nwWvaMtQMu1JNka434vwYwxfjrWi8c"
+        "Authorization": "Bearer {ここに個人のアクセストークン}"
 documents: "./src/features/apollo/gql/**/*.ts"
 generates:
   ./src/features/apollo/generated-types.ts:

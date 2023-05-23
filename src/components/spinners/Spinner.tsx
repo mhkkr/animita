@@ -1,0 +1,1 @@
+export const RingSpinner = () => <div className="inline-block align-[-.146em] animate-spin h-[1em] w-[1em] border-[.15em] border-current rounded-full border-t-transparent"></div>;
