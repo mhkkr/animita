@@ -7,7 +7,7 @@ export default function Home() {
     <LayoutContainer>
       <div className="bg-gray-200">
         <div className="max-w-5xl mx-auto">
-          <AnimeList />
+          <AnimeList statusState={'WATCHING'} />
         </div>
       </div>
     </LayoutContainer>

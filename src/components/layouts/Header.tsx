@@ -16,17 +16,17 @@ function NavButton({ state }: { state: typeNavButton }) {
 const stateList = [
   { icon: '', label: '見てる', id: 'WATCHING' },
   { icon: '', label: '見たい', id: 'WANNA_WATCH' },
-  { icon: '', label: '見た', id: 'WATCHED' },
   { icon: '', label: '中断', id: 'ON_HOLD' },
-  { icon: '', label: '中止', id: 'STOP_WATCHING' }
+  { icon: '', label: '中止', id: 'STOP_WATCHING' },
+  { icon: '', label: '見た', id: 'WATCHED' }
 ];
 function Nav() {
   return (
     <nav>
       <div className="max-w-5xl mx-auto">
-        <ul className="flex">
+        <ul className="flex w-full">
           {stateList.map(state => {
-            return <li key={state.id}><NavButton state={state} /></li>
+            return <li className="last:ml-auto" key={state.id}><NavButton state={state} /></li>
           })}
         </ul>
       </div>

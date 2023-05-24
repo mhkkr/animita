@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { useQuery } from '@apollo/client';
-import { LibraryEntriesWatching } from '~/features/apollo/gql/LibraryEntriesWatching';
-import type { LibraryEntriesWatchingQuery } from '~/features/apollo/generated-types';
+import { LibraryEntries } from '~/features/apollo/gql/LibraryEntries';
+import type { LibraryEntriesQuery } from '~/features/apollo/generated-types';
 import BackButton from '~/components/buttons/BackButton';
 
 export default function AnimeDetail({ annictId }: { annictId: string }) {
-  const { data, loading, error } = useQuery<LibraryEntriesWatchingQuery>(LibraryEntriesWatching);
+  const { data, loading, error } = useQuery<LibraryEntriesQuery>(LibraryEntries);
   if (loading) return <div>詳細取得中</div>;
   if (error) return <div>{error.message}</div>;
  

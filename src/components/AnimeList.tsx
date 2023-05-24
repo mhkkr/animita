@@ -2,21 +2,24 @@
 
 import Link from 'next/link';
 import { useQuery } from '@apollo/client';
-import { LibraryEntriesWatching } from '~/features/apollo/gql/LibraryEntriesWatching';
-import type { LibraryEntriesWatchingQuery, LibraryEntry } from '~/features/apollo/generated-types';
+import { LibraryEntries } from '~/features/apollo/gql/LibraryEntries';
+import type { LibraryEntriesQuery, LibraryEntry } from '~/features/apollo/generated-types';
 
-export default function AnimeList() {
-  const { data, loading, error } = useQuery<LibraryEntriesWatchingQuery>(LibraryEntriesWatching);
+export default function AnimeList({ statusState }: { statusState: string }) {
+  const { data, loading, error } = useQuery<LibraryEntriesQuery>(LibraryEntries);
   if (loading) return <div>リスト取得中</div>;
   if (error) return <div>{error.message}</div>;
 
   const now = Date.now();
 
-  // 次回があるものだけに絞る
-  const watchingAnimeHasNextProgram = data?.viewer?.libraryEntries?.nodes?.filter(node => node?.nextProgram !== null);
+  // ステータスが一致するものだけに絞る
+  const animeStatusFilter = data?.viewer?.libraryEntries?.nodes?.filter(node => node?.status?.state === statusState);
+
+  // 次の話があるものだけに絞る
+  const animeHasNextProgram = animeStatusFilter?.filter(node => node?.nextProgram !== null);
 
   // 放映配信開始日時順に並び替え
-  watchingAnimeHasNextProgram?.sort((a, b) => new Date(a?.nextProgram?.startedAt).getTime() - new Date(b?.nextProgram?.startedAt).getTime());
+  animeHasNextProgram?.sort((a, b) => new Date(a?.nextProgram?.startedAt).getTime() - new Date(b?.nextProgram?.startedAt).getTime());
 
   // 視聴可能または予定曜日ごとに格納する
   const animeDayEntries: Array<{ day: string, list: Array<LibraryEntry | any> }> = [
@@ -29,7 +32,7 @@ export default function AnimeList() {
     { day: '金', list: [] },
     { day: '土', list: [] }
   ];
-  watchingAnimeHasNextProgram?.forEach(anime => {
+  animeHasNextProgram?.forEach(anime => {
     const startedAt = new Date(anime?.nextProgram?.startedAt);
     const isViewable = now > startedAt.getTime();
     const day = ['日','月','火','水','木','金','土'][startedAt.getDay()];
@@ -40,27 +43,27 @@ export default function AnimeList() {
   });
 
   // 曜日で並び替え
-  const animeList = animeDayEntries.slice(0, 1)
-                    // 今日の曜日から最後まで取得
-                    .concat(animeDayEntries.slice(new Date().getDay() + 1))
-                    // 視聴可能の次から今日の曜日の前まで取得
-                    .concat(animeDayEntries.slice(1, new Date().getDay() + 1));
+  const entries = animeDayEntries.slice(0, 1)
+                  // 今日の曜日から最後まで取得
+                  .concat(animeDayEntries.slice(new Date().getDay() + 1))
+                  // 視聴可能の次から今日の曜日の前まで取得
+                  .concat(animeDayEntries.slice(1, new Date().getDay() + 1));
 
-  if (!animeList) return <div>リスト取得できませんでした。</div>;
+  if (!entries) return <div>リスト取得できませんでした。</div>;
 
-  // console.log(watchingAnimeHasNextProgram);
-  // console.log(animeList);
+  // console.log(animeHasNextProgram);
+  // console.log(entries);
 
   return (
     <>
       <h1 className="text-center my-4 text-xl font-bold">見てる</h1>
       <div>
-        {animeList.filter(entry => entry.list.length).map((entry, i) => {
+        {entries.filter(entry => entry.list.length).map(entry => {
           return (
             <div key={entry.day} className="mb-12">
               <div className={`px-4 py-2 font-bold ${entry.day === '視聴可能' ? 'bg-lime-800 text-white' : 'bg-gray-300'}`}>{entry.day}{entry.day !== '視聴可能' && '曜日'}</div>
               <ul>
-                {entry.list?.map((anime: LibraryEntry, i) => {
+                {entry.list?.map((anime: LibraryEntry) => {
                   const startedAt = new Date(anime?.nextProgram?.startedAt);
                   const isViewable = now > startedAt.getTime();
                   return (

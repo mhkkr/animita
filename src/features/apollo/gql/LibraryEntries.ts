@@ -7,6 +7,9 @@ export const LibraryEntries = gql`
         states: [WATCHING, WANNA_WATCH, WATCHED, ON_HOLD, STOP_WATCHING]
       ) {
         nodes {
+          status {
+            state
+          }
           work {
             annictId
             officialSiteUrl
