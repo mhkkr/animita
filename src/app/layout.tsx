@@ -1,13 +1,17 @@
 import '~/app/globals.scss';
-import { Inter } from 'next/font/google';
 
 import ApolloProviderWrapper from '~/features/apollo/components/Provider';
 import SessionProviderWrapper from '~/features/oauth/components/Provider';
 import LoginController from '~/features/oauth/components/Controller';
+import RecoilRoot from '~/features/recoli/components/Root';
 
-// recoli or useState
+import { Roboto } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] });
+const roboto = Roboto({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  variable: '--font-roboto',
+});
 
 export const metadata = {
   title: 'みた！',
@@ -21,11 +25,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={inter.className}>
+      <body className={`${roboto.variable}`}>
         <ApolloProviderWrapper>
           <SessionProviderWrapper>
             <LoginController>
-              {children}
+              <RecoilRoot>
+                {children}
+              </RecoilRoot>
             </LoginController>
           </SessionProviderWrapper>
         </ApolloProviderWrapper>

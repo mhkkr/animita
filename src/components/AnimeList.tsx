@@ -1,12 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+
 import { useQuery } from '@apollo/client';
 import { LibraryEntries } from '~/features/apollo/gql/LibraryEntries';
 import type { LibraryEntriesQuery, LibraryEntry } from '~/features/apollo/generated-types';
 
-export default function AnimeList({ statusState }: { statusState: string }) {
+import { useRecoilState } from 'recoil';
+import { statusStateAtom } from '~/atoms/statusStateAtom';
+
+export default function AnimeList() {
   const { data, loading, error } = useQuery<LibraryEntriesQuery>(LibraryEntries);
+  const [statusState] = useRecoilState(statusStateAtom);
+  
   if (loading) return <div>リスト取得中</div>;
   if (error) return <div>{error.message}</div>;
 
@@ -80,7 +86,7 @@ export default function AnimeList({ statusState }: { statusState: string }) {
                       </div>
                       <div>
                         <p className={`text-sm ${isViewable ? 'text-lime-800 font-bold' : 'text-gray-700'}`}>{startedAt.getFullYear()}/{startedAt.getMonth() + 1}/{startedAt.getDate()} {startedAt.getHours().toString().padStart(2, '0')}:{startedAt.getMinutes().toString().padStart(2, '0')}<span className="ml-1">({['日','月','火','水','木','金','土'][startedAt.getDay()]})</span></p>
-                        <p className="mt-1 text-sm font-bold"><Link href={`/anime/${anime?.work.annictId}`}>{anime?.work.title}</Link></p>
+                        <p className="mt-1 text-sm font-bold font-roboto"><Link href={`/anime/${anime?.work.annictId}`}>{anime?.work.title}</Link></p>
                         <div className="mt-1 text-sm">
                           <span className="flex gap-1">
                             <span className="whitespace-nowrap">{isViewable && <span className="mr-1 cursor-pointer">📝</span>}{anime?.nextProgram?.episode.numberText}</span>

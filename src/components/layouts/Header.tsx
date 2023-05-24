@@ -1,4 +1,9 @@
+'use client';
+
 import Image from 'next/image';
+
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { statusStateAtom } from '~/atoms/statusStateAtom';
 
 import Logout from '~/features/oauth/components/Logout';
 
@@ -8,28 +13,30 @@ type typeNavButton = {
   id: string
 };
 function NavButton({ state }: { state: typeNavButton }) {
+  const setStatusState = useSetRecoilState(statusStateAtom);
+
   return (
-    <button type="button">{state.label}</button>
+    <button onClick={() => setStatusState(state.id)} type="button">{state.label}</button>
   );
 }
 
 const stateList = [
   { icon: '', label: '見てる', id: 'WATCHING' },
   { icon: '', label: '見たい', id: 'WANNA_WATCH' },
+  { icon: '', label: '見た', id: 'WATCHED' },
   { icon: '', label: '中断', id: 'ON_HOLD' },
-  { icon: '', label: '中止', id: 'STOP_WATCHING' },
-  { icon: '', label: '見た', id: 'WATCHED' }
+  { icon: '', label: '中止', id: 'STOP_WATCHING' }
 ];
 function Nav() {
+  const [statusState] = useRecoilState(statusStateAtom);
+
   return (
     <nav>
-      <div className="max-w-5xl mx-auto">
-        <ul className="flex w-full">
-          {stateList.map(state => {
-            return <li className="last:ml-auto" key={state.id}><NavButton state={state} /></li>
-          })}
-        </ul>
-      </div>
+      <ul>
+        {stateList.map(state => {
+          return <li className={`${statusState === state.id ? 'font-bold' : ''}`} key={state.id}><NavButton state={state} /></li>
+        })}
+      </ul>
     </nav>
   );
 }
@@ -38,7 +45,6 @@ export default function Header() {
   return (
     <>
       <header>
-        <div className="max-w-5xl mx-auto flex gap-4">
           <h1 className="mr-auto">
             ロゴ
             {/* <Image
@@ -49,18 +55,11 @@ export default function Header() {
               alt={process.env.NEXT_PUBLIC_TITLE || ''}
             /> */}
           </h1>
-          <div>
-            検索
-          </div>
-          <div>
-            通知
-          </div>
+          <Nav />
           <div>
             <button className="block p-4 bg-black/50 text-white" type="button">ユーザー</button>
           </div>
-        </div>
       </header>
-      <Nav />
     </>
   );
 }

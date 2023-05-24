@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <>
       <footer>
-        <div className="max-w-5xl mx-auto flex gap-4">
+        <div>
           <h1 className="mr-auto">
             フッター
           </h1>

@@ -5,11 +5,7 @@ import AnimeList from '~/components/AnimeList';
 export default function Home() {
   return (
     <LayoutContainer>
-      <div className="bg-gray-200">
-        <div className="max-w-5xl mx-auto">
-          <AnimeList statusState={'WATCHING'} />
-        </div>
-      </div>
+      <AnimeList />
     </LayoutContainer>
   );
 }

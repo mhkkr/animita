@@ -7,7 +7,7 @@ export default function LayoutContainer({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen max-w-2xl mx-auto flex gap-4">
       <Header />
       <main className="flex-1">
         {children}
