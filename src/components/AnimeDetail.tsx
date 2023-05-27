@@ -1,47 +1,80 @@
 'use client';
 
-import Link from 'next/link';
+import { useEffect } from 'react';
+
 import { useQuery } from '@apollo/client';
-import { LibraryEntries } from '~/features/apollo/gql/LibraryEntries';
-import type { LibraryEntriesQuery } from '~/features/apollo/generated-types';
+import { searchWorksGql } from '~/features/apollo/gql/searchWorksGql';
+import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
+import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
+
+import { useSetRecoilState } from 'recoil';
+import { statusStateAtom } from '~/atoms/statusStateAtom';
+
 import BackButton from '~/components/buttons/BackButton';
+import { RingSpinner } from '~/components/spinners/Spinner';
 
-export default function AnimeDetail({ annictId }: { annictId: string }) {
-  const { data, loading, error } = useQuery<LibraryEntriesQuery>(LibraryEntries);
-  if (loading) return <div>詳細取得中</div>;
-  if (error) return <div>{error.message}</div>;
- 
-  const annictId_int = parseInt(annictId, 10);
-  const anime = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work?.annictId === annictId_int);
-  if (!anime) return <div>詳細取得できませんでした。</div>;
+import Episodes from '~/components/Episodes';
+import Profile from '~/components/Profile';
 
-  const now = Date.now();
-  const startedAt = new Date(anime?.nextProgram?.startedAt);
-  const isViewable = now > startedAt.getTime();
+import Const from '~/constants';
+
+const statusStateArray: string[] = [];
+Const.STATE_LIST.map(state => statusStateArray.push(state.id));
+
+// TODO: setStatusState を実行したいだけで、この実装は苦しい気がする…。
+function SetStatusState({ work }: { work: Work }) {
+  const setStatusState = useSetRecoilState(statusStateAtom);
+  const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
+    variables: {
+      states: statusStateArray,
+      seasons: [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`]
+    }
+  });
+  const entry = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
+
+  useEffect(() => {
+    if (entry?.status?.state) {
+      setStatusState(entry?.status?.state);
+    }
+  }, [entry]);
   
-  console.log(anime);
-  
+  if (loading) return <></>;
+  if (error) { console.error(error); return <></>; }
+  return <></>;
+}
+
+export default function AnimeDetail({ annictId }: { annictId: number }) {
+  const { data, loading, error } = useQuery<SearchWorksQuery>(searchWorksGql, {
+    variables: { annictIds: [annictId] }
+  });
+  const work = data?.searchWorks?.nodes ? (data?.searchWorks?.nodes[0] as Work) : null;
+
   return (
     <>
       <p><BackButton /></p>
-      <figure className="bg-gray-300">
-        <img src={anime?.work?.image?.facebookOgImageUrl || ''} alt="作品サムネイル" loading="lazy" onError={e => {
-          (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>';
-        }} />
-      </figure>
-      <p className="mt-2 text-xs">{anime?.nextProgram?.channel.name}</p>
-      <p className="mt-1 font-bold">{anime?.work.title}</p>
-      <p className={`${isViewable ? 'text-lime-800 font-bold' : 'text-gray-700'}`}></p>
-      <table>
-        {isViewable && (
-          <tr>
-            <td>{startedAt.getFullYear()}/{startedAt.getMonth() + 1}/{startedAt.getDate()} {startedAt.getHours().toString().padStart(2, '0')}:{startedAt.getMinutes().toString().padStart(2, '0')}<span className="ml-1">({['日','月','火','水','木','金','土'][startedAt.getDay()]})</span></td>
-            <td><span className="mr-1 cursor-pointer">📝</span>{anime?.nextProgram?.episode.numberText}</td>
-            <td>{anime?.nextProgram?.episode.title}</td>
-          </tr>
-        )}
-      </table>
-      <p><BackButton /></p>
+
+      {loading && <div className="pt-12 border-t dark:border-white/25 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+      {error && <p className="px-4 pt-6 dark:text-white/70 border-t dark:border-white/25">{error.message}</p>}
+
+      {!(loading || error) &&
+        <>
+          {!work && 
+            <div className="px-4 pt-6 dark:text-white/70 border-t dark:border-white/25">
+              <span className="!table mx-auto mb-4 material-symbols-outlined material-symbols-outlined--fill">unknown_document</span>
+              <p className="text-center">詳細取得できませんでした。</p>
+            </div>
+          }
+          {work && 
+            <>
+              <SetStatusState work={work} />
+              <Profile work={work} />
+              <div className="mt-6">
+                <Episodes work={work} />
+              </div>
+            </>
+          }
+        </>
+      }
     </>
   );
 }

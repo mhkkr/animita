@@ -25,7 +25,7 @@ const Main = () => {
     setProcessing(true);
 
     try {
-      await signIn('annict', { callbackUrl: process.env.NEXT_PUBLIC_URL });
+      await signIn('annict', { callbackUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL });
     } catch (e) {
       if (e instanceof Error) {
         setProcessing(false);

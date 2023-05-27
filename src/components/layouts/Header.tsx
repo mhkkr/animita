@@ -1,65 +1,33 @@
 'use client';
 
+import Link from 'next/link';
 import Image from 'next/image';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { statusStateAtom } from '~/atoms/statusStateAtom';
+import Nav from '~/components/Nav';
+import User from '~/components/User';
 
-import Logout from '~/features/oauth/components/Logout';
+import Const from '~/constants';
 
-type typeNavButton = {
-  icon: string,
-  label: string,
-  id: string
-};
-function NavButton({ state }: { state: typeNavButton }) {
-  const setStatusState = useSetRecoilState(statusStateAtom);
-
+export default function Header({ className }: { className: string }) {
   return (
-    <button onClick={() => setStatusState(state.id)} type="button">{state.label}</button>
-  );
-}
-
-const stateList = [
-  { icon: '', label: '見てる', id: 'WATCHING' },
-  { icon: '', label: '見たい', id: 'WANNA_WATCH' },
-  { icon: '', label: '見た', id: 'WATCHED' },
-  { icon: '', label: '中断', id: 'ON_HOLD' },
-  { icon: '', label: '中止', id: 'STOP_WATCHING' }
-];
-function Nav() {
-  const [statusState] = useRecoilState(statusStateAtom);
-
-  return (
-    <nav>
-      <ul>
-        {stateList.map(state => {
-          return <li className={`${statusState === state.id ? 'font-bold' : ''}`} key={state.id}><NavButton state={state} /></li>
-        })}
-      </ul>
-    </nav>
-  );
-}
-
-export default function Header() {
-  return (
-    <>
-      <header>
-          <h1 className="mr-auto">
-            ロゴ
-            {/* <Image
-              className="mx-auto"
+    <header className={`${className} relative`}>
+      <div className="sticky top-0 flex flex-col h-screen overflow-x-hidden overflow-y-auto">
+        <h1 className="my-4">
+          <Link className="table mx-auto bg-white rounded-full w-24 h-24" href="/">
+            <Image
+              className="object-cover w-24 h-24"
               src="/mitabit-home.png"
               width={336 * .3}
               height={420 * .3}
-              alt={process.env.NEXT_PUBLIC_TITLE || ''}
-            /> */}
-          </h1>
-          <Nav />
-          <div>
-            <button className="block p-4 bg-black/50 text-white" type="button">ユーザー</button>
-          </div>
-      </header>
-    </>
+              alt={Const.TITLE}
+            />
+          </Link>
+        </h1>
+        <Nav />
+        <div className="mt-auto">
+          <User />
+        </div>
+      </div>
+    </header>
   );
 }

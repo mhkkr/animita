@@ -7,6 +7,8 @@ import RecoilRoot from '~/features/recoli/components/Root';
 
 import { Roboto } from 'next/font/google';
 
+import Const from '~/constants';
+
 const roboto = Roboto({
   weight: ['400', '700'],
   subsets: ['latin'],
@@ -14,8 +16,32 @@ const roboto = Roboto({
 });
 
 export const metadata = {
-  title: 'みた！',
-  description: 'あの作品を見た観た履歴。いまのところ Annict だけ。',
+  title: {
+    default: Const.TITLE,
+    template: `%s - ${Const.TITLE}`,
+  },
+  description: Const.DESCRIPTION,
+  openGraph: {
+    title: Const.TITLE,
+    description: Const.DESCRIPTION,
+    url: Const.URL,
+    siteName: Const.TITLE,
+    locale: 'ja_JP',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: Const.TITLE,
+    description: Const.DESCRIPTION,
+    site: '@サイト用アカウントのTwitterID',
+    creator: '@kakera_dev',
+  },  
+  verification: {
+    google: 'サーチコンソールのやつ',
+  },
+  alternates: {
+    canonical: Const.URL,
+  },
 };
 
 export default function RootLayout({
@@ -25,6 +51,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
+      <head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+      </head>
       <body className={`${roboto.variable}`}>
         <ApolloProviderWrapper>
           <SessionProviderWrapper>

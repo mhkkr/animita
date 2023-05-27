@@ -1,10 +1,11 @@
 import { gql } from '@apollo/client';
 
-export const LibraryEntries = gql`
-  query LibraryEntries {
+export const libraryEntriesGql = gql`
+  query libraryEntries($states: [StatusState!], $seasons: [String!]) {
     viewer {
       libraryEntries(
-        states: [WATCHING, WANNA_WATCH, WATCHED, ON_HOLD, STOP_WATCHING]
+        states: $states
+        seasons: $seasons
       ) {
         nodes {
           status {
@@ -12,9 +13,7 @@ export const LibraryEntries = gql`
           }
           work {
             annictId
-            officialSiteUrl
             title
-            media
             image {
               facebookOgImageUrl
               copyright
@@ -27,7 +26,7 @@ export const LibraryEntries = gql`
             }
             startedAt
             episode {
-              number
+              annictId
               numberText
               title
             }

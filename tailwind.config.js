@@ -6,9 +6,14 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        'annict': {
+          100: '#d51c5b',
+        },
+      },
       fontFamily: {
-        sans: ['ＭＳ ゴシック', 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', 'sans-serif'],
-        roboto: ['var(--font-roboto)'],
+        sans: ['Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', 'sans-serif'],
+        roboto: ['var(--font-roboto)']
       },
     }
   },
