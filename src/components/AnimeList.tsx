@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 
-import * as Scroll from 'react-scroll';
-
 import { useQuery } from '@apollo/client';
 import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
 import type { LibraryEntriesQuery, LibraryEntry } from '~/features/apollo/generated-types';
@@ -14,18 +12,16 @@ import { tabStateAtom } from '~/atoms/tabStateAtom';
 
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
-import { RecordOpenButton, RecordViewer } from '~/components/Records';
+import * as Record from '~/components/AnimeRecords';
 
 import Const from '~/constants';
-
-const scroll = Scroll.animateScroll;
 
 type EntryEachDate = {
   day: string,
   list: LibraryEntry[]
 };
 
-function SwitchTab({ id, label }: { id: string, label: string }) {
+function SwitchTab({ value, label }: { value: string, label: string }) {
   const [statusState] = useRecoilState(statusStateAtom);
   const [tabState, setTabState] = useRecoilState(tabStateAtom);
 
@@ -34,22 +30,20 @@ function SwitchTab({ id, label }: { id: string, label: string }) {
   
   const deliveredTabDeep: { id: string; value: string; }[] = JSON.parse(JSON.stringify(tabState));
   const tabChange = () => {
-    deliveredTabDeep[tabIndex].value = id;
+    deliveredTabDeep[tabIndex].value = value;
     setTabState(deliveredTabDeep);
   }
 
   return (
     <button
       onClick={() => {
-        scroll.scrollToTop({
-          duration: 200
-        });
+        document.documentElement.scrollIntoView({ behavior: 'smooth' });
         tabChange();
       }}
       className={`
         relative w-1/2 px-4 py-3
         after:content-[''] after:block after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1/2 after:h-1 after:bg-annict-100 after:rounded-full
-        ${tab?.value === id ? 'font-bold' : 'dark:text-white/70 after:hidden'}
+        ${tab?.value === value ? 'font-bold' : 'dark:text-white/70 after:hidden'}
       `}
       type="button"
     >{label}</button>
@@ -81,17 +75,18 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
               <p className="text-sm dark:text-white/70"><DisplayDate date={startedAt} /></p>
               <p className="mt-1 font-bold"><Link href={`/anime/${entry?.work.annictId}`}>{entry?.work.title}</Link></p>
               <div className={`${isViewable ? '' : 'cursor-text'}`}>
-                <RecordOpenButton
+                <Record.ToggleButton
                   className={`
                     flex w-full text-sm
                     ${isViewable ? 'mt-1.5 px-4 py-2 border dark:border-white/30 rounded-full' : 'mt-1 pointer-events-none'}
                   `}
-                  annictId={entry?.nextProgram?.episode?.annictId}
-                  disabled={isViewable ? true : false}
+                  workAnnictId={entry?.work.annictId}
+                  episodeAnnictId={entry?.nextProgram?.episode?.annictId}
+                  disabled={isViewable ? false : true}
                 >
                   <span className="flex-shrink-0 mr-2">{entry?.nextProgram?.episode.numberText}</span>
                   <span className="flex-1 text-left">{entry?.nextProgram?.episode.title || '未定'}</span>
-                </RecordOpenButton>
+                </Record.ToggleButton>
               </div>
             </div>
           </li>
@@ -145,12 +140,12 @@ function UnDeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[
     );
 
   return (
-    <div className={`${tab?.value === 'Undelivered' ? '' : 'hidden'}`}>
+    <div className={`${tab?.value === 'undelivered' ? '' : 'hidden'}`}>
       {undeliveredEntries.filter(entry => entry.list.length).length === 0 ?
         <NotEntry /> :
         undeliveredEntries.map(entry => (
           <div key={entry.day} className="mt-12 first:mt-6">
-            <div className="border-b dark:border-white/30 p-4 text-lg font-bold">{entry.day}曜日</div>
+            <div className="border-b dark:border-white/25 p-4 text-lg font-bold">{entry.day}曜日</div>
             <Detail entry={entry} now={now} />
           </div>
         ))
@@ -202,7 +197,7 @@ export default function AnimeList() {
   const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
     variables: { states: [statusState] }
   });
-  const STATE = Const.STATE_LIST.find(state => state.id === statusState);
+  const STATE = Const.STATUSSTATE_LIST.find(state => state.id === statusState);
 
   return (
     <div className="relative">
@@ -212,20 +207,15 @@ export default function AnimeList() {
           <span>{STATE?.label}</span>
         </h1>
         <div className="flex border-b dark:border-white/25">
-          <SwitchTab id="Delivered" label="配信済み" />
-          <SwitchTab id="Undelivered" label="未配信" />
+          <SwitchTab value="delivered" label="配信済み" />
+          <SwitchTab value="undelivered" label="未配信" />
         </div>
       </header>
       
       {loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
       {error && <p className="p-4 dark:text-white/70">{error.message}</p>}
       
-      {!(loading || error) && 
-        <>
-          <EntryList data={data} />
-          <RecordViewer />
-        </>
-      }
+      {!(loading || error) && <EntryList data={data} />}
     </div>
   );
 }

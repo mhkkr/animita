@@ -1,19 +1,10 @@
 'use client';
 
-// TODO: キャッシュする
-
-import { useQuery } from '@apollo/client';
-import { userGql } from '~/features/apollo/gql/userGql';
-import type { UserQuery } from '~/features/apollo/generated-types';
-
 import { Popover, Transition } from '@headlessui/react';
-
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 export default function User() {
-  const { data, loading, error } = useQuery<UserQuery>(userGql);
-
-  if (error) return <p className="p-3 w-full dark:text-white/70">{error.message}</p>
+  const { data } = useSession();
 
   return (
     <Popover className="relative">
@@ -37,12 +28,9 @@ export default function User() {
           mr-3 dark:bg-white rounded-full overflow-hidden w-12 h-12
           group-focus-visible/user:outline group-focus-visible/user:outline-1 group-focus-visible/user:outline-offset-2
         ">
-          {loading ? 
-            <span className="material-symbols-outlined material-symbols-outlined--fill dark:text-stone-800 !text-5xl">face</span> :
-            <img className="object-cover w-full h-full" src={data?.viewer?.avatarUrl || ''} alt="ユーザーアイコン" />
-          }
+          <img className="object-cover w-full h-full" src={data?.user?.image || ''} alt={`${data?.user?.name}さんのアイコン`} />
         </span>
-        <span>{data?.viewer?.username}</span>
+        <span>{data?.user?.name}</span>
       </Popover.Button>
     </Popover>
   );

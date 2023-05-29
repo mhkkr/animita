@@ -6,19 +6,29 @@ export const searchEpisodesGql = gql`
       annictIds: $annictIds
     ) {
       nodes {
+				id
         annictId
-      	sortNumber
+        sortNumber
+        numberText
+        title
 				viewerDidTrack
-      	numberText
-      	title
+        viewerRecordsCount
+        recordsCount
 				records(
 					hasComment: true
 				) {
 					nodes {
+						id
+						annictId
 						ratingState
 						comment
+						createdAt
+						updatedAt
+						likesCount
 						user {
+							email
 							name
+							avatarUrl
 						}
 					}
 				}

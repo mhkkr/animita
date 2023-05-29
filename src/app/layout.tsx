@@ -5,15 +5,7 @@ import SessionProviderWrapper from '~/features/oauth/components/Provider';
 import LoginController from '~/features/oauth/components/Controller';
 import RecoilRoot from '~/features/recoli/components/Root';
 
-import { Roboto } from 'next/font/google';
-
 import Const from '~/constants';
-
-const roboto = Roboto({
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  variable: '--font-roboto',
-});
 
 export const metadata = {
   title: {
@@ -54,7 +46,7 @@ export default function RootLayout({
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
       </head>
-      <body className={`${roboto.variable}`}>
+      <body>
         <ApolloProviderWrapper>
           <SessionProviderWrapper>
             <LoginController>

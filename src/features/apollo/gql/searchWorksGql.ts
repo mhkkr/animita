@@ -23,23 +23,18 @@ export const searchWorksGql = gql`
           nodes {
             annictId
             sortNumber
-						viewerDidTrack
             numberText
             title
+						viewerDidTrack
             viewerRecordsCount
+            recordsCount
           }
         }
         programs {
 					nodes {
-						# startedAt
-            # Cannot return null for non-nullable field Program.episode が出て data が取得できなくなる…。
-						# episode {
-						# 	annictId
-						# }
 						channel {
 							annictId
 							name
-							# published
 						}
 					}
 				}

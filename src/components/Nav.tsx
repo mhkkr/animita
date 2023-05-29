@@ -41,7 +41,7 @@ export default function Nav() {
   return (
     <nav>
       <ul>
-        {Const.STATE_LIST.map(state => {
+        {Const.STATUSSTATE_LIST.map(state => {
           return <li key={state.id}><NavButton state={state} /></li>
         })}
       </ul>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { searchWorksGql } from '~/features/apollo/gql/searchWorksGql';
@@ -13,13 +13,13 @@ import { statusStateAtom } from '~/atoms/statusStateAtom';
 import BackButton from '~/components/buttons/BackButton';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
-import Episodes from '~/components/Episodes';
-import Profile from '~/components/Profile';
+import Episodes from '~/components/AnimeEpisodes';
+import Info from '~/components/AnimeInfo';
 
 import Const from '~/constants';
 
 const statusStateArray: string[] = [];
-Const.STATE_LIST.map(state => statusStateArray.push(state.id));
+Const.STATUSSTATE_LIST.map(state => statusStateArray.push(state.id));
 
 // TODO: setStatusState を実行したいだけで、この実装は苦しい気がする…。
 function SetStatusState({ work }: { work: Work }) {
@@ -32,7 +32,7 @@ function SetStatusState({ work }: { work: Work }) {
   });
   const entry = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (entry?.status?.state) {
       setStatusState(entry?.status?.state);
     }
@@ -67,7 +67,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
           {work && 
             <>
               <SetStatusState work={work} />
-              <Profile work={work} />
+              <Info work={work} />
               <div className="mt-6">
                 <Episodes work={work} />
               </div>

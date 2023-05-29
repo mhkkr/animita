@@ -1,24 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-
 import { useQuery } from '@apollo/client';
-import { searchWorksGql } from '~/features/apollo/gql/searchWorksGql';
 import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
-import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
-
-import { useRecoilState } from 'recoil';
-import { statusStateAtom } from '~/atoms/statusStateAtom';
-
-import BackButton from '~/components/buttons/BackButton';
-import { RingSpinner } from '~/components/spinners/Spinner';
-
-import Episodes from '~/components/Episodes';
+import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
 import Const from '~/constants';
 
 const statusStateArray: string[] = [];
-Const.STATE_LIST.map(state => statusStateArray.push(state.id));
+Const.STATUSSTATE_LIST.map(state => statusStateArray.push(state.id));
 
 function RelatedLink({ icon, className, test, href, label }: {
   icon: string,
@@ -62,7 +51,7 @@ function Channel({ work }: { work: Work }) {
   )
 }
 
-export default function Profile({ work }: { work: Work }) {
+export default function Info({ work }: { work: Work }) {
   return (
     <>
       <figure className="bg-gray-300">
@@ -70,7 +59,7 @@ export default function Profile({ work }: { work: Work }) {
           (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>';
         }} />
       </figure>
-      <ul className="flex gap-4 mt-4 px-4 text-xs">
+      <ul className="flex flex-wrap gap-4 mt-4 px-4 text-xs">
         <Channel work={work} />
         <RelatedLink
           icon="open_in_new"
@@ -95,10 +84,10 @@ export default function Profile({ work }: { work: Work }) {
         />
       </ul>
       <h1 className="mt-4 px-4 font-bold text-lg">{work.title}</h1>
-      <ul className="flex gap-4 mt-2 px-4 text-xs dark:text-white/70">
+      <ul className="flex flex-wrap gap-4 mt-2 px-4 text-xs dark:text-white/70">
         <li>視聴者数:{work.watchersCount}</li>
         <li>評価数:{work.reviewsCount}</li>
-        <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.en === work.seasonName)?.ja}</li>
+        <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
       </ul>
     </>
   );
