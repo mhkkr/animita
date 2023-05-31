@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 import { statusStateAtom } from '~/atoms/statusStateAtom';
 
+import StatuSstateIcon from '~/components/icons/StatuSstateIcon';
+
 import Const from '~/constants';
 
 function NavButton({ state }: {
   state: {
-    icon: string,
-    label: string,
-    id: string
+    id: string,
+    label: string
   }
 }) {
   const router = useRouter();
@@ -31,7 +32,10 @@ function NavButton({ state }: {
       `}
       type="button"
     >
-      <span className={`mr-2 material-symbols-outlined ${statusState === state.id ? 'material-symbols-outlined--fill' : ''}`}>{state.icon}</span>
+      {statusState === state.id ?
+        <StatuSstateIcon id={`${state.id}_CURRENT`} className="text-[1.5em] mr-2" /> :
+        <StatuSstateIcon id={state.id} className="text-[1.5em] mr-2" />
+      }
       <span>{state.label}</span>
     </button>
   );

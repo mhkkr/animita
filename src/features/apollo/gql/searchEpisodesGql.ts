@@ -14,9 +14,7 @@ export const searchEpisodesGql = gql`
 				viewerDidTrack
         viewerRecordsCount
         recordsCount
-				records(
-					hasComment: true
-				) {
+				records {
 					nodes {
 						id
 						annictId

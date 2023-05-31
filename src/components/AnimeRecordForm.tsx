@@ -3,15 +3,14 @@
 import { FormEvent, useState } from 'react';
 
 import { useMutation, gql } from '@apollo/client';
-import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
-import { searchEpisodesGql } from '~/features/apollo/gql/searchEpisodesGql';
-import { searchWorksGql } from '~/features/apollo/gql/searchWorksGql';
 import type { Episode } from '~/features/apollo/generated-types';
-
-import { FaTwitter } from 'react-icons/fa';
 
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
+
+import BrandIcon from '~/components/icons/BrandIcon';
+import FormIcon from '~/components/icons/FormIcon';
+import RatingStateIcon from '~/components/icons/RatingStateIcon';
 
 import { RingSpinner } from '~/components/spinners/Spinner';
 
@@ -91,25 +90,31 @@ export default function Form({ episode }: { episode: Episode }) {
         disabled={loading}
       />
       <div className="mt-4 flex items-center w-full gap-4">
-        <div className="flex-1 grid grid-cols-4 text-xs">
+        <div className="flex-1 grid grid-cols-4">
           {Const.RATINGSTATE_LIST.map((RATINGSTATE) => {
             return (
               <label
                 key={RATINGSTATE.id}
                 className={`
-                  relative flex items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-white/25 cursor-pointer
+                  relative flex items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-white/25 cursor-pointer text-xs
                   transition-colors ${ratingState === RATINGSTATE.id ? RATINGSTATE.bgColor : ''}
                   focus-within:outline focus-within:outline-1 focus-within:outline-offset-2
                 `}>
                 <input
-                  onChange={e => setRatingState(e.target.value)}
+                  onChange={e => setTimeout(() => setRatingState(e.target.value), 0)}
+                  onClick={e => {
+                    if (e.currentTarget.value === ratingState) {
+                      e.currentTarget.checked = false;
+                      setRatingState('');
+                    }
+                  }}
                   className="absolute -z-10 opacity-0"
                   type="radio"
                   value={RATINGSTATE.id}
                   checked={ratingState === RATINGSTATE.id}
                   disabled={loading}
                 />
-                <span className="material-symbols-outlined material-symbols-outlined--fill !text-[1em] mr-1">{RATINGSTATE.icon}</span>
+                <RatingStateIcon id={RATINGSTATE.id} className={`mr-1 text-[1.25em] transition-transform ${ratingState === RATINGSTATE.id ? 'scale-110' : ''}`} />
                 {RATINGSTATE.label}
               </label>
             );
@@ -125,7 +130,8 @@ export default function Form({ episode }: { episode: Episode }) {
               checked={shareTwitter}
               disabled={loading}
             />
-            <FaTwitter
+            <BrandIcon
+              id="twitter"
               className={`transition-all ${shareTwitter ? 'text-[#1da1f2]' : 'opacity-30'}`}
               data-tooltip-id="records-edit-form-tooltip" data-tooltip-content={shareTwitter ? 'シェアする' : 'シェアしない'} data-tooltip-place="top"
             />
@@ -140,7 +146,7 @@ export default function Form({ episode }: { episode: Episode }) {
         `}
         type="submit"
         disabled={loading}
-      >{loading ? <span className="mr-2 text-white"><RingSpinner /></span> : <span className="material-symbols-outlined mr-2">publish</span>}投稿する</button>
+      >{loading ? <span className="mr-2 text-white"><RingSpinner /></span> : <FormIcon id="publish" className="mr-2 text-[1.5em]" />}投稿する</button>
       <Tooltip id="records-edit-form-tooltip" />
     </form>
   );

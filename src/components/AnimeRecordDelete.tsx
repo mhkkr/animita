@@ -1,9 +1,8 @@
 'use client';
 
 import { useMutation, gql } from '@apollo/client';
-import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
-import { searchEpisodesGql } from '~/features/apollo/gql/searchEpisodesGql';
-import { searchWorksGql } from '~/features/apollo/gql/searchWorksGql';
+
+import FormIcon from '~/components/icons/FormIcon';
 
 export default function Delete({ recordId }: { recordId: string }) {
   const [deleteRecord, { loading, error }] = useMutation(gql`
@@ -18,11 +17,21 @@ export default function Delete({ recordId }: { recordId: string }) {
         }
       }
     }
-  `, {
-    refetchQueries: [
-      'searchEpisodesGql',
-      'searchWorksGql'
-    ]
+  `,{
+    update (cache, { data: { deleteRecord } }) {
+      // // 追加した商品のキャッシュIDを取得
+      // const cacheId = cache.identify(deleteRecord)
+      // console.log(cacheId) // Item:4
+      // cache.modify({
+      //   fields: {
+      //     items(existingItemRefs, { toReference }) {
+      //       console.log(existingItemRefs) // [{__ref: 'Item:1'}, {__ref: 'Item:2'}, {__ref: 'Item:3'}]
+      //       console.log(toReference(cacheId)) // {__ref: 'Item:4'}
+      //       return [toReference(cacheId), existingItemRefs]
+      //     },
+      //   },
+      // })
+    }
   });
 
   if (error) {
@@ -37,7 +46,7 @@ export default function Delete({ recordId }: { recordId: string }) {
       type="button"
       disabled={loading}
     >
-      <span className="material-symbols-outlined !text-[1em] mr-1">delete</span>
+      <FormIcon id="delete" className="mr-1" />
       削除
     </button>
   );

@@ -4,6 +4,8 @@ import { useQuery } from '@apollo/client';
 import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
 import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
+import LinkIcon from '~/components/icons/LinkIcon';
+
 import Const from '~/constants';
 
 const statusStateArray: string[] = [];
@@ -20,7 +22,7 @@ function RelatedLink({ icon, className, test, href, label }: {
     return (
       <li>
         <a className="flex items-center" href={href} target="_blank" rel="noopener noreferrer">
-          <span className={`material-symbols-outlined ${className}`}>{icon}</span>{label}
+          <LinkIcon id={icon} className="text-[1.5em] mr-1" />{label}
         </a>
       </li>
     );
@@ -76,7 +78,7 @@ export default function Info({ work }: { work: Work }) {
           label="公式サイト"
         />
         <RelatedLink
-          icon="tag"
+          icon="hashtag"
           className="mr-0.5"
           test={work.twitterHashtag}
           href={`https://twitter.com/hashtag/${work.twitterHashtag}?src=hashtag&f=live`}
@@ -85,8 +87,8 @@ export default function Info({ work }: { work: Work }) {
       </ul>
       <h1 className="mt-4 px-4 font-bold text-lg">{work.title}</h1>
       <ul className="flex flex-wrap gap-4 mt-2 px-4 text-xs dark:text-white/70">
-        <li>視聴者数:{work.watchersCount}</li>
-        <li>評価数:{work.reviewsCount}</li>
+        <li>視聴者数：{work.watchersCount}</li>
+        <li>評価数：{work.reviewsCount}</li>
         <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
       </ul>
     </>

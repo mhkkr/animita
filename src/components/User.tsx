@@ -3,6 +3,8 @@
 import { Popover, Transition } from '@headlessui/react';
 import { signOut, useSession } from 'next-auth/react';
 
+import FormIcon from '~/components/icons/FormIcon';
+
 export default function User() {
   const { data } = useSession();
 
@@ -18,7 +20,7 @@ export default function User() {
       >
         <Popover.Panel className="absolute bottom-full left-4 right-4 border dark:border-white/25 rounded-xl shadow-xl">
           <button onClick={() => signOut()} className="flex items-center p-3 w-full hover:text-red-500 font-bold" type="button">
-            <span className="mr-1.5 material-symbols-outlined">logout</span>
+            <FormIcon id="logout" className="mr-1.5 text-lg" />
             ログアウト
           </button>
         </Popover.Panel>

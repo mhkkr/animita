@@ -10,6 +10,9 @@ import { useRecoilState } from 'recoil';
 import { statusStateAtom } from '~/atoms/statusStateAtom';
 import { tabStateAtom } from '~/atoms/tabStateAtom';
 
+import Notification from '~/components/icons/Notification';
+import StatuSstateIcon from '~/components/icons/StatuSstateIcon';
+
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
 import * as Record from '~/components/AnimeRecords';
@@ -27,18 +30,14 @@ function SwitchTab({ value, label }: { value: string, label: string }) {
 
   const tab = tabState.find(tab => tab.id === statusState);
   const tabIndex = tabState.findIndex(tab => tab.id === statusState);
-  
   const deliveredTabDeep: { id: string; value: string; }[] = JSON.parse(JSON.stringify(tabState));
-  const tabChange = () => {
-    deliveredTabDeep[tabIndex].value = value;
-    setTabState(deliveredTabDeep);
-  }
 
   return (
     <button
       onClick={() => {
+        deliveredTabDeep[tabIndex].value = value;
+        setTabState(deliveredTabDeep);
         document.documentElement.scrollIntoView({ behavior: 'smooth' });
-        tabChange();
       }}
       className={`
         relative w-1/2 px-4 py-3
@@ -78,7 +77,7 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
                 <Record.ToggleButton
                   className={`
                     flex w-full text-sm
-                    ${isViewable ? 'mt-1.5 px-4 py-2 border dark:border-white/30 rounded-full' : 'mt-1 pointer-events-none'}
+                    ${isViewable ? 'mt-1.5 px-4 py-2 border dark:border-white/30 rounded-3xl' : 'mt-1 pointer-events-none'}
                   `}
                   workAnnictId={entry?.work.annictId}
                   episodeAnnictId={entry?.nextProgram?.episode?.annictId}
@@ -99,7 +98,7 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
 function NotEntry() {
   return (
     <div className="px-4 pt-6 dark:text-white/70">
-      <span className="!table mx-auto mb-4 material-symbols-outlined material-symbols-outlined--fill">check_circle</span>
+      <Notification id="unknow" className="table mx-auto mb-4 text-2xl" />
       <p className="text-center">エピソードがありません！</p>
     </div>
   );
@@ -110,8 +109,8 @@ function DeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[],
   const [tabState] = useRecoilState(tabStateAtom);
   const tab = tabState.find(tab => tab.id === statusState);
 
-  // 配信済み
-  const deliveredEntry = entryEachDate.find(entry => entry.day === '配信済み');
+  // 視聴可能
+  const deliveredEntry = entryEachDate.find(entry => entry.day === '視聴可能');
 
   if (!deliveredEntry) return <></>;
 
@@ -135,7 +134,7 @@ function UnDeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[
     (
       // 今日の曜日から最後まで取得
       entryEachDate.slice(new Date().getDay() + 1)
-      // 配信済みの次から今日の曜日の前まで取得
+      // 視聴可能の次から今日の曜日の前まで取得
       .concat(entryEachDate.slice(1, new Date().getDay() + 1))
     );
 
@@ -163,9 +162,9 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
   // 放映配信開始日時順に並び替え
   hasNextPrograms?.sort((a, b) => new Date(a?.nextProgram?.startedAt).getTime() - new Date(b?.nextProgram?.startedAt).getTime());
 
-  // 配信済みまたは予定曜日ごとに格納する
+  // 視聴可能または予定曜日ごとに格納する
   const entryEachDate: EntryEachDate[] = [
-    { day: '配信済み', list: [] },
+    { day: '視聴可能', list: [] },
     { day: '日', list: [] },
     { day: '月', list: [] },
     { day: '火', list: [] },
@@ -178,7 +177,7 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
     const startedAt = new Date(program?.nextProgram?.startedAt);
     const isViewable = now > startedAt.getTime();
     const day = ['日','月','火','水','木','金','土'][startedAt.getDay()];
-    const entry = isViewable ? entryEachDate.find(entry => entry.day === '配信済み') : entryEachDate.find(entry => entry.day === day);
+    const entry = isViewable ? entryEachDate.find(entry => entry.day === '視聴可能') : entryEachDate.find(entry => entry.day === day);
     if (entry && program) {
       entry.list.push(program as LibraryEntry);
     }
@@ -203,11 +202,11 @@ export default function AnimeList() {
     <div className="relative">
       <header className="sticky top-0 dark:bg-black/60 backdrop-blur-md">
         <h1 className="flex items-center justify-center px-4 py-3 text-xl font-bold">
-          <span className="mr-2 material-symbols-outlined material-symbols-outlined--fill">{STATE?.icon}</span>
+          <StatuSstateIcon id={`${STATE?.id}_CURRENT`} className="mr-2 text-[1.5em]" />
           <span>{STATE?.label}</span>
         </h1>
         <div className="flex border-b dark:border-white/25">
-          <SwitchTab value="delivered" label="配信済み" />
+          <SwitchTab value="delivered" label="視聴可能" />
           <SwitchTab value="undelivered" label="未配信" />
         </div>
       </header>

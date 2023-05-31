@@ -32,6 +32,7 @@ export const searchWorksGql = gql`
         }
         programs {
 					nodes {
+						startedAt
 						channel {
 							annictId
 							name
