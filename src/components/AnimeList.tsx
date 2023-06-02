@@ -10,8 +10,8 @@ import { useRecoilState } from 'recoil';
 import { statusStateAtom } from '~/atoms/statusStateAtom';
 import { tabStateAtom } from '~/atoms/tabStateAtom';
 
-import Notification from '~/components/icons/Notification';
-import StatuSstateIcon from '~/components/icons/StatuSstateIcon';
+import NotificationIcon from '~/components/icons/NotificationIcon';
+import StatuSstateIcon from '~/components/icons/StatusStateIcon';
 
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
@@ -98,7 +98,7 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
 function NotEntry() {
   return (
     <div className="px-4 pt-6 dark:text-white/70">
-      <Notification id="unknow" className="table mx-auto mb-4 text-2xl" />
+      <NotificationIcon id="unknow" className="table mx-auto mb-4 text-2xl" />
       <p className="text-center">エピソードがありません！</p>
     </div>
   );

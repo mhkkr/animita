@@ -4,7 +4,7 @@ import { TbPlayerPause, TbPlayerPauseFilled } from 'react-icons/tb';
 
 type Props = React.ComponentPropsWithoutRef<'svg'>;
 
-export default function StatuSstateIcon(props: Props) {
+export default function StatusStateIcon(props: Props) {
   switch (props.id) {
     case 'WATCHING': return <MdOutlinePlayArrow {...props} />;
     case 'WATCHING_CURRENT': return <MdPlayArrow {...props} />;

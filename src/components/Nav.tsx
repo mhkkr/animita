@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 import { statusStateAtom } from '~/atoms/statusStateAtom';
 
-import StatuSstateIcon from '~/components/icons/StatuSstateIcon';
+import StatuSstateIcon from '~/components/icons/StatusStateIcon';
 
 import Const from '~/constants';
 

@@ -8,6 +8,7 @@ export const libraryEntriesGql = gql`
         seasons: $seasons
       ) {
         nodes {
+          id
           status {
             state
           }

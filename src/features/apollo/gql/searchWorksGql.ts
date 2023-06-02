@@ -6,12 +6,13 @@ export const searchWorksGql = gql`
       annictIds: $annictIds
     ) {
       nodes {
+        id
+        annictId
         watchersCount
         reviewsCount
         twitterHashtag
         seasonName
         seasonYear
-        annictId
         officialSiteUrl
         title
         media
@@ -21,6 +22,7 @@ export const searchWorksGql = gql`
         }
         episodes {
           nodes {
+            id
             annictId
             sortNumber
             numberText

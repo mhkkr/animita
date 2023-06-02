@@ -10,7 +10,7 @@ import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apo
 import { useSetRecoilState } from 'recoil';
 import { statusStateAtom } from '~/atoms/statusStateAtom';
 
-import Notification from '~/components/icons/Notification';
+import NotificationIcon from '~/components/icons/NotificationIcon';
 
 import BackButton from '~/components/buttons/BackButton';
 import { RingSpinner } from '~/components/spinners/Spinner';
@@ -62,7 +62,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
         <>
           {!work && 
             <div className="px-4 pt-6 dark:text-white/70 border-t dark:border-white/25">
-              <Notification id="unknow" className="table mx-auto mb-4 text-2xl" />
+              <NotificationIcon id="unknow" className="table mx-auto mb-4 text-2xl" />
               <p className="text-center">詳細取得できませんでした。</p>
             </div>
           }

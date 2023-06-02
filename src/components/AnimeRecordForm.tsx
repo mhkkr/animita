@@ -8,9 +8,7 @@ import type { Episode } from '~/features/apollo/generated-types';
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
 
-import BrandIcon from '~/components/icons/BrandIcon';
-import FormIcon from '~/components/icons/FormIcon';
-import RatingStateIcon from '~/components/icons/RatingStateIcon';
+import Icons from '~/components/icons/Icons';
 
 import { RingSpinner } from '~/components/spinners/Spinner';
 
@@ -88,6 +86,7 @@ export default function Form({ episode }: { episode: Episode }) {
         className="block w-full h-64 p-4 rounded-md dark:text-black dark:bg-stone-50"
         defaultValue={comment}
         disabled={loading}
+        placeholder="ここに感想を書きましょう！"
       />
       <div className="mt-4 flex items-center w-full gap-4">
         <div className="flex-1 grid grid-cols-4">
@@ -114,7 +113,7 @@ export default function Form({ episode }: { episode: Episode }) {
                   checked={ratingState === RATINGSTATE.id}
                   disabled={loading}
                 />
-                <RatingStateIcon id={RATINGSTATE.id} className={`mr-1 text-[1.25em] transition-transform ${ratingState === RATINGSTATE.id ? 'scale-110' : ''}`} />
+                <Icons id={RATINGSTATE.id} type="rating_state" className={`mr-1 text-[1.25em] transition-transform ${ratingState === RATINGSTATE.id ? 'scale-110' : ''}`} />
                 {RATINGSTATE.label}
               </label>
             );
@@ -130,8 +129,9 @@ export default function Form({ episode }: { episode: Episode }) {
               checked={shareTwitter}
               disabled={loading}
             />
-            <BrandIcon
+            <Icons
               id="twitter"
+              type="brand"
               className={`transition-all ${shareTwitter ? 'text-[#1da1f2]' : 'opacity-30'}`}
               data-tooltip-id="records-edit-form-tooltip" data-tooltip-content={shareTwitter ? 'シェアする' : 'シェアしない'} data-tooltip-place="top"
             />
@@ -146,7 +146,7 @@ export default function Form({ episode }: { episode: Episode }) {
         `}
         type="submit"
         disabled={loading}
-      >{loading ? <span className="mr-2 text-white"><RingSpinner /></span> : <FormIcon id="publish" className="mr-2 text-[1.5em]" />}投稿する</button>
+      >{loading ? <span className="mr-2 text-white"><RingSpinner /></span> : <Icons id="publish" type="form" className="mr-2 text-[1.5em]" />}投稿する</button>
       <Tooltip id="records-edit-form-tooltip" />
     </form>
   );

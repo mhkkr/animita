@@ -2,7 +2,7 @@
 
 import { useMutation, gql } from '@apollo/client';
 
-import FormIcon from '~/components/icons/FormIcon';
+import Icons from '~/components/icons/Icons';
 
 export default function Delete({ recordId }: { recordId: string }) {
   const [deleteRecord, { loading, error }] = useMutation(gql`
@@ -13,24 +13,38 @@ export default function Delete({ recordId }: { recordId: string }) {
         }
       ) {
         episode {
-          annictId
+          id
+          viewerRecordsCount
+          viewerDidTrack
+          recordsCount
+					records {
+						nodes {
+							id
+						}
+					}
         }
       }
     }
-  `,{
-    update (cache, { data: { deleteRecord } }) {
-      // // 追加した商品のキャッシュIDを取得
-      // const cacheId = cache.identify(deleteRecord)
-      // console.log(cacheId) // Item:4
-      // cache.modify({
-      //   fields: {
-      //     items(existingItemRefs, { toReference }) {
-      //       console.log(existingItemRefs) // [{__ref: 'Item:1'}, {__ref: 'Item:2'}, {__ref: 'Item:3'}]
-      //       console.log(toReference(cacheId)) // {__ref: 'Item:4'}
-      //       return [toReference(cacheId), existingItemRefs]
-      //     },
-      //   },
-      // })
+  `, {
+    update(cache, { data: { deleteRecord } }) {
+      cache.evict({ id: cache.identify(deleteRecord) });
+      cache.gc();
+
+      cache.modify({
+        id: cache.identify({ id: deleteRecord.episode.id, __typename: 'Episode' }),
+        fields: {
+          viewerRecordsCount() {
+            return deleteRecord.episode.viewerRecordsCount;
+          },
+          viewerDidTrack() {
+            return deleteRecord.episode.viewerDidTrack;
+          },
+          recordsCount() {
+            // return deleteRecord.episode.recordsCount; // なんか値が変わってない？
+            return deleteRecord.episode.records.nodes.length;
+          }
+        }
+      });
     }
   });
 
@@ -46,7 +60,7 @@ export default function Delete({ recordId }: { recordId: string }) {
       type="button"
       disabled={loading}
     >
-      <FormIcon id="delete" className="mr-1" />
+      <Icons id="delete" type="form" className="mr-1" />
       削除
     </button>
   );
