@@ -6,8 +6,7 @@ const withPWA = require('next-pwa')({
   scope: '/app',
   skipWaiting: true,
   disable: process.env.NEXT_PUBLIC_NODE_ENV === 'development'
-})
-
+});
 
 module.exports = withPWA({
   experimental: {
@@ -27,4 +26,4 @@ module.exports = withPWA({
   images: {
     disableStaticImages: true, // importした画像の型定義設定を無効にする
   }
-})
+});
