@@ -3,12 +3,12 @@
 import { useLayoutEffect } from 'react';
 
 import { useQuery } from '@apollo/client';
-import { searchWorksGql } from '~/features/apollo/gql/searchWorksGql';
-import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
+import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
+import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
 import { useSetRecoilState } from 'recoil';
-import { statusStateAtom } from '~/atoms/statusStateAtom';
+import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
 
 import NotificationIcon from '~/components/icons/NotificationIcon';
 
@@ -20,15 +20,15 @@ import Info from '~/components/AnimeInfo';
 
 import Const from '~/constants';
 
-const statusStateArray: string[] = [];
-Const.STATUSSTATE_LIST.map(state => statusStateArray.push(state.id));
+const statusStateIdArray: string[] = [];
+Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
 
-// TODO: setStatusState を実行したいだけで、この実装は苦しい気がする…。
+// TODO: setStatusStateId を実行したいだけで、この実装は苦しい気がする…。
 function SetStatusState({ work }: { work: Work }) {
-  const setStatusState = useSetRecoilState(statusStateAtom);
+  const setStatusStateId = useSetRecoilState(statusStateIdAtom);
   const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
     variables: {
-      states: statusStateArray,
+      states: statusStateIdArray,
       seasons: [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`]
     }
   });
@@ -36,7 +36,7 @@ function SetStatusState({ work }: { work: Work }) {
 
   useLayoutEffect(() => {
     if (entry?.status?.state) {
-      setStatusState(entry?.status?.state);
+      setStatusStateId(entry?.status?.state);
     }
   }, [entry]);
   
@@ -56,7 +56,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
       <p><BackButton /></p>
 
       {loading && <div className="pt-12 border-t dark:border-white/25 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="px-4 pt-6 dark:text-white/70 border-t dark:border-white/25">{error.message}</p>}
+      {error && <p className="px-4 pt-6 dark:text-white/70 border-t text-red-500">{error.message}</p>}
 
       {!(loading || error) &&
         <>

@@ -1,15 +1,18 @@
 'use client';
 
 import { useQuery } from '@apollo/client';
-import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
+import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
-import LinkIcon from '~/components/icons/LinkIcon';
+import Icons from '~/components/icons/Icons';
+
+import Stataus from '~/components/AnimeStataus';
+import Thumbnail from '~/components/AnimeThumbnail';
 
 import Const from '~/constants';
 
-const statusStateArray: string[] = [];
-Const.STATUSSTATE_LIST.map(state => statusStateArray.push(state.id));
+const statusStateIdArray: string[] = [];
+Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
 
 function RelatedLink({ icon, className, test, href, label }: {
   icon: string,
@@ -22,7 +25,8 @@ function RelatedLink({ icon, className, test, href, label }: {
     return (
       <li>
         <a className="flex items-center" href={href} target="_blank" rel="noopener noreferrer">
-          <LinkIcon id={icon} className="text-[1.5em] mr-1" />{label}
+          <Icons id={icon} type="link" className={`text-[1.5em] ${className}`} />
+          {label}
         </a>
       </li>
     );
@@ -33,7 +37,7 @@ function RelatedLink({ icon, className, test, href, label }: {
 function Channel({ work }: { work: Work }) {
   const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
     variables: {
-      states: statusStateArray,
+      states: statusStateIdArray,
       seasons: [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`]
     }
   });
@@ -57,11 +61,9 @@ export default function Info({ work }: { work: Work }) {
   return (
     <>
       <figure className="bg-gray-300">
-        <img src={work.image?.facebookOgImageUrl || ''} alt="作品サムネイル" loading="lazy" onError={e => {
-          (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>';
-        }} />
+        <Thumbnail work={work} className="mx-auto" />
       </figure>
-      <ul className="flex flex-wrap gap-4 mt-4 px-4 text-xs">
+      <ul className="flex flex-wrap gap-x-4 gap-y-2 mt-4 px-4 text-xs">
         <Channel work={work} />
         <RelatedLink
           icon="open_in_new"
@@ -85,12 +87,19 @@ export default function Info({ work }: { work: Work }) {
           label={work.twitterHashtag}
         />
       </ul>
-      <h1 className="mt-4 px-4 font-bold text-lg">{work.title}</h1>
-      <ul className="flex flex-wrap gap-4 mt-2 px-4 text-xs dark:text-white/70">
-        <li>視聴者数：{work.watchersCount}</li>
-        <li>評価数：{work.reviewsCount}</li>
-        <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
-      </ul>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 mt-4">
+        <div className="flex-1">
+          <h1 className="font-bold text-lg">{work.title}</h1>
+          <ul className="flex flex-wrap gap-4 mt-2 text-xs dark:text-white/70">
+            <li>視聴者数：{work.watchersCount}</li>
+            <li>評価数：{work.reviewsCount}</li>
+            <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
+          </ul>
+        </div>
+        <div className="flex-shrink-0 order-first sm:order-none">
+          <Stataus work={work} />
+        </div>
+      </div>
     </>
   );
 }

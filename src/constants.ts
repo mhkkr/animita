@@ -1,7 +1,7 @@
 class Const {
   URL = 'http://watch.kakera.dev/';
-  TITLE = 'みた！';
-  DESCRIPTION = '「みた！」を使って Annict でアニメの視聴を管理しよう！';
+  TITLE = 'アニみた';
+  DESCRIPTION = '「アニみた」は、Annict が提供する API を利用したユーザークライアントです。すぐ見れるアニメの把握と感想を書きやすくして、ちょっとだけアニメライフの充実に貢献する！';
 
   SEASON_LIST = [
     { id: 'SPRING', label: '春' },
@@ -23,6 +23,14 @@ class Const {
     { id: 'AVERAGE', label: '普通', bgColor: 'bg-orange-500' },
     { id: 'GOOD', label: '良い', bgColor: 'bg-green-500' },
     { id: 'GREAT', label: 'とても良い', bgColor: 'bg-blue-500' },
+  ];
+
+  SPECIAL_ANIME_LIST = [
+    { id: 'this', label: '今期のアニメ' },
+    { id: 'next', label: '来期のアニメ' },
+    { id: 'prev', label: '前期のアニメ' },
+    { id: 'popular', label: '人気アニメ' },
+    { id: 'new', label: '新規登録アニメ' },
   ];
 }
 

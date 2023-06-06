@@ -29,16 +29,20 @@ const handler = NextAuth(
     callbacks: {
       async jwt({ token, account }) {
         if (account) {
-          token.accessToken = account.access_token
+          token.accessToken = account.access_token;
         }
-        return token
+        return token;
       },
       async session({ session, token, user }) {
-        session.accessToken = token.accessToken
-        return session
+        session.accessToken = token.accessToken;
+        // 取得できない…。
+        // if (session?.user) {
+        //   session.user.id = user.id;
+        // }
+        return session;
       }
     }
   }
-)
+);
 
 export { handler as GET, handler as POST }

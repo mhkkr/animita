@@ -3,28 +3,27 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-import Nav from '~/components/Nav';
-import User from '~/components/User';
+import Nav from '~/components/layouts/Nav';
+import User from '~/components/layouts/User';
 
 import Const from '~/constants';
 
 export default function Header({ className }: { className: string }) {
   return (
-    <header className={`${className} relative`}>
-      <div className="sticky top-0 flex flex-col h-screen overflow-x-hidden overflow-y-auto">
-        <h1 className="my-4">
-          <Link className="table mx-auto bg-white rounded-full w-24 h-24" href="/">
+    <header className={`${className} relative z-40`}>
+      <div className="sm:sticky sm:top-0 flex items-center sm:items-stretch sm:flex-col p-4 sm:p-0 sm:w-48 sm:h-screen sm:overflow-x-hidden sm:overflow-y-auto border-b dark:border-white/25 mb-2 sm:mb-0 sm:border-b-0">
+        <h1 className="sm:my-8 w-8 sm:w-auto">
+          <Link className="table mx-auto" href="/">
             <Image
-              className="object-cover w-24 h-24"
-              src="/mitabit-home.png"
-              width={336 * .3}
-              height={420 * .3}
+              src="/logo.svg"
+              width={600 * .1}
+              height={500 * .1}
               alt={Const.TITLE}
             />
           </Link>
         </h1>
         <Nav />
-        <div className="mt-auto">
+        <div className="sm:mt-auto ml-auto sm:ml-0">
           <User />
         </div>
       </div>

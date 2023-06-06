@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  scope: '/app',
+  skipWaiting: true,
+  disable: process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+})
+
+
+module.exports = withPWA({
   experimental: {
     appDir: true,
   },
@@ -8,7 +18,7 @@ const nextConfig = {
       test: /\.svg$/,
       use: [
         {
-          loader: "@svgr/webpack",
+          loader: '@svgr/webpack',
         },
       ],
     });
@@ -16,7 +26,5 @@ const nextConfig = {
   },
   images: {
     disableStaticImages: true, // importした画像の型定義設定を無効にする
-  },
-}
-
-module.exports = nextConfig
+  }
+})

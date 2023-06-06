@@ -6,6 +6,7 @@ import LinkIcon from './LinkIcon';
 import NavigationIcon from './NavigationIcon';
 import NotificationIcon from './NotificationIcon';
 import RatingStateIcon from './RatingStateIcon';
+import SpecialAnimeIcon from './SpecialAnimeIcon';
 import StatusStateIcon from './StatusStateIcon';
 
 type Props = React.ComponentPropsWithoutRef<'svg'>;
@@ -18,6 +19,7 @@ export default function Icons(props: Props) {
     case 'navigation': return <NavigationIcon {...props} />;
     case 'notification': return <NotificationIcon {...props} />;
     case 'rating_state': return <RatingStateIcon {...props} />;
+    case 'special_anime': return <SpecialAnimeIcon {...props} />;
     case 'status_state': return <StatusStateIcon {...props} />;
   }
   return <></>;

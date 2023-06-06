@@ -3,11 +3,11 @@
 import Link from 'next/link';
 
 import { useQuery } from '@apollo/client';
-import { libraryEntriesGql } from '~/features/apollo/gql/libraryEntriesGql';
+import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { LibraryEntriesQuery, LibraryEntry } from '~/features/apollo/generated-types';
 
 import { useRecoilState } from 'recoil';
-import { statusStateAtom } from '~/atoms/statusStateAtom';
+import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
 import { tabStateAtom } from '~/atoms/tabStateAtom';
 
 import NotificationIcon from '~/components/icons/NotificationIcon';
@@ -16,6 +16,7 @@ import StatuSstateIcon from '~/components/icons/StatusStateIcon';
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
 import * as Record from '~/components/AnimeRecords';
+import Thumbnail from '~/components/AnimeThumbnail';
 
 import Const from '~/constants';
 
@@ -25,11 +26,11 @@ type EntryEachDate = {
 };
 
 function SwitchTab({ value, label }: { value: string, label: string }) {
-  const [statusState] = useRecoilState(statusStateAtom);
+  const [statusStateId] = useRecoilState(statusStateIdAtom);
   const [tabState, setTabState] = useRecoilState(tabStateAtom);
 
-  const tab = tabState.find(tab => tab.id === statusState);
-  const tabIndex = tabState.findIndex(tab => tab.id === statusState);
+  const tab = tabState.find(tab => tab.id === statusStateId);
+  const tabIndex = tabState.findIndex(tab => tab.id === statusStateId);
   const deliveredTabDeep: { id: string; value: string; }[] = JSON.parse(JSON.stringify(tabState));
 
   return (
@@ -63,9 +64,7 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
             <div className="flex-shrink-0 w-28">
               <Link href={`/anime/${entry?.work.annictId}`}>
                 <figure className="bg-gray-300">
-                  <img className="mx-auto object-contain max-h-28 max-w-28" src={entry?.work?.image?.facebookOgImageUrl ?? ''} alt="作品サムネイル" loading="lazy" onError={e => {
-                    (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>';
-                  }} />
+                  <Thumbnail work={entry?.work} className="mx-auto object-contain max-h-28 max-w-28" />
                 </figure>
               </Link>
               <p className="mt-2 text-center text-xs dark:text-white/70">{entry?.nextProgram?.channel.name}</p>
@@ -105,9 +104,9 @@ function NotEntry() {
 }
 
 function DeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[], now: number }) {
-  const [statusState] = useRecoilState(statusStateAtom);
+  const [statusStateId] = useRecoilState(statusStateIdAtom);
   const [tabState] = useRecoilState(tabStateAtom);
-  const tab = tabState.find(tab => tab.id === statusState);
+  const tab = tabState.find(tab => tab.id === statusStateId);
 
   // 視聴可能
   const deliveredEntry = entryEachDate.find(entry => entry.day === '視聴可能');
@@ -125,9 +124,9 @@ function DeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[],
 }
 
 function UnDeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[], now: number }) {
-  const [statusState] = useRecoilState(statusStateAtom);
+  const [statusStateId] = useRecoilState(statusStateIdAtom);
   const [tabState] = useRecoilState(tabStateAtom);
-  const tab = tabState.find(tab => tab.id === statusState);
+  const tab = tabState.find(tab => tab.id === statusStateId);
 
   // 未配信を曜日で並び替え
   const undeliveredEntries =
@@ -192,11 +191,11 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
 }
 
 export default function AnimeList() {
-  const [statusState] = useRecoilState(statusStateAtom);
+  const [statusStateId] = useRecoilState(statusStateIdAtom);
   const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
-    variables: { states: [statusState] }
+    variables: { states: [statusStateId] }
   });
-  const STATE = Const.STATUSSTATE_LIST.find(state => state.id === statusState);
+  const STATE = Const.STATUSSTATE_LIST.find(state => state.id === statusStateId);
 
   return (
     <div className="relative">
@@ -212,7 +211,7 @@ export default function AnimeList() {
       </header>
       
       {loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="p-4 dark:text-white/70">{error.message}</p>}
+      {error && <p className="p-4 text-red-500">{error.message}</p>}
       
       {!(loading || error) && <EntryList data={data} />}
     </div>

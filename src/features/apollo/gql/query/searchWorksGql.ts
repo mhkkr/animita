@@ -8,6 +8,7 @@ export const searchWorksGql = gql`
       nodes {
         id
         annictId
+        malAnimeId
         watchersCount
         reviewsCount
         twitterHashtag

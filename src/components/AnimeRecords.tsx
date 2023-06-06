@@ -4,21 +4,25 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 import { useQuery } from '@apollo/client';
-import { searchEpisodesGql } from '~/features/apollo/gql/searchEpisodesGql';
+import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
 import type { SearchEpisodesQuery, Episode, Record } from '~/features/apollo/generated-types';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { recordViewerAnnictIdAtom } from '~/atoms/recordViewerAnnictIdAtom';
-import { recordViewerOpenIdAtom } from '~/atoms/recordViewerOpenIdAtom';
-import { recordViewerShowNoCommentAtom } from '~/atoms/recordViewerShowNoCommentAtom';
+import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
+import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
+import { recordCurrentEpisodeAnnictIdAtom } from '~/atoms/recordCurrentEpisodeAnnictIdAtom';
+import { recordOpenerEpisodeAnnictIdAtom } from '~/atoms/recordOpenerEpisodeAnnictIdAtom';
+import { recordShowNoCommentAtom } from '~/atoms/recordShowNoCommentAtom';
 
 import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
-import Form from '~/components/AnimeRecordForm';
 import Delete from '~/components/AnimeRecordDelete';
+import Edit from '~/components/AnimeRecordEdit';
+import Favorite from '~/components/AnimeRecordFavorite';
+import Form from '~/components/AnimeRecordForm';
 
 import Const from '~/constants';
 
@@ -34,8 +38,9 @@ function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disa
   workAnnictId?: number | undefined,
   disabled?: boolean
 }) {
-  const setRecordViewerAnnictId = useSetRecoilState(recordViewerAnnictIdAtom);
-  const setRecordViewerOpenId = useSetRecoilState(recordViewerOpenIdAtom);
+  const setRecordEditId = useSetRecoilState(recordEditIdAtom);
+  const setRecordCurrentEpisodeAnnictId = useSetRecoilState(recordCurrentEpisodeAnnictIdAtom);
+  const setRecordOpenerEpisodeAnnictId = useSetRecoilState(recordOpenerEpisodeAnnictIdAtom);
   const router = useRouter();
 
   return (
@@ -44,13 +49,16 @@ function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disa
         if (workAnnictId) {
           router.push(`/anime/${workAnnictId}`);
         }
+
+        setRecordEditId('');
+
         if (!episodeAnnictId) {
           document.body.style.overflow = 'visible';
-          setRecordViewerOpenId(0);
+          setRecordOpenerEpisodeAnnictId(0);
         } else {
           document.body.style.overflow = 'hidden';
-          setRecordViewerAnnictId(episodeAnnictId ?? 0);
-          setRecordViewerOpenId(episodeAnnictId ?? 0);
+          setRecordCurrentEpisodeAnnictId(episodeAnnictId ?? 0);
+          setRecordOpenerEpisodeAnnictId(episodeAnnictId ?? 0);
         }
       }}
       className={className}
@@ -64,7 +72,9 @@ function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disa
 
 function Records({ records }: { records: Record[] }) {
   const { data: userSession } = useSession();
-  const [recordViewerShowNoComment] = useRecoilState(recordViewerShowNoCommentAtom);
+  const [recordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
+  const [recordDeleteId] = useRecoilState(recordDeleteIdAtom);
+  const [recordEditId] = useRecoilState(recordEditIdAtom);
 
   function generateDateStyle({ date }: { date: Date }) {
     if (!date) return 0;
@@ -75,57 +85,51 @@ function Records({ records }: { records: Record[] }) {
     <ul className="flex flex-wrap text-sm">
       {records.map(record => {
         const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
-        const isMy = record.user.name === userSession?.user?.name;
+        const isMyRecord = record.user.name === userSession?.user?.name;
         return (
           <li
             key={record.annictId}
             className={`
               p-4 border-t dark:border-white/25
-              ${isMy && 'order-first'}
-              ${(record.comment || isMy) ? 'w-full' : 'w-1/2 sm:w-1/3'}
-              ${(!record.comment && !recordViewerShowNoComment && !isMy) && 'hidden'}
+              ${isMyRecord && 'order-first'}
+              ${(record.comment || isMyRecord) ? 'w-full' : 'w-1/2 sm:w-1/3'}
+              ${(!record.comment && !recordShowNoComment && !isMyRecord) && 'hidden'}
             `}
           >
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-3">
-                <div className="flex-shrink-0 rounded-full overflow-hidden w-8 h-8">
-                  <img className="object-cover w-full h-full" src={record.user?.avatarUrl || ''} alt={`${record.user.name}さんのアイコン`} loading="lazy" />
-                </div>
-                <div>{record.user.name}</div>
-              </div>
-              {(isMy && record.id) &&
-                <>
-                  <button
-                    className="inline-flex items-center"
-                    type="button"
-                  >
-                    <Icons id="edit" type="form" className="mr-1" />
-                    変更
-                  </button>
-                  <Delete recordId={record.id} />
-                </>
-              }
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              {record.ratingState &&
-                <div className={`inline-flex items-center px-2 py-0.5 rounded-full ${ratingstate?.bgColor}`}>
-                  <Icons id={ratingstate?.id} type="rating_state" className="text-sm mr-1" />
-                  {ratingstate?.label}
-                </div>
-              }
-              <button
-                className="inline-flex items-center"
-                type="button"
-              >
-                <Icons id="favorite" type="form" className="mr-1" />
-                {record.likesCount}
-              </button>
+            <div className={`
+              transition-opacity
+              ${recordDeleteId === record.id && 'opacity-50'}
+              ${recordEditId === record.id && 'opacity-50'}
+            `}>
               <div className="flex flex-wrap items-center gap-3">
-                <span><DisplayDate date={record.createdAt} /></span>
-                {generateDateStyle(record.createdAt) !== generateDateStyle(record.updatedAt) && <span className="dark:text-white/70 text-xs"><DisplayDate date={record.updatedAt} /></span>}
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 rounded-full overflow-hidden w-8 h-8">
+                    <img className="object-cover w-full h-full" src={record.user?.avatarUrl || ''} alt={`${record.user.name}さんのアイコン`} loading="lazy" />
+                  </div>
+                  <div>{record.user.name}</div>
+                </div>
+                {isMyRecord &&
+                  <>
+                    <Edit record={record} />
+                    <Delete record={record} />
+                  </>
+                }
               </div>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <Favorite record={record} />
+                {record.ratingState &&
+                  <div className={`inline-flex items-center px-2 py-0.5 rounded-full ${ratingstate?.bgColor}`}>
+                    <Icons id={ratingstate?.id} type="rating_state" className="text-sm mr-1" />
+                    {ratingstate?.label}
+                  </div>
+                }
+                <div className="flex flex-wrap items-center gap-3">
+                  <span><DisplayDate date={record.createdAt} /></span>
+                  {generateDateStyle(record.createdAt) !== generateDateStyle(record.updatedAt) && <span className="dark:text-white/70 text-xs"><DisplayDate date={record.updatedAt} /></span>}
+                </div>
+              </div>
+              {record.comment && <p className="mt-3 whitespace-pre-wrap">{record.comment}</p>}
             </div>
-            {record.comment && <p className="mt-3 whitespace-pre-wrap">{record.comment}</p>}
           </li>
         )
       })}
@@ -136,10 +140,10 @@ function Records({ records }: { records: Record[] }) {
 function ViewerBody() {
   const { data: userSession } = useSession();
 
-  const [recordViewerAnnictId] = useRecoilState(recordViewerAnnictIdAtom);
-  const [recordViewerShowNoComment, setRecordViewerShowNoComment] = useRecoilState(recordViewerShowNoCommentAtom);
+  const [recordCurrentEpisodeAnnictId] = useRecoilState(recordCurrentEpisodeAnnictIdAtom);
+  const [recordShowNoComment, setRecordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
   const { data, loading, error } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
-    variables: { annictIds: [recordViewerAnnictId] }
+    variables: { annictIds: [recordCurrentEpisodeAnnictId] }
   });
   const episode = data?.searchEpisodes?.nodes ? (data?.searchEpisodes?.nodes[0] as Episode) : null;
   const records = episode?.records?.nodes ? Array.from(episode?.records?.nodes) : [];
@@ -163,7 +167,7 @@ function ViewerBody() {
   return (
     <>
       {loading && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="p-4 dark:text-white/70 border-y dark:border-white/25">{error.message}</p>}
+      {error && <p className="p-4 text-red-500">{error.message}</p>}
 
       {!(loading || error) &&
         <>
@@ -186,12 +190,12 @@ function ViewerBody() {
           <div className="border-t dark:border-white/25">
             <div className="my-6">
               <button
-                onClick={() => setRecordViewerShowNoComment(prevState => !prevState)}
+                onClick={() => setRecordShowNoComment(prevState => !prevState)}
                 className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
                 type="button"
               >
-                <span>コメントなしを{recordViewerShowNoComment ? '非表示にする' : '表示する'}</span>
-                <Icons id={recordViewerShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
+                <span>コメントなしを{recordShowNoComment ? '非表示にする' : '表示する'}</span>
+                <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
               </button>
             </div>
             <Records records={otherRecords} />
@@ -203,16 +207,16 @@ function ViewerBody() {
 }
 
 function Viewer() {
-  const [recordViewerOpenId] = useRecoilState(recordViewerOpenIdAtom);
+  const [recordOpenerEpisodeAnnictId] = useRecoilState(recordOpenerEpisodeAnnictIdAtom);
 
   return (
     <div className={`
       fixed inset-0 z-40 bg-slate-700/70 overflow-y-auto
-      ${recordViewerOpenId === 0 ? 'hidden' : 'block'}
+      ${recordOpenerEpisodeAnnictId === 0 ? 'hidden' : 'block'}
     `}>
-      <div className="relative py-24 px-4">
+      <div className="relative sm:py-24 sm:px-4">
         <ToggleButton className="absolute inset-0" />
-        <div className="relative max-w-xl mx-auto dark:bg-black rounded-lg overflow-hidden shadow-2xl">
+        <div className="relative sm:max-w-xl mx-auto dark:bg-black sm:rounded-lg overflow-hidden sm:shadow-2xl">
           <ViewerBody />
         </div>
       </div>

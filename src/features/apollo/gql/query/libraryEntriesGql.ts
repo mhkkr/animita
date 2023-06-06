@@ -14,6 +14,7 @@ export const libraryEntriesGql = gql`
           }
           work {
             annictId
+						malAnimeId
             title
             image {
               facebookOgImageUrl

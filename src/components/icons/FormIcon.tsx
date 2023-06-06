@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdEdit, MdDelete, MdPublish, MdFavorite, MdLogout } from 'react-icons/md';
+import { MdEdit, MdDelete, MdPublish, MdFavorite, MdLogout, MdSearch } from 'react-icons/md';
 
 type Props = React.ComponentPropsWithoutRef<'svg'>;
 
@@ -10,6 +10,7 @@ export default function FormIcon(props: Props) {
     case 'publish': return <MdPublish {...props} />;
     case 'favorite': return <MdFavorite {...props} />;
     case 'logout': return <MdLogout {...props} />;
+    case 'search': return <MdSearch {...props} />;
   }
   return <></>;
 }
