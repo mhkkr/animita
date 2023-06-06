@@ -137,15 +137,11 @@ function Records({ records }: { records: Record[] }) {
   );
 }
 
-function ViewerBody() {
+function ViewerBody({ episodes }: { episodes: SearchEpisodesQuery }) {
   const { data: userSession } = useSession();
 
-  const [recordCurrentEpisodeAnnictId] = useRecoilState(recordCurrentEpisodeAnnictIdAtom);
   const [recordShowNoComment, setRecordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
-  const { data, loading, error } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
-    variables: { annictIds: [recordCurrentEpisodeAnnictId] }
-  });
-  const episode = data?.searchEpisodes?.nodes ? (data?.searchEpisodes?.nodes[0] as Episode) : null;
+  const episode = episodes?.searchEpisodes?.nodes ? (episodes?.searchEpisodes?.nodes[0] as Episode) : null;
   const records = episode?.records?.nodes ? Array.from(episode?.records?.nodes) : [];
 
   // // コメントありと評価ありを上側に表示
@@ -166,58 +162,60 @@ function ViewerBody() {
 
   return (
     <>
-      {loading && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="p-4 text-red-500">{error.message}</p>}
-
-      {!(loading || error) &&
-        <>
-          <div className="p-4">
-            <div className="mb-3 flex gap-2">
-              <span className="flex-shrink-0">{episode?.numberText}</span>
-              <span className="flex-1">{episode?.title || '未定'}</span>
-              <ToggleButton className="flex-shrink-0">
-                <Icons id="close" type="navigation" className="text-2xl" />
-              </ToggleButton>
-            </div>
-            {episode && <Form episode={episode} />}
-          </div>
-          <div className="grid grid-cols-3 border-t dark:border-white/25 text-xs text-center">
-            <span className="p-4">全評価数：{episode?.recordsCount}</span>
-            <span className="p-4 border-l dark:border-white/25">コメントあり：{records.filter(record => record?.comment).length}</span>
-            <span className="p-4 border-l dark:border-white/25">自分の評価数：{episode?.viewerRecordsCount}</span>
-          </div>
-          <Records records={mainRecords} />
-          <div className="border-t dark:border-white/25">
-            <div className="my-6">
-              <button
-                onClick={() => setRecordShowNoComment(prevState => !prevState)}
-                className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
-                type="button"
-              >
-                <span>コメントなしを{recordShowNoComment ? '非表示にする' : '表示する'}</span>
-                <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
-              </button>
-            </div>
-            <Records records={otherRecords} />
-          </div>
-        </>
-      }
+      <div className="p-4">
+        <div className="mb-3 flex gap-2">
+          <span className="flex-shrink-0">{episode?.numberText}</span>
+          <span className="flex-1">{episode?.title || '未定'}</span>
+          <ToggleButton className="flex-shrink-0">
+            <Icons id="close" type="navigation" className="text-2xl" />
+          </ToggleButton>
+        </div>
+        {episode && <Form episode={episode} />}
+      </div>
+      <div className="grid grid-cols-3 border-t dark:border-white/25 text-xs text-center">
+        <span className="p-4">全評価数：{episode?.recordsCount}</span>
+        <span className="p-4 border-l dark:border-white/25">コメントあり：{records.filter(record => record?.comment).length}</span>
+        <span className="p-4 border-l dark:border-white/25">自分の評価数：{episode?.viewerRecordsCount}</span>
+      </div>
+      <Records records={mainRecords} />
+      <div className="border-t dark:border-white/25">
+        <div className="my-6">
+          <button
+            onClick={() => setRecordShowNoComment(prevState => !prevState)}
+            className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
+            type="button"
+          >
+            <span>コメントなしを{recordShowNoComment ? '非表示にする' : '表示する'}</span>
+            <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
+          </button>
+        </div>
+        <Records records={otherRecords} />
+      </div>
     </>
   );
 }
 
 function Viewer() {
   const [recordOpenerEpisodeAnnictId] = useRecoilState(recordOpenerEpisodeAnnictIdAtom);
+  const [recordCurrentEpisodeAnnictId] = useRecoilState(recordCurrentEpisodeAnnictIdAtom);
+
+  const { data: episodes, loading, error } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
+    variables: { annictIds: [recordCurrentEpisodeAnnictId] }
+  });
 
   return (
     <div className={`
       fixed inset-0 z-40 bg-slate-700/70 overflow-y-auto
       ${recordOpenerEpisodeAnnictId === 0 ? 'hidden' : 'block'}
     `}>
-      <div className="relative sm:py-24 sm:px-4">
+      <div className={`relative sm:py-24 sm:px-4 ${loading && 'py-24 px-4'}`}>
         <ToggleButton className="absolute inset-0" />
-        <div className="relative sm:max-w-xl mx-auto dark:bg-black sm:rounded-lg overflow-hidden sm:shadow-2xl">
-          <ViewerBody />
+
+        <div className={`relative mx-auto dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${loading && 'max-w-xl rounded-lg shadow-2xl'}`}>
+          {loading && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+          {error && <p className="p-4 text-red-500">{error.message}</p>}
+
+          {!(loading || error) && episodes && <ViewerBody episodes={episodes} />}
         </div>
       </div>
     </div>
