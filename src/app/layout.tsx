@@ -5,6 +5,8 @@ import SessionProviderWrapper from '~/features/oauth/components/Provider';
 import LoginController from '~/features/oauth/components/Controller';
 import RecoilRoot from '~/features/recoli/components/Root';
 
+import Analytics from '~/components/Analytics';
+
 import Const from '~/constants';
 
 export const metadata = {
@@ -49,6 +51,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#d51c5b" />
       </head>
       <body>
+        <Analytics />
         <ApolloProviderWrapper>
           <SessionProviderWrapper>
             <LoginController>

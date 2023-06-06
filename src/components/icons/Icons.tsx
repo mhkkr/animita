@@ -1,13 +1,13 @@
 import React from 'react';
 
-import BrandIcon from './BrandIcon';
-import FormIcon from './FormIcon';
-import LinkIcon from './LinkIcon';
-import NavigationIcon from './NavigationIcon';
-import NotificationIcon from './NotificationIcon';
-import RatingStateIcon from './RatingStateIcon';
-import SpecialAnimeIcon from './SpecialAnimeIcon';
-import StatusStateIcon from './StatusStateIcon';
+import BrandIcon from '~/components/icons/BrandIcon';
+import FormIcon from '~/components/icons/FormIcon';
+import LinkIcon from '~/components/icons/LinkIcon';
+import NavigationIcon from '~/components/icons/NavigationIcon';
+import NotificationIcon from '~/components/icons/NotificationIcon';
+import RatingStateIcon from '~/components/icons/RatingStateIcon';
+import SpecialAnimeIcon from '~/components/icons/SpecialAnimeIcon';
+import StatusStateIcon from '~/components/icons/StatusStateIcon';
 
 type Props = React.ComponentPropsWithoutRef<'svg'>;
 
