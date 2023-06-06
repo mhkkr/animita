@@ -1,5 +1,5 @@
 class Const {
-  URL = 'http://watch.kakera.dev/';
+  URL = 'https://animita.vercel.app/';
   TITLE = 'アニみた';
   DESCRIPTION = '「アニみた」は、Annict が提供する API を利用したユーザークライアントです。すぐ見れるアニメの把握と感想を書きやすくして、ちょっとだけアニメライフの充実に貢献する！';
 
