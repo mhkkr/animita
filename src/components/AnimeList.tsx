@@ -10,8 +10,7 @@ import { useRecoilState } from 'recoil';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
 import { tabStateAtom } from '~/atoms/tabStateAtom';
 
-import NotificationIcon from '~/components/icons/NotificationIcon';
-import StatuSstateIcon from '~/components/icons/StatusStateIcon';
+import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
@@ -97,7 +96,7 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
 function NotEntry() {
   return (
     <div className="px-4 pt-6 dark:text-white/70">
-      <NotificationIcon id="unknow" className="table mx-auto mb-4 text-2xl" />
+      <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
       <p className="text-center">エピソードがありません！</p>
     </div>
   );
@@ -201,7 +200,7 @@ export default function AnimeList() {
     <div className="relative">
       <header className="sticky top-0 dark:bg-black/60 backdrop-blur-md">
         <h1 className="flex items-center justify-center px-4 py-3 text-xl font-bold">
-          <StatuSstateIcon id={`${STATE?.id}_CURRENT`} className="mr-2 text-[1.5em]" />
+          <Icons id={`${STATE?.id}_CURRENT`} type="status_state" className="mr-2 text-[1.5em]" />
           <span>{STATE?.label}</span>
         </h1>
         <div className="flex border-b dark:border-white/25">
