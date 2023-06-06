@@ -6,8 +6,8 @@ import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-type
 
 import Icons from '~/components/icons/Icons';
 
-import Stataus from '~/components/AnimeStataus';
-import Thumbnail from '~/components/AnimeThumbnail';
+import Stataus from '~/components/animes/AnimeStataus';
+import Thumbnail from '~/components/animes/AnimeThumbnail';
 
 import Const from '~/constants';
 

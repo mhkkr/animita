@@ -19,10 +19,10 @@ import Icons from '~/components/icons/Icons';
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
-import Delete from '~/components/AnimeRecordDelete';
-import Edit from '~/components/AnimeRecordEdit';
-import Favorite from '~/components/AnimeRecordFavorite';
-import Form from '~/components/AnimeRecordForm';
+import Delete from '~/components/animes/AnimeRecordDelete';
+import Edit from '~/components/animes/AnimeRecordEdit';
+import Favorite from '~/components/animes/AnimeRecordFavorite';
+import Form from '~/components/animes/AnimeRecordForm';
 
 import Const from '~/constants';
 

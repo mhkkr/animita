@@ -1,6 +1,6 @@
 import LayoutContainer from '~/components/layouts/Container';
 
-import AnimeDetail from '~/components/AnimeDetail';
+import AnimeDetail from '~/components/animes/Animes/AnimeDetail';
 
 type Params = {
   params: { annictId: string }

@@ -15,8 +15,8 @@ import Icons from '~/components/icons/Icons';
 import BackButton from '~/components/buttons/BackButton';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
-import Episodes from '~/components/AnimeEpisodes';
-import Info from '~/components/AnimeInfo';
+import Episodes from '~/components/animes/AnimeEpisodes';
+import Info from '~/components/animes/AnimeInfo';
 
 import Const from '~/constants';
 

@@ -10,7 +10,7 @@ import { Tooltip } from 'react-tooltip';
 import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
-import * as Record from '~/components/AnimeRecords';
+import * as Record from '~/components/animes/AnimeRecords';
 
 import Const from '~/constants';
 

@@ -14,8 +14,8 @@ import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
-import * as Record from '~/components/AnimeRecords';
-import Thumbnail from '~/components/AnimeThumbnail';
+import * as Record from '~/components/animes/AnimeRecords';
+import Thumbnail from '~/components/animes/AnimeThumbnail';
 
 import Const from '~/constants';
 
