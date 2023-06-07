@@ -20,6 +20,11 @@ export const metadata = {
     description: Const.DESCRIPTION,
     url: Const.URL,
     siteName: Const.TITLE,
+    images: {
+      url: Const.URL + 'og-image.png',
+      width: 1200,
+      height: 630,
+    },
     locale: 'ja_JP',
     type: 'website',
   },
@@ -27,14 +32,15 @@ export const metadata = {
     card: 'summary_large_image',
     title: Const.TITLE,
     description: Const.DESCRIPTION,
-    site: '@サイト用アカウントのTwitterID',
+    images: {
+      url: Const.URL + 'og-image.png',
+      width: 1200,
+      height: 630,
+    },
     creator: '@kakera_dev',
   },  
   verification: {
-    google: 'サーチコンソールのやつ',
-  },
-  alternates: {
-    canonical: Const.URL,
+    google: 'vjqnqyyQHxEhW2NoR4bqhDWGX8mZLNz046_yoyBzHG8',
   },
 };
 

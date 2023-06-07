@@ -4,7 +4,7 @@ import LayoutContainer from '~/components/layouts/Container';
 import Icons from '~/components/icons/Icons';
 
 export const metadata = {
-  title: '初期設定'
+  title: '初期設定',
 };
 
 export default function HowTo() {

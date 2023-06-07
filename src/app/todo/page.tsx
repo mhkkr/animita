@@ -1,7 +1,7 @@
 import LayoutContainer from '~/components/layouts/Container';
 
 export const metadata = {
-  title: 'やり残しと更新履歴'
+  title: 'やり残しと更新履歴',
 };
 
 export default function Todo() {
