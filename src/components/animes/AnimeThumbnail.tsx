@@ -1,5 +1,8 @@
 'use client';
 
+// TODO: 公式サイトのOGPイメージ直リンクのままでいいのかな…？
+//       できれば cdn.myanimelist.net に変えたがいい気がするけど。
+
 import { useState, useEffect } from "react";
 import type { Work } from '~/features/apollo/generated-types';
 
