@@ -4,8 +4,8 @@ import type { Record } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
 
+// TODO: いいねを更新できる API がなかった 2023/06/03
 // https://developers.annict.com/docs/graphql-api/beta/reference/mutations/update-record
-// いいねを更新できる API がなかった 2023/06/03
 
 export default function Favorite({ record }: { record: Record }) {
   return (
