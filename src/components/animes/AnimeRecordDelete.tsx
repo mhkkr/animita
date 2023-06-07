@@ -43,8 +43,11 @@ export default function Delete({ record }: { record: Record }) {
   return (
     <button
       onClick={() => {
-        setRecordDeleteId(record.id);
-        deleteRecord({ variables: { recordId: record.id }});
+        const confirm = window.confirm('本当に削除しますか？');
+        if (confirm) {
+          setRecordDeleteId(record.id);
+          deleteRecord({ variables: { recordId: record.id }});
+        }
       }}
       className={`inline-flex items-center ${loading ? 'cursor-not-allowed grayscale' : ''}`}
       type="button"
