@@ -41,6 +41,15 @@ export default function Form({ episode }: { episode: Episode }) {
     }
   }, [recordEditId]);
 
+  useEffect(() => {
+    window.addEventListener('beforeunload', function(event){
+      if (textarea.current?.value) {
+        event.preventDefault();
+        event.returnValue = 'Check';
+      }
+    });
+  }, []);
+
   const [createRecord, { loading: cl, error: ce }] = useMutation(createRecordGql, {
     update(cache, { data: { createRecord } }) {
       cache.modify({
