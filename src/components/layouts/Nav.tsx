@@ -21,8 +21,8 @@ function NavButton({ state }: {
   return (
     <button
       onClick={() => {
-        router.push('/');
         setStatusStateId(state.id);
+        router.push('/');
       }}
       className={`
         relative flex items-center justify-center sm:justify-normal p-3 w-full text-xl sm:rounded-l-full

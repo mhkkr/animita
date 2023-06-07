@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
@@ -34,7 +34,7 @@ function SetStatusState({ work }: { work: Work }) {
   });
   const entry = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (entry?.status?.state) {
       setStatusStateId(entry?.status?.state);
     }

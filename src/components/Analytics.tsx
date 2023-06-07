@@ -3,9 +3,9 @@ import Script from 'next/script';
 const ANALYTICS_ID = process.env.NEXT_PUBLIC_ANALYTICS_ID;
 
 export default function Analytics() {
-  // if (process.env.NODE_ENV !== 'production') {
-  //   return <></>;
-  // }
+  if (process.env.NODE_ENV !== 'production') {
+    return <></>;
+  }
 
   if (!ANALYTICS_ID) {
     console.warn('NEXT_PUBLIC_ANALYTICS_ID not defined');
