@@ -7,7 +7,7 @@ export const metadata = {
 export default function Todo() {
   return (
     <LayoutContainer>
-      <h1 className="mb-8 px-4 pt-1 sm:py-3 text-center text-lg font-bold border-b dark:border-white/25">やり残しと更新履歴</h1>
+      <h1 className="mb-8 px-4 py-3 pt-1 sm:py-3 text-center text-lg font-bold border-b dark:border-white/25">やり残しと更新履歴</h1>
 
       <section className="mt-8 px-4">
         <h2 className="text-lg font-bold">やり残しTODO</h2>
