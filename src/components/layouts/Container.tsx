@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import Header from './Header';
 import Footer from './Footer';
 
@@ -16,7 +18,15 @@ export default function LayoutContainer({
           </main>
           <div className="relative lg:w-48 px-4 lg:pr-0">
             <div className="lg:sticky lg:top-0 lg:h-screen lg:flex lg:flex-col">
-              <Footer className="mt-auto mb-4" />
+              <div className="mt-auto">
+                <aside className="mb-4">
+                  <ul className="grid grid-rows-2 lg:grid-rows-1 gap-3">
+                    <li><Link className="block text-xs text-center dark:text-white/70 py-3 px-2 rounded border dark:border-white/25" href="/howto">初期設定</Link></li>
+                    <li><Link className="block text-xs text-center dark:text-white/70 py-3 px-2 rounded border dark:border-white/25" href="/todo">やり残しと更新履歴</Link></li>
+                  </ul>
+                </aside>
+                <Footer className="mb-4" />
+              </div>
             </div>
           </div>
         </div>
