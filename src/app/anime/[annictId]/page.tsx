@@ -6,7 +6,10 @@ type Params = {
   params: { annictId: string }
 };
 
-// TODO: タイトル取得したいけど、なかなか上手くいかない
+export const metadata = {
+  title: '詳細'
+};
+// TODO: タイトル取得したいけど、上手くいく手法が分からない
 // export async function generateMetadata({ params }: Params): Promise<Metadata> {
 //   const work = data?.searchWorks?.nodes ? (data?.searchWorks?.nodes[0] as Work) : null;
 //   return { title: work?.title }
