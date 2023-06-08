@@ -46,15 +46,7 @@ function Channel({ work }: { work: Work }) {
   if (loading) return <></>;
   if (error) { console.error(error); return <></>; }
 
-  return (
-    <RelatedLink
-      icon="open_in_new"
-      className="mr-1"
-      test={work.title}
-      href={`https://animestore.docomo.ne.jp/animestore/sch_pc?searchKey=${work.title}`}
-      label={(work.programs?.nodes) ? entry?.nextProgram?.channel.name : ''}
-    />
-  )
+  return <>{entry?.nextProgram?.channel.name}</>;
 }
 
 export default function Info({ work }: { work: Work }) {
@@ -64,7 +56,6 @@ export default function Info({ work }: { work: Work }) {
         <Thumbnail work={work} className="mx-auto" />
       </figure>
       <ul className="flex flex-wrap gap-x-4 gap-y-2 mt-4 px-4 text-xs">
-        <Channel work={work} />
         <RelatedLink
           icon="open_in_new"
           className="mr-1"
@@ -94,6 +85,7 @@ export default function Info({ work }: { work: Work }) {
             <li>視聴者数：{work.watchersCount}</li>
             <li>評価数：{work.reviewsCount}</li>
             <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
+            <li><Channel work={work} /></li>
           </ul>
         </div>
         <div className="flex-shrink-0 order-first sm:order-none">
