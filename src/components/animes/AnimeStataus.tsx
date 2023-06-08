@@ -13,6 +13,7 @@ import { useRecoilState } from 'recoil';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
 
 import Icons from '~/components/icons/Icons';
+import { RingSpinner } from '~/components/spinners/Spinner';
 
 import Const from '~/constants';
 
@@ -38,7 +39,7 @@ export default function Stataus({ work }: { work: Work }) {
 
   const [updateStatus, { loading: ul, error: ue }] = useMutation(updateStatusGql);
   
-  if (ll || ul) return <></>;
+  if (ll || ul) return <div className="text-center text-3xl text-annict-100"><RingSpinner /></div>;
   if (le || ue) { console.error(le || ue); return <p className="text-red-500">{le?.message || ue?.message}</p>; }
 
   const state = Const.STATUSSTATE_LIST.find(state => state.id === entry?.status?.state);
@@ -53,7 +54,7 @@ export default function Stataus({ work }: { work: Work }) {
         leaveFrom="transform scale-100 opacity-100"
         leaveTo="transform scale-95 opacity-0"
       >
-        <Listbox.Options className="absolute bottom-full mb-2 -left-2 -right-2 border dark:border-white/25 bg-white dark:bg-black rounded-xl overflow-hidden shadow-xl">
+        <Listbox.Options className="absolute bottom-full mb-2 right-0 min-w-full whitespace-nowrap border dark:border-white/25 bg-white dark:bg-black rounded-xl overflow-hidden shadow-xl">
           {Const.STATUSSTATE_LIST.map(state => {
             return (
               <Listbox.Option
@@ -87,8 +88,13 @@ export default function Stataus({ work }: { work: Work }) {
         </Listbox.Options>
       </Transition>
       <Listbox.Button className="flex items-center justify-center w-full pr-4 pl-3 py-2 bg-black text-white dark:bg-white dark:text-gray-900 rounded-lg">
-        <Icons id={`${changeStatusState ? changeStatusState.id : state?.id}_CURRENT`} type="status_state" className="text-[1.5em] mr-2" />
-        <span>{changeStatusState ? changeStatusState.label : state?.label}</span>
+        {!changeStatusState && !state ?
+          <span>未選択</span> :
+          <>
+            <Icons id={`${changeStatusState ? changeStatusState.id : state?.id}_CURRENT`} type="status_state" className="text-[1.5em] mr-2" />
+            <span>{changeStatusState ? changeStatusState.label : state?.label}</span>
+          </>
+        }
       </Listbox.Button>
     </Listbox>
   )
