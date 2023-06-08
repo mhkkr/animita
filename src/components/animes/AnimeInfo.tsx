@@ -81,7 +81,7 @@ export default function Info({ work }: { work: Work }) {
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 mt-4">
         <div className="flex-1">
           <h1 className="font-bold text-lg">{work.title}</h1>
-          <ul className="flex flex-wrap gap-4 mt-2 text-xs dark:text-white/70">
+          <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
             <li>視聴者数：{work.watchersCount}</li>
             <li>評価数：{work.reviewsCount}</li>
             <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
