@@ -16,6 +16,13 @@ export default function Todo() {
           <li>パフォーマンスを上げる…。</li>
         </ul>
       </section>
+
+      <section className="mt-8 px-4">
+        <h2 className="text-lg font-bold">やりたかったけどできなかったこと</h2>
+        <ul className="list-disc mt-2 ml-6">
+          <li>他の人のエピソードの記録に対して、いいねを押したかったが API がなかったので断念した。</li>
+        </ul>
+      </section>
       
       <section className="mt-8 px-4">
         <h2 className="text-lg font-bold">更新履歴</h2>
