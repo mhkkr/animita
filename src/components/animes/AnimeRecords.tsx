@@ -167,7 +167,7 @@ function ViewerBody({ episodes }: { episodes: SearchEpisodesQuery }) {
         <div className="mb-3 flex gap-2">
           <span className="flex-shrink-0">{episode?.numberText}</span>
           <span className="flex-1">{episode?.title || '未定'}</span>
-          <ToggleButton className="flex-shrink-0">
+          <ToggleButton className="flex-shrink-0 flex items-start">
             <Icons id="close" type="navigation" className="text-2xl" />
           </ToggleButton>
         </div>
