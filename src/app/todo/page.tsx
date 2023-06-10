@@ -20,7 +20,14 @@ export default function Todo() {
       <section className="mt-8 px-4">
         <h2 className="text-lg font-bold">やりたかったけどできなかったこと</h2>
         <ul className="list-disc mt-2 ml-6">
-          <li>他の人のエピソードの記録に対して、いいねを押したかったが API がなかったので断念した。</li>
+          <li>他の人のエピソードの記録に対して、いいねを押したかったが API がなかったので断念しました。</li>
+        </ul>
+      </section>
+
+      <section className="mt-8 px-4">
+        <h2 className="text-lg font-bold">確認している不具合</h2>
+        <ul className="list-disc mt-2 ml-6">
+          <li>Annict でスキップをすると次のエピソードの取得が上手くいかないかもしれません。</li>
         </ul>
       </section>
       
@@ -28,6 +35,12 @@ export default function Todo() {
         <h2 className="text-lg font-bold">更新履歴</h2>
         <div>
           {[
+            {
+              date: '2023/06/10 (土)',
+              comments: [
+                'エピソード画面からブラウザバックした際にスクロールが出来なくなる現象を解消しました。',
+              ]
+            },
             {
               date: '2023/06/08 (木)',
               comments: [
@@ -38,7 +51,7 @@ export default function Todo() {
             {
               date: '2023/06/07 (水)',
               comments: [
-                'レビュー削除の際に確認を行うようにしました。',
+                'エピソード記録の削除の際に確認を行うようにしました。',
                 'コメントが入力されている際に離脱確認を行うようにしました。',
               ]
             },

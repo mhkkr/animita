@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
@@ -196,12 +197,19 @@ function ViewerBody({ episodes }: { episodes: SearchEpisodesQuery }) {
 }
 
 function Viewer() {
-  const [recordOpenerEpisodeAnnictId] = useRecoilState(recordOpenerEpisodeAnnictIdAtom);
+  const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useRecoilState(recordOpenerEpisodeAnnictIdAtom);
   const [recordCurrentEpisodeAnnictId] = useRecoilState(recordCurrentEpisodeAnnictIdAtom);
 
   const { data: episodes, loading, error } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
     variables: { annictIds: [recordCurrentEpisodeAnnictId] }
   });
+
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'visible';
+      setRecordOpenerEpisodeAnnictId(0);
+    };
+  }, []);
 
   return (
     <div className={`
