@@ -23,6 +23,7 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 import Delete from '~/components/animes/AnimeRecordDelete';
 import Edit from '~/components/animes/AnimeRecordEdit';
 import Favorite from '~/components/animes/AnimeRecordFavorite';
+import Twitter from '~/components/animes/AnimeRecordTwitter';
 import Form from '~/components/animes/AnimeRecordForm';
 
 import Const from '~/constants';
@@ -71,7 +72,7 @@ function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disa
   );
 }
 
-function Records({ records }: { records: Record[] }) {
+function Records({ records, episode }: { records: Record[], episode: Episode }) {
   const { data: userSession } = useSession();
   const [recordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
   const [recordDeleteId] = useRecoilState(recordDeleteIdAtom);
@@ -113,6 +114,7 @@ function Records({ records }: { records: Record[] }) {
                   <>
                     <Edit record={record} />
                     <Delete record={record} />
+                    <Twitter record={record} episode={episode} />
                   </>
                 }
               </div>
@@ -138,12 +140,11 @@ function Records({ records }: { records: Record[] }) {
   );
 }
 
-function ViewerBody({ episodes }: { episodes: SearchEpisodesQuery }) {
+function ViewerBody({ episode }: { episode: Episode }) {
   const { data: userSession } = useSession();
 
   const [recordShowNoComment, setRecordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
-  const episode = episodes?.searchEpisodes?.nodes ? (episodes?.searchEpisodes?.nodes[0] as Episode) : null;
-  const records = episode?.records?.nodes ? Array.from(episode?.records?.nodes) : [];
+  const records = episode.records?.nodes ? Array.from(episode.records?.nodes) : [];
 
   // // コメントありと評価ありを上側に表示
   // records.sort((a, b) => {
@@ -165,8 +166,8 @@ function ViewerBody({ episodes }: { episodes: SearchEpisodesQuery }) {
     <>
       <div className="p-4">
         <div className="mb-3 flex gap-2">
-          <span className="flex-shrink-0">{episode?.numberText}</span>
-          <span className="flex-1">{episode?.title || '未定'}</span>
+          <span className="flex-shrink-0">{episode.numberText}</span>
+          <span className="flex-1">{episode.title || '未定'}</span>
           <ToggleButton className="flex-shrink-0 flex items-start">
             <Icons id="close" type="navigation" className="text-2xl" />
           </ToggleButton>
@@ -174,11 +175,11 @@ function ViewerBody({ episodes }: { episodes: SearchEpisodesQuery }) {
         {episode && <Form episode={episode} />}
       </div>
       <div className="grid grid-cols-2 border-t dark:border-white/25 text-xs text-center">
-        <span className="p-4">全評価数：<span className="inline-block">{episode?.recordsCount}</span></span>
+        <span className="p-4">全評価数：<span className="inline-block">{episode.recordsCount}</span></span>
         <span className="p-4 border-l dark:border-white/25">コメントあり：<span className="inline-block">{records.filter(record => record?.comment).length}</span></span>
-        {/* <span className="p-4 border-l dark:border-white/25">自分の評価数：<span className="inline-block">{episode?.viewerRecordsCount}</span></span> */}
+        {/* <span className="p-4 border-l dark:border-white/25">自分の評価数：<span className="inline-block">{episode.viewerRecordsCount}</span></span> */}
       </div>
-      <Records records={mainRecords} />
+      <Records records={mainRecords} episode={episode} />
       <div className="border-t dark:border-white/25">
         <div className="my-6">
           <button
@@ -190,7 +191,7 @@ function ViewerBody({ episodes }: { episodes: SearchEpisodesQuery }) {
             <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
           </button>
         </div>
-        <Records records={otherRecords} />
+        <Records records={otherRecords} episode={episode} />
       </div>
     </>
   );
@@ -203,6 +204,7 @@ function Viewer() {
   const { data: episodes, loading, error } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
     variables: { annictIds: [recordCurrentEpisodeAnnictId] }
   });
+  const episode = episodes?.searchEpisodes?.nodes ? (episodes?.searchEpisodes?.nodes[0] as Episode) : null;
 
   useEffect(() => {
     return () => {
@@ -223,7 +225,15 @@ function Viewer() {
           {loading && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
           {error && <p className="p-4 text-red-500">{error.message}</p>}
 
-          {!(loading || error) && episodes && <ViewerBody episodes={episodes} />}
+          {!(loading || error) && <>
+            {episode ?
+              <ViewerBody episode={episode} /> :
+              <div className="p-6 dark:text-white/70">
+                <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
+                <p className="text-center">エピソードがありません！</p>
+              </div>
+            }
+          </>}
         </div>
       </div>
     </div>
