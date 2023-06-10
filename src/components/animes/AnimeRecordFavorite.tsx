@@ -1,5 +1,3 @@
-'use client';
-
 import type { Record } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
