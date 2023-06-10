@@ -173,10 +173,10 @@ function ViewerBody({ episodes }: { episodes: SearchEpisodesQuery }) {
         </div>
         {episode && <Form episode={episode} />}
       </div>
-      <div className="grid grid-cols-3 border-t dark:border-white/25 text-xs text-center">
-        <span className="p-4">全評価数：{episode?.recordsCount}</span>
-        <span className="p-4 border-l dark:border-white/25">コメントあり：{records.filter(record => record?.comment).length}</span>
-        <span className="p-4 border-l dark:border-white/25">自分の評価数：{episode?.viewerRecordsCount}</span>
+      <div className="grid grid-cols-2 border-t dark:border-white/25 text-xs text-center">
+        <span className="p-4">全評価数：<span className="inline-block">{episode?.recordsCount}</span></span>
+        <span className="p-4 border-l dark:border-white/25">コメントあり：<span className="inline-block">{records.filter(record => record?.comment).length}</span></span>
+        {/* <span className="p-4 border-l dark:border-white/25">自分の評価数：<span className="inline-block">{episode?.viewerRecordsCount}</span></span> */}
       </div>
       <Records records={mainRecords} />
       <div className="border-t dark:border-white/25">
