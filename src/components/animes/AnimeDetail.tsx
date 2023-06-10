@@ -15,6 +15,7 @@ import Icons from '~/components/icons/Icons';
 import BackButton from '~/components/buttons/BackButton';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
+import Cast from '~/components/animes/AnimeCast';
 import Episodes from '~/components/animes/AnimeEpisodes';
 import Info from '~/components/animes/AnimeInfo';
 
@@ -72,6 +73,9 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
               <Info work={work} />
               <div className="mt-6">
                 <Episodes work={work} />
+              </div>
+              <div className="mt-6">
+                <Cast work={work} />
               </div>
             </>
           }

@@ -21,6 +21,14 @@ export const searchWorksGql = gql`
           facebookOgImageUrl
           copyright
         }
+				casts {
+					nodes {
+						name
+						character {
+							name
+						}
+					}
+				}
         episodes {
           nodes {
             id
