@@ -18,8 +18,8 @@ export const updateRecordGql = gql`
 				updatedAt
 				likesCount
 				user {
-					email
 					name
+					username
 					avatarUrl
 				}
         episode {

@@ -24,14 +24,15 @@ export const searchEpisodesGql = gql`
 						updatedAt
 						likesCount
 						user {
-							email
 							name
+							username
 							avatarUrl
 						}
 					}
 				}
 				work {
 					annictId
+        	twitterHashtag
 				}
       }
     }

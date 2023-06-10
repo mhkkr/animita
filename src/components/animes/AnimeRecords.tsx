@@ -6,7 +6,8 @@ import { useSession } from 'next-auth/react';
 
 import { useQuery } from '@apollo/client';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
-import type { SearchEpisodesQuery, Episode, Record } from '~/features/apollo/generated-types';
+import { viewerUserGql } from '~/features/apollo/gql/query/viewerUser';
+import type { SearchEpisodesQuery, ViewerUserQuery, Episode, Record } from '~/features/apollo/generated-types';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
@@ -72,8 +73,7 @@ function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disa
   );
 }
 
-function Records({ records, episode }: { records: Record[], episode: Episode }) {
-  const { data: userSession } = useSession();
+function Records({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
   const [recordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
   const [recordDeleteId] = useRecoilState(recordDeleteIdAtom);
   const [recordEditId] = useRecoilState(recordEditIdAtom);
@@ -87,7 +87,7 @@ function Records({ records, episode }: { records: Record[], episode: Episode }) 
     <ul className="flex flex-wrap text-sm">
       {records.map(record => {
         const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
-        const isMyRecord = record.user.name === userSession?.user?.name;
+        const isMyRecord = record.user.username === user.viewer?.username;
         return (
           <li
             key={record.annictId}
@@ -114,7 +114,7 @@ function Records({ records, episode }: { records: Record[], episode: Episode }) 
                   <>
                     <Edit record={record} />
                     <Delete record={record} />
-                    <Twitter record={record} episode={episode} />
+                    <Twitter record={record} episode={episode} user={user} />
                   </>
                 }
               </div>
@@ -140,9 +140,7 @@ function Records({ records, episode }: { records: Record[], episode: Episode }) 
   );
 }
 
-function ViewerBody({ episode }: { episode: Episode }) {
-  const { data: userSession } = useSession();
-
+function ViewerBody({ episode, user }: { episode: Episode, user: ViewerUserQuery }) {
   const [recordShowNoComment, setRecordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
   const records = episode.records?.nodes ? Array.from(episode.records?.nodes) : [];
 
@@ -159,8 +157,8 @@ function ViewerBody({ episode }: { episode: Episode }) {
   //   return 0;
   // });
 
-  const mainRecords = records.filter(record => record?.comment || record?.user.name === userSession?.user?.name) as Record[];
-  const otherRecords = records.filter(record => !record?.comment && record?.user.name !== userSession?.user?.name) as Record[];
+  const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username) as Record[];
+  const otherRecords = records.filter(record => !record?.comment && record?.user.username !== user?.viewer?.username) as Record[];
 
   return (
     <>
@@ -179,7 +177,7 @@ function ViewerBody({ episode }: { episode: Episode }) {
         <span className="p-4 border-l dark:border-white/25">コメントあり：<span className="inline-block">{records.filter(record => record?.comment).length}</span></span>
         {/* <span className="p-4 border-l dark:border-white/25">自分の評価数：<span className="inline-block">{episode.viewerRecordsCount}</span></span> */}
       </div>
-      <Records records={mainRecords} episode={episode} />
+      <Records records={mainRecords} episode={episode} user={user} />
       <div className="border-t dark:border-white/25">
         <div className="my-6">
           <button
@@ -191,7 +189,7 @@ function ViewerBody({ episode }: { episode: Episode }) {
             <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
           </button>
         </div>
-        <Records records={otherRecords} episode={episode} />
+        <Records records={otherRecords} episode={episode} user={user} />
       </div>
     </>
   );
@@ -201,7 +199,8 @@ function Viewer() {
   const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useRecoilState(recordOpenerEpisodeAnnictIdAtom);
   const [recordCurrentEpisodeAnnictId] = useRecoilState(recordCurrentEpisodeAnnictIdAtom);
 
-  const { data: episodes, loading, error } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
+  const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql);
+  const { data: episodes, loading: el, error: ee } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
     variables: { annictIds: [recordCurrentEpisodeAnnictId] }
   });
   const episode = episodes?.searchEpisodes?.nodes ? (episodes?.searchEpisodes?.nodes[0] as Episode) : null;
@@ -218,16 +217,16 @@ function Viewer() {
       fixed inset-0 z-40 bg-slate-700/70 overflow-y-auto
       ${recordOpenerEpisodeAnnictId === 0 ? 'hidden' : 'block'}
     `}>
-      <div className={`relative sm:py-24 sm:px-4 ${loading && 'py-24 px-4'}`}>
+      <div className={`relative sm:py-24 sm:px-4 ${el && 'py-24 px-4'}`}>
         <ToggleButton className="absolute inset-0" />
 
-        <div className={`relative mx-auto dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${loading && 'max-w-xl rounded-lg shadow-2xl'}`}>
-          {loading && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-          {error && <p className="p-4 text-red-500">{error.message}</p>}
+        <div className={`relative mx-auto dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el && 'max-w-xl rounded-lg shadow-2xl'}`}>
+          {(el || ul) && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+          {(ee || ue) && <p className="p-4 text-red-500">{ee?.message || ue?.message}</p>}
 
-          {!(loading || error) && <>
-            {episode ?
-              <ViewerBody episode={episode} /> :
+          {!(el || ee || ul || ue) && <>
+            {episode && user ?
+              <ViewerBody episode={episode} user={user} /> :
               <div className="p-6 dark:text-white/70">
                 <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
                 <p className="text-center">エピソードがありません！</p>
