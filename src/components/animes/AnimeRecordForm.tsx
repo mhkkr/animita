@@ -25,7 +25,6 @@ export default function Form({ episode }: { episode: Episode }) {
   const textarea = useRef<HTMLTextAreaElement>(null);
   const [comment, setComment] = useState('');
   const [ratingState, setRatingState] = useState('');
-  const [shareTwitter, setShareTwitter] = useState(false);
 
   useEffect(() => {
     if (recordEditId && episode?.records?.nodes) {
@@ -60,7 +59,6 @@ export default function Form({ episode }: { episode: Episode }) {
     onCompleted() {
       setComment('');
       setRatingState('');
-      setShareTwitter(false);
     }
   });
 
@@ -76,7 +74,6 @@ export default function Form({ episode }: { episode: Episode }) {
 
       setComment('');
       setRatingState('');
-      setShareTwitter(false);
     }
   });
 
@@ -92,15 +89,15 @@ export default function Form({ episode }: { episode: Episode }) {
       if (recordEditId && episode?.records?.nodes) {
         const record = episode?.records?.nodes.find(record => record?.id === recordEditId);
         if (ratingState) {
-          updateRecord({ variables: { recordId: record?.id, comment: comment, ratingState: ratingState, shareTwitter: shareTwitter }});
+          updateRecord({ variables: { recordId: record?.id, comment: comment, ratingState: ratingState }});
         } else {
-          updateRecord({ variables: { recordId: record?.id, comment: comment, shareTwitter: shareTwitter }});
+          updateRecord({ variables: { recordId: record?.id, comment: comment }});
         }
       } else {
         if (ratingState) {
-          createRecord({ variables: { episodeId: episode.id, comment: comment, ratingState: ratingState, shareTwitter: shareTwitter }});
+          createRecord({ variables: { episodeId: episode.id, comment: comment, ratingState: ratingState }});
         } else {
-          createRecord({ variables: { episodeId: episode.id, comment: comment, shareTwitter: shareTwitter }});
+          createRecord({ variables: { episodeId: episode.id, comment: comment }});
         }
       }
     }}>
@@ -112,56 +109,36 @@ export default function Form({ episode }: { episode: Episode }) {
         disabled={cl || ul}
         placeholder="ここに感想を書きましょう！"
       />
-      <div className="mt-4 flex items-center w-full gap-4">
-        <div className="flex-1 grid grid-cols-4">
-          {Const.RATINGSTATE_LIST.map((RATINGSTATE) => {
-            return (
-              <label
-                key={RATINGSTATE.id}
-                className={`
-                  relative flex items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-white/25 cursor-pointer text-xs
-                  transition-colors ${ratingState === RATINGSTATE.id ? RATINGSTATE.bgColor : ''}
-                  focus-within:outline focus-within:outline-1 focus-within:outline-offset-2
-                `}
-              >
-                <input
-                  onChange={e => setTimeout(() => setRatingState(e.target.value), 0)}
-                  onClick={e => {
-                    if (e.currentTarget.value === ratingState) {
-                      e.currentTarget.checked = false;
-                      setRatingState('');
-                    }
-                  }}
-                  className="absolute -z-10 opacity-0"
-                  type="radio"
-                  value={RATINGSTATE.id}
-                  checked={ratingState === RATINGSTATE.id}
-                  disabled={cl || ul}
-                />
-                <Icons id={RATINGSTATE.id} type="rating_state" className={`mr-1 text-[1.25em] transition-transform ${ratingState === RATINGSTATE.id ? 'scale-110' : ''}`} />
-                {RATINGSTATE.label}
-              </label>
-            );
-          })}
-        </div>
-        <div className="flex-shrink-0">
-          <label className="cursor-pointer">
-            <input
-              className="hidden"
-              onChange={() => setShareTwitter(prevState => !prevState)}
-              type="checkbox"
-              id="check"
-              checked={shareTwitter}
-              disabled={cl || ul}
-            />
-            <Icons
-              id="twitter"
-              type="brand"
-              className={`transition-all ${shareTwitter ? 'text-[#1da1f2]' : 'opacity-30'}`}
-              data-tooltip-id="records-edit-form-tooltip" data-tooltip-content={shareTwitter ? 'シェアする' : 'シェアしない'} data-tooltip-place="top"
-            />
-          </label>
-        </div>
+      <div className="mt-4 grid grid-cols-4">
+        {Const.RATINGSTATE_LIST.map((RATINGSTATE) => {
+          return (
+            <label
+              key={RATINGSTATE.id}
+              className={`
+                relative flex items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-white/25 cursor-pointer text-xs
+                transition-colors ${ratingState === RATINGSTATE.id ? RATINGSTATE.bgColor : ''}
+                focus-within:outline focus-within:outline-1 focus-within:outline-offset-2
+              `}
+            >
+              <input
+                onChange={e => setTimeout(() => setRatingState(e.target.value), 0)}
+                onClick={e => {
+                  if (e.currentTarget.value === ratingState) {
+                    e.currentTarget.checked = false;
+                    setRatingState('');
+                  }
+                }}
+                className="absolute -z-10 opacity-0"
+                type="radio"
+                value={RATINGSTATE.id}
+                checked={ratingState === RATINGSTATE.id}
+                disabled={cl || ul}
+              />
+              <Icons id={RATINGSTATE.id} type="rating_state" className={`mr-1 text-[1.25em] transition-transform ${ratingState === RATINGSTATE.id ? 'scale-110' : ''}`} />
+              {RATINGSTATE.label}
+            </label>
+          );
+        })}
       </div>
       <button
         className={`

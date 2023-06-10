@@ -1,13 +1,12 @@
 import { gql } from '@apollo/client';
 
 export const createRecordGql = gql`
-  mutation createRecord($episodeId: ID!, $comment: String, $ratingState: RatingState, $shareTwitter: Boolean) {
+  mutation createRecord($episodeId: ID!, $comment: String, $ratingState: RatingState) {
     createRecord(
       input: {
         episodeId: $episodeId
         comment: $comment
         ratingState: $ratingState
-        shareTwitter: $shareTwitter
       }
     ) {
       record {
