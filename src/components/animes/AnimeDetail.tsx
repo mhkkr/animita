@@ -72,9 +72,11 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
               <SetStatusState work={work} />
               <Info work={work} />
               <div className="mt-6">
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-white/25">エピソード</h2>
                 <Episodes work={work} />
               </div>
               <div className="mt-6">
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-white/25">キャスト</h2>
                 <Cast work={work} />
               </div>
             </>

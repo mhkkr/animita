@@ -10,6 +10,7 @@ import { Tooltip } from 'react-tooltip';
 import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
+import { RingSpinner } from '~/components/spinners/Spinner';
 import * as Record from '~/components/animes/AnimeRecords';
 
 import Const from '~/constants';
@@ -39,7 +40,7 @@ export default function Episodes({ work }: { work: Work }) {
       seasons: [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`]
     }
   });
-  if (loading || !libraryEntries) return <></>;
+  if (loading || !libraryEntries) return <div className="mt-6 text-center text-5xl text-annict-100"><RingSpinner /></div>;
   if (error) { console.error(error); return <></>; }
 
   const episodes = (work.episodes?.nodes ? Array.from(work.episodes?.nodes) : []) as Episode[];
@@ -49,7 +50,6 @@ export default function Episodes({ work }: { work: Work }) {
 
   return (
     <>
-      <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-white/25">エピソード</h2>
       <table className="w-full">
         {episodes.map((episode, episodeIndex) => {
           const viewable = checkViewable(libraryEntries, work, episodeIndex, now);
@@ -58,33 +58,31 @@ export default function Episodes({ work }: { work: Work }) {
               <tr className={`hover:bg-stone-500/30 ${!viewable.state && 'dark:text-white/70'}`}>
                 <td className={`
                   hidden sm:table-cell
-                  w-px whitespace-nowrap pl-4 py-1 align-top
+                  w-px whitespace-nowrap pl-4 py-1.5 pt-[.6rem] align-top
                   ${!episode?.viewerDidTrack && '!w-0 !pl-2' /* 一話も視聴していない場合アイコンがすべて表示されないので幅の調整をしている */}
                 `}>
                   {episode?.viewerDidTrack && <Icons id="WATCHED_CURRENT" type="status_state" className="text-[1.25em] align-[-.2em]" data-tooltip-id="episodes-tooltip" data-tooltip-content="視聴済み" data-tooltip-place="top" />}
                 </td>
                 
-                <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1">{episode?.numberText}</td>
+                <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1.5 pt-[.6rem]">{episode?.numberText}</td>
 
-                <td className="pl-3 py-1">
-                  <div className="grid grid-cols-1 items-center gap-1">
-                    <span>{episode?.title || '未定'}</span>
-                    {!viewable.state && <span className="text-sm">予定日時：<DisplayDate date={viewable.startedAt} /></span>}
-                  </div>
+                <td className="pl-3 py-1.5 pt-[.6rem] align-top">
+                  <div>{episode?.title || '未定'}</div>
+                  {!viewable.state && <div className="mt-1 text-sm">予定日時：<DisplayDate date={viewable.startedAt} /></div>}
                 </td>
 
-                <td className="w-px whitespace-nowrap pl-3 pr-4 align-top text-xs py-1">
+                <td className="w-px whitespace-nowrap pl-3 pr-4 align-top text-xs py-1.5">
                   {viewable.state &&
                     <Record.ToggleButton
                       className={`
-                        inline-flex w-full px-2 py-1 border dark:border-white/30 rounded-full
+                        inline-flex w-full px-2 py-1.5 border dark:border-white/30 rounded-full
                         ${episode?.viewerDidTrack && 'bg-white text-black'}
                       `}
                       episodeAnnictId={episode?.annictId}
                     >
                       <Icons id="edit" type="form" className="text-[1.25em]" />
                       <span className="ml-0.5 mr-1">{episode?.viewerRecordsCount}</span>
-                      <span className="flex-1 text-right">記録／変更</span>
+                      <span className="flex-1 text-right">記録する</span>
                     </Record.ToggleButton>
                   }
                 </td>
