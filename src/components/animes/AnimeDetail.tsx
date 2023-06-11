@@ -57,7 +57,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
       <p><BackButton /></p>
 
       {loading && <div className="pt-12 border-t dark:border-white/25 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="px-4 pt-6 dark:text-white/70 border-t text-red-500">{error.message}</p>}
+      {error && <p className="px-4 pt-6 border-t dark:border-white/25 text-red-500">{error.message}</p>}
 
       {!(loading || error) &&
         <>
