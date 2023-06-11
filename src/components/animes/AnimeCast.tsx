@@ -8,7 +8,7 @@ export default function Cast({ work }: { work: Work }) {
     <table className="w-full">
       <tbody>
         {casts.map(cast => (
-          <tr key={cast.person.annictId} className="hover:bg-stone-500/30">
+          <tr key={cast.character.name + '-' + cast.person.annictId} className="hover:bg-stone-500/30">
             <td className="align-top py-1.5 px-2 pl-4 whitespace-nowrap w-0 text-right">{cast.character.name}</td>
             <td className="align-top py-1.5 px-2 pr-4">
               <div className="flex flex-wrap items-center gap-1">
