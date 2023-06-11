@@ -23,7 +23,11 @@ export const searchWorksGql = gql`
         }
 				casts {
 					nodes {
-						name
+            person {
+              annictId
+						  name
+							nameKana
+						}
 						character {
 							name
 						}
