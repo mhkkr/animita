@@ -10,7 +10,10 @@ function lengthMax140(comment: string, base: string, url: string) {
   if (split(`${comment}${basePlusUrl}`).length > 140) {
     const baseLength = split(base).length;
     const urlLength = split(url).length / 2;
-    return base + comment.substring(0, (140 - (baseLength + urlLength))) + '...' + '\n\n';
+    const subComment = comment.substring(0, (140 - (baseLength + urlLength)));
+    if (subComment !== comment) {
+      return base + subComment + ' [...]' + '\n\n';
+    }
   }
   return base + comment + '\n\n';
 }
