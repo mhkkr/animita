@@ -58,15 +58,15 @@ export default function Episodes({ work }: { work: Work }) {
               <tr className={`hover:bg-stone-500/30 ${!viewable.state && 'dark:text-white/70'}`}>
                 <td className={`
                   hidden sm:table-cell
-                  w-px whitespace-nowrap pl-4 py-1.5 pt-[.6rem] align-top
+                  w-px whitespace-nowrap pl-4 py-1.5 pt-[.55rem] align-top
                   ${!episode?.viewerDidTrack && '!w-0 !pl-2' /* 一話も視聴していない場合アイコンがすべて表示されないので幅の調整をしている */}
                 `}>
                   {episode?.viewerDidTrack && <Icons id="WATCHED_CURRENT" type="status_state" className="text-[1.25em] align-[-.2em]" data-tooltip-id="episodes-tooltip" data-tooltip-content="視聴済み" data-tooltip-place="top" />}
                 </td>
                 
-                <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1.5 pt-[.6rem]">{episode?.numberText}</td>
+                <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1.5 pt-[.55rem]">{episode?.numberText}</td>
 
-                <td className="pl-3 py-1.5 pt-[.6rem] align-top">
+                <td className="pl-3 py-1.5 pt-[.55rem] align-top">
                   <div>{episode?.title || '未定'}</div>
                   {!viewable.state && <div className="mt-1 text-sm">予定日時：<DisplayDate date={viewable.startedAt} /></div>}
                 </td>
