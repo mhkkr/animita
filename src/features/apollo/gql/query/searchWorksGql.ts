@@ -21,6 +21,12 @@ export const searchWorksGql = gql`
           facebookOgImageUrl
           copyright
         }
+				staffs {
+					nodes {
+						name
+						roleText
+					}
+				}
 				casts {
 					nodes {
             person {

@@ -49,6 +49,35 @@ function Channel({ work }: { work: Work }) {
   return <>{entry?.nextProgram?.channel.name}</>;
 }
 
+function Staffs({ work }: { work: Work }) {
+  const gensakuStaffs = work.staffs?.nodes ? work.staffs.nodes.filter(staff => staff?.roleText === '原作') : [];
+  const kantokuStaffs = work.staffs?.nodes ? work.staffs.nodes.filter(staff => staff?.roleText === '監督') : [];
+  const seisakuStaffs = work.staffs?.nodes ? work.staffs.nodes.filter(staff => staff?.roleText === 'アニメーション制作') : [];
+  const staffs = [...gensakuStaffs, ...kantokuStaffs, ...seisakuStaffs];
+
+  const sumRoleStaffs: { displayRoleText: string, roleText: string, name: string }[] = [
+    { displayRoleText: '原作', roleText: '原作', name: '' },
+    { displayRoleText: '監督', roleText: '監督', name: '' },
+    { displayRoleText: '制作', roleText: 'アニメーション制作', name: '' }
+  ];
+  staffs.forEach(staff => {
+    const role = sumRoleStaffs.find(sum => sum.roleText === staff?.roleText);
+    if (role && staff?.name) {
+      if (role.name) {
+        role.name = role.name + '／' + staff.name;
+      } else {
+        role.name = staff.name;
+      }
+    }
+  });
+
+  return (
+    <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
+      {sumRoleStaffs.map(sum => <li key={sum.displayRoleText + '-' + sum.name}>{sum.displayRoleText}：{sum.name}</li>)}
+    </ul>
+  );
+}
+
 export default function Info({ work }: { work: Work }) {
   return (
     <>
@@ -81,16 +110,19 @@ export default function Info({ work }: { work: Work }) {
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 mt-4">
         <div className="flex-1">
           <h1 className="font-bold text-lg">{work.title}</h1>
-          <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
-            <li>視聴者数：{work.watchersCount}</li>
-            <li>評価数：{work.reviewsCount}</li>
-            <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
-            <li><Channel work={work} /></li>
-          </ul>
         </div>
         <div className="flex-shrink-0 order-first sm:order-none">
           <Stataus work={work} />
         </div>
+      </div>
+      <div className="px-4 mt-4">
+        <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
+          <li>視聴者数：{work.watchersCount}</li>
+          <li>評価数：{work.reviewsCount}</li>
+          <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
+          <li><Channel work={work} /></li>
+        </ul>
+        <Staffs work={work} />
       </div>
     </>
   );
