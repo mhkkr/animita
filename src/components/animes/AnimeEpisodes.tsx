@@ -76,7 +76,7 @@ export default function Episodes({ work }: { work: Work }) {
                     <Record.ToggleButton
                       className={`
                         inline-flex w-full px-2 py-1.5 border dark:border-white/30 rounded-full
-                        ${episode?.viewerDidTrack && 'bg-white text-black'}
+                        ${episode?.viewerDidTrack && 'bg-black text-white dark:bg-white dark:text-black'}
                       `}
                       episodeAnnictId={episode?.annictId}
                     >

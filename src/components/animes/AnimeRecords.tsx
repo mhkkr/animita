@@ -121,7 +121,7 @@ function Records({ records, episode, user }: { records: Record[], episode: Episo
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <Favorite record={record} />
                 {record.ratingState &&
-                  <div className={`inline-flex items-center px-2 py-0.5 rounded-full ${ratingstate?.bgColor}`}>
+                  <div className={`inline-flex items-center px-2 py-0.5 rounded-full ${ratingstate?.bgColor} text-white dark:text-inherit`}>
                     <Icons id={ratingstate?.id} type="rating_state" className="text-sm mr-1" />
                     {ratingstate?.label}
                   </div>
@@ -220,7 +220,7 @@ function Viewer() {
       <div className={`relative sm:py-24 sm:px-4 ${el && 'py-24 px-4'}`}>
         <ToggleButton className="absolute inset-0" />
 
-        <div className={`relative mx-auto dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el && 'max-w-xl rounded-lg shadow-2xl'}`}>
+        <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>
           {(el || ul) && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
           {(ee || ue) && <p className="p-4 text-red-500">{ee?.message || ue?.message}</p>}
 

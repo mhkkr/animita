@@ -104,7 +104,7 @@ export default function Form({ episode }: { episode: Episode }) {
       <textarea
         onChange={e => setComment(e.target.value)}
         ref={textarea}
-        className="block w-full h-64 p-4 rounded-md dark:text-black dark:bg-stone-50"
+        className="block w-full h-64 p-4 rounded-md border dark:text-black dark:bg-stone-50"
         value={comment}
         disabled={cl || ul}
         placeholder="ここに感想を書きましょう！"
@@ -116,7 +116,7 @@ export default function Form({ episode }: { episode: Episode }) {
               key={RATINGSTATE.id}
               className={`
                 relative flex items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-white/25 cursor-pointer text-xs
-                transition-colors ${ratingState === RATINGSTATE.id ? RATINGSTATE.bgColor : ''}
+                transition-colors ${ratingState === RATINGSTATE.id ? `${RATINGSTATE.bgColor} text-white dark:text-inherit` : ''}
                 focus-within:outline focus-within:outline-1 focus-within:outline-offset-2
               `}
             >

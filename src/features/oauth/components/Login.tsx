@@ -65,7 +65,7 @@ export default function Login({ status }: { status: string }) {
     <>
       <main className="min-h-screen mx-auto max-w-md flex flex-col justify-center p-4">
         <div className="w-full my-12 bg-white dark:bg-black rounded-lg shadow-lg">
-          <h1 className="mx-auto -mt-12 w-24 h-24 p-4 bg-slate-700 rounded-full overflow-hidden">
+          <h1 className="mx-auto -mt-12 w-24 h-24 p-4 bg-slate-400 dark:bg-slate-700 rounded-full overflow-hidden">
             <Image
               className="object-contain w-full h-full"
               src="/logo.svg"
@@ -79,7 +79,7 @@ export default function Login({ status }: { status: string }) {
           </div>
         </div>
       </main>
-      <div className="fixed inset-0 -z-10 bg-slate-700"></div>
+      <div className="fixed inset-0 -z-10 bg-slate-400 dark:bg-slate-700"></div>
     </>
   );
 }
