@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 
 import { useQuery } from '@apollo/client';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUser';
-import type { SearchEpisodesQuery, ViewerUserQuery, Episode, Record } from '~/features/apollo/generated-types';
+import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
@@ -15,12 +14,15 @@ import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
 import { recordCurrentEpisodeAnnictIdAtom } from '~/atoms/recordCurrentEpisodeAnnictIdAtom';
 import { recordOpenerEpisodeAnnictIdAtom } from '~/atoms/recordOpenerEpisodeAnnictIdAtom';
 import { recordShowNoCommentAtom } from '~/atoms/recordShowNoCommentAtom';
+import { recordShowInfoCastAtom } from '~/atoms/recordShowInfoCastAtom';
 
 import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
+import Cast from '~/components/animes/AnimeCast';
+import { InfoLite } from '~/components/animes/AnimeInfo';
 import Delete from '~/components/animes/AnimeRecordDelete';
 import Edit from '~/components/animes/AnimeRecordEdit';
 import Favorite from '~/components/animes/AnimeRecordFavorite';
@@ -140,22 +142,60 @@ function Records({ records, episode, user }: { records: Record[], episode: Episo
   );
 }
 
-function ViewerBody({ episode, user }: { episode: Episode, user: ViewerUserQuery }) {
-  const [recordShowNoComment, setRecordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
-  const records = episode.records?.nodes ? Array.from(episode.records?.nodes) : [];
+function ViewerInInfoCast({ work }: { work: Work }) {
+  const [recordShowInfoCast, setRecordShowInfoCast] = useRecoilState(recordShowInfoCastAtom);
 
-  // // コメントありと評価ありを上側に表示
-  // records.sort((a, b) => {
-  //   const ac = a?.comment ? a?.comment.length : 0;
-  //   const bc = b?.comment ? b?.comment.length : 0;
-  //   const ar = a?.ratingState ? a?.ratingState.length : 0;
-  //   const br = b?.ratingState ? b?.ratingState.length : 0;
-  //   if (ac > bc) return -1;
-  //   if (ac < bc) return 0;
-  //   if (ar > br) return -1;
-  //   if (ar < br) return 1;
-  //   return 0;
-  // });
+  const handleClick = useCallback(() => setRecordShowInfoCast(prevState => !prevState), []);
+
+  return (
+    <div className="mb-4 border-t dark:border-white/25">
+      <div className="mt-4">
+        <button
+          onClick={handleClick}
+          className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
+          type="button"
+        >
+          <span>アニメ情報とキャストを{recordShowInfoCast ? '非表示にする' : '表示する'}</span>
+          <Icons id={recordShowInfoCast ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
+        </button>
+      </div>
+      {recordShowInfoCast && (
+        <>
+          <InfoLite work={work} />
+          <div className="mt-6">
+            <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-white/25">キャスト</h2>
+            <Cast work={work} />
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function NoCommentRecords({ otherRecords, episode, user }: { otherRecords: Record[], episode: Episode, user: ViewerUserQuery }) {
+  const [recordShowNoComment, setRecordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
+
+  const handleClick = useCallback(() => setRecordShowNoComment(prevState => !prevState), []);
+
+  return (
+    <div className="border-t dark:border-white/25">
+      <div className="my-6">
+        <button
+          onClick={handleClick}
+          className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
+          type="button"
+        >
+          <span>コメントなしを{recordShowNoComment ? '非表示にする' : '表示する'}</span>
+          <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
+        </button>
+      </div>
+      <Records records={otherRecords} episode={episode} user={user} />
+    </div>
+  )
+}
+
+function ViewerBody({ work, episode, user }: { work: Work, episode: Episode, user: ViewerUserQuery }) {
+  const records = episode.records?.nodes ? Array.from(episode.records?.nodes) : [];
 
   const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username) as Record[];
   const otherRecords = records.filter(record => !record?.comment && record?.user.username !== user?.viewer?.username) as Record[];
@@ -172,30 +212,18 @@ function ViewerBody({ episode, user }: { episode: Episode, user: ViewerUserQuery
         </div>
         {episode && <Form episode={episode} />}
       </div>
+      <ViewerInInfoCast work={work} />
       <div className="grid grid-cols-2 border-t dark:border-white/25 text-xs text-center">
         <span className="p-4">全評価数：<span className="inline-block">{episode.recordsCount}</span></span>
         <span className="p-4 border-l dark:border-white/25">コメントあり：<span className="inline-block">{records.filter(record => record?.comment).length}</span></span>
-        {/* <span className="p-4 border-l dark:border-white/25">自分の評価数：<span className="inline-block">{episode.viewerRecordsCount}</span></span> */}
       </div>
       <Records records={mainRecords} episode={episode} user={user} />
-      <div className="border-t dark:border-white/25">
-        <div className="my-6">
-          <button
-            onClick={() => setRecordShowNoComment(prevState => !prevState)}
-            className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
-            type="button"
-          >
-            <span>コメントなしを{recordShowNoComment ? '非表示にする' : '表示する'}</span>
-            <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
-          </button>
-        </div>
-        <Records records={otherRecords} episode={episode} user={user} />
-      </div>
+      <NoCommentRecords otherRecords={otherRecords} episode={episode} user={user} />
     </>
   );
 }
 
-function Viewer() {
+function Viewer({ work }: { work: Work }) {
   const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useRecoilState(recordOpenerEpisodeAnnictIdAtom);
   const [recordCurrentEpisodeAnnictId] = useRecoilState(recordCurrentEpisodeAnnictIdAtom);
 
@@ -226,7 +254,7 @@ function Viewer() {
 
           {!(el || ee || ul || ue) && <>
             {episode && user ?
-              <ViewerBody episode={episode} user={user} /> :
+              <ViewerBody work={work} episode={episode} user={user} /> :
               <div className="p-6 dark:text-white/70">
                 <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
                 <p className="text-center">エピソードがありません！</p>

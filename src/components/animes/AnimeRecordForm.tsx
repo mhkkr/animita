@@ -108,6 +108,7 @@ export default function Form({ episode }: { episode: Episode }) {
         value={comment}
         disabled={cl || ul}
         placeholder="ここに感想を書きましょう！"
+        autoFocus={episode.viewerRecordsCount ? false : true}
       />
       <div className="mt-4 grid grid-cols-4">
         {Const.RATINGSTATE_LIST.map((RATINGSTATE) => {
@@ -158,7 +159,7 @@ export default function Form({ episode }: { episode: Episode }) {
       {recordEditId &&
         <button onClick={() => setRecordEditId('')} className="mt-4 flex items-center mx-auto text-sm" type="button">
           <Icons id="close" type="navigation" className="mr-2 text-[1.5em]" />
-          変更を解除する
+          変更をやめる
         </button>
       }
       <Tooltip id="records-edit-form-tooltip" />

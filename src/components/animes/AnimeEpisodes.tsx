@@ -18,7 +18,7 @@ import Const from '~/constants';
 const statusStateIdArray: string[] = [];
 Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
 
-function checkViewable(libraryEntries: LibraryEntriesQuery, work: Work, episodeIndex: number, now: number) {
+function checkViewTable(libraryEntries: LibraryEntriesQuery, work: Work, episodeIndex: number, now: number) {
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
   const channel = entry?.nextProgram?.channel.name;
 
@@ -29,8 +29,8 @@ function checkViewable(libraryEntries: LibraryEntriesQuery, work: Work, episodeI
   if (!program) return { state: true, startedAt: '' };
 
   const startedAt = new Date(program?.startedAt);
-  const isViewable = now > startedAt.getTime();
-  return { state: isViewable, startedAt: startedAt };
+  const isViewTable = now > startedAt.getTime();
+  return { state: isViewTable, startedAt: startedAt };
 }
 
 export default function Episodes({ work }: { work: Work }) {
@@ -52,10 +52,10 @@ export default function Episodes({ work }: { work: Work }) {
     <>
       <table className="w-full">
         {episodes.map((episode, episodeIndex) => {
-          const viewable = checkViewable(libraryEntries, work, episodeIndex, now);
+          const viewTable = checkViewTable(libraryEntries, work, episodeIndex, now);
           return (
             <tbody key={episode?.annictId} className="relative">
-              <tr className={`hover:bg-stone-500/30 ${!viewable.state && 'dark:text-white/70'}`}>
+              <tr className={`hover:bg-stone-500/30 ${!viewTable.state && 'dark:text-white/70'}`}>
                 <td className={`
                   hidden sm:table-cell
                   w-px whitespace-nowrap pl-4 py-1.5 pt-[.55rem] align-top
@@ -68,11 +68,11 @@ export default function Episodes({ work }: { work: Work }) {
 
                 <td className="pl-3 py-1.5 pt-[.55rem] align-top">
                   <div>{episode?.title || '未定'}</div>
-                  {!viewable.state && <div className="mt-1 text-sm">予定日時：<DisplayDate date={viewable.startedAt} /></div>}
+                  {!viewTable.state && <div className="mt-1 text-sm">予定日時：<DisplayDate date={viewTable.startedAt} /></div>}
                 </td>
 
                 <td className="w-px whitespace-nowrap pl-3 pr-4 align-top text-xs py-1.5">
-                  {viewable.state &&
+                  {viewTable.state &&
                     <Record.ToggleButton
                       className={`
                         inline-flex w-full px-2 py-1.5 border dark:border-white/30 rounded-full
@@ -92,7 +92,7 @@ export default function Episodes({ work }: { work: Work }) {
         })}
       </table>
       <Tooltip id="episodes-tooltip" />
-      <Record.Viewer />
+      <Record.Viewer work={work} />
     </>
   );
 }

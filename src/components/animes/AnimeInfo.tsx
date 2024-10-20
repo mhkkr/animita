@@ -11,6 +11,11 @@ import Thumbnail from '~/components/animes/AnimeThumbnail';
 
 import Const from '~/constants';
 
+export {
+  Info,
+  InfoLite
+}
+
 const statusStateIdArray: string[] = [];
 Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
 
@@ -78,7 +83,7 @@ function Staffs({ work }: { work: Work }) {
   );
 }
 
-export default function Info({ work }: { work: Work }) {
+function Info({ work }: { work: Work }) {
   return (
     <>
       <figure className="bg-gray-300">
@@ -120,6 +125,42 @@ export default function Info({ work }: { work: Work }) {
           <li>視聴者数：{work.watchersCount}</li>
           <li>評価数：{work.reviewsCount}</li>
           <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
+          <li><Channel work={work} /></li>
+        </ul>
+        <Staffs work={work} />
+      </div>
+    </>
+  );
+}
+
+function InfoLite({ work }: { work: Work }) {
+  return (
+    <>
+      <ul className="flex flex-wrap gap-x-4 gap-y-2 mt-4 px-4 text-xs">
+        <RelatedLink
+          icon="open_in_new"
+          className="mr-1"
+          test={work.annictId}
+          href={`https://annict.com/works/${work.annictId}`}
+          label="Annict"
+        />
+        <RelatedLink
+          icon="open_in_new"
+          className="mr-1"
+          test={work.officialSiteUrl}
+          href={work.officialSiteUrl}
+          label="公式サイト"
+        />
+        <RelatedLink
+          icon="hashtag"
+          className="mr-0.5"
+          test={work.twitterHashtag}
+          href={`https://twitter.com/hashtag/${work.twitterHashtag}?src=hashtag&f=live`}
+          label={work.twitterHashtag}
+        />
+      </ul>
+      <div className="px-4 mt-4">
+        <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
           <li><Channel work={work} /></li>
         </ul>
         <Staffs work={work} />

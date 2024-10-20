@@ -17,7 +17,7 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 
 import Cast from '~/components/animes/AnimeCast';
 import Episodes from '~/components/animes/AnimeEpisodes';
-import Info from '~/components/animes/AnimeInfo';
+import { Info } from '~/components/animes/AnimeInfo';
 
 import Const from '~/constants';
 
