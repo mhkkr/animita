@@ -160,9 +160,6 @@ function InfoLite({ work }: { work: Work }) {
         />
       </ul>
       <div className="px-4 mt-4">
-        <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
-          <li><Channel work={work} /></li>
-        </ul>
         <Staffs work={work} />
       </div>
     </>
