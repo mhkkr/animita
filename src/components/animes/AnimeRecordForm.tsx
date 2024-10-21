@@ -44,7 +44,6 @@ export default function Form({ episode }: { episode: Episode }) {
     window.addEventListener('beforeunload', function(event){
       if (textarea.current?.value) {
         event.preventDefault();
-        event.returnValue = 'Check';
       }
     });
   }, []);
