@@ -78,7 +78,7 @@ function Staffs({ work }: { work: Work }) {
 
   return (
     <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
-      {sumRoleStaffs.map(sum => <li key={sum.displayRoleText + '-' + sum.name}>{sum.displayRoleText}：{sum.name}</li>)}
+      {sumRoleStaffs.map(sum => sum.name && <li key={sum.displayRoleText + '-' + sum.name}>{sum.displayRoleText}：{sum.name}</li>)}
     </ul>
   );
 }

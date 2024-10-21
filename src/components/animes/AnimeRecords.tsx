@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { useQuery } from '@apollo/client';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
-import { viewerUserGql } from '~/features/apollo/gql/query/viewerUser';
+import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
 import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -214,6 +214,8 @@ function RatingStates({ records }: { records: Record[] }) {
     return <></>;
   }
 
+  const maxValue = Math.max(...Object.values(ratings));
+
   return (
     <div className="p-4 border-t dark:border-white/25 text-sm">
       <p>★みんなの評価</p>
@@ -222,7 +224,7 @@ function RatingStates({ records }: { records: Record[] }) {
           const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === key);
           return (
             value !== 0 && (
-              <li key={key} className={`py-2 ${ratingstate?.bgColor} min-w-4`} style={{ width: value / allCount * 100 + "%" }} title={ratingstate?.label}>
+              <li key={key} className={`min-w-4 py-2 ${ratingstate?.bgColor} ${maxValue == value ? "font-bold" : ""}`} style={{ width: value / allCount * 100 + "%" }} title={ratingstate?.label}>
                 {value}
               </li>
             )
