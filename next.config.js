@@ -9,9 +9,6 @@ const withPWA = require('next-pwa')({
 });
 
 module.exports = withPWA({
-  experimental: {
-    appDir: true,
-  },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/,
