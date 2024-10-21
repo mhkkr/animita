@@ -194,11 +194,50 @@ function NoCommentRecords({ otherRecords, episode, user }: { otherRecords: Recor
   )
 }
 
-function ViewerBody({ work, episode, user }: { work: Work, episode: Episode, user: ViewerUserQuery }) {
-  const records = episode.records?.nodes ? Array.from(episode.records?.nodes) : [];
+function RatingStates({ records }: { records: Record[] }) {
+  let allCount = 0;
+  const ratings = {
+    'BAD' : 0,
+    'AVERAGE' : 0,
+    'GOOD' : 0,
+    'GREAT' : 0
+  };
 
-  const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username) as Record[];
-  const otherRecords = records.filter(record => !record?.comment && record?.user.username !== user?.viewer?.username) as Record[];
+  records.forEach(record => {
+    if (record.ratingState) {
+      ratings[record.ratingState]++;
+      allCount++;
+    }
+  });
+
+  if (allCount === 0) {
+    return <></>;
+  }
+
+  return (
+    <div className="p-4 border-t dark:border-white/25 text-sm">
+      <p>★みんなの評価</p>
+      <ul className="mt-2 flex text-center rounded-md overflow-hidden">
+        {Object.entries(ratings).map(([key, value]) => {
+          const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === key);
+          return (
+            value !== 0 && (
+              <li key={key} className={`py-2 ${ratingstate?.bgColor} min-w-4`} style={{ width: value / allCount * 100 + "%" }} title={ratingstate?.label}>
+                {value}
+              </li>
+            )
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+function ViewerBody({ work, episode, user }: { work: Work, episode: Episode, user: ViewerUserQuery }) {
+  const records = episode.records?.nodes ? Array.from(episode.records?.nodes) as Record[] : [];
+
+  const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username);
+  const otherRecords = records.filter(record => !record?.comment && record?.user.username !== user?.viewer?.username);
 
   return (
     <>
@@ -217,6 +256,7 @@ function ViewerBody({ work, episode, user }: { work: Work, episode: Episode, use
         <span className="p-4">全評価数：<span className="inline-block">{episode.recordsCount}</span></span>
         <span className="p-4 border-l dark:border-white/25">コメントあり：<span className="inline-block">{records.filter(record => record?.comment).length}</span></span>
       </div>
+      <RatingStates records={records} />
       <Records records={mainRecords} episode={episode} user={user} />
       <NoCommentRecords otherRecords={otherRecords} episode={episode} user={user} />
     </>
