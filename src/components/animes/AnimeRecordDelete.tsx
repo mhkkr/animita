@@ -1,5 +1,3 @@
-'use client';
-
 import { useMutation } from '@apollo/client';
 import { deleteRecordGql } from '~/features/apollo/gql/mutation/deleteRecordGql';
 
@@ -10,7 +8,7 @@ import { Record } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
 
-export default function Delete({ record }: { record: Record }) {
+export default function Delete({ record, close }: { record: Record, close: () => void }) {
   const [recordDeleteId, setRecordDeleteId] = useRecoilState(recordDeleteIdAtom);
   const [recordEditId, setRecordEditId] = useRecoilState(recordEditIdAtom);
 
@@ -48,6 +46,7 @@ export default function Delete({ record }: { record: Record }) {
           setRecordDeleteId(record.id);
           deleteRecord({ variables: { recordId: record.id }});
         }
+        close();
       }}
       className={`inline-flex items-center ${loading ? 'cursor-not-allowed grayscale' : ''}`}
       type="button"

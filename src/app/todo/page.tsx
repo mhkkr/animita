@@ -8,14 +8,15 @@ const updates = [
   {
     date: '2024/10/23 (水)',
     comments: [
-      '（試験運用）マイページを追加（記録したエピソードの確認）しました。',
+      '（試験運用）マイページ（記録したエピソードの確認とミュート）を追加しました。',
+      'エピソード記録画面でユーザーのミュートを行えるようにしました。',
     ]
   },
   {
     date: '2024/10/21 (月)',
     comments: [
       '各種ライブラリを最新のものに変更しました。',
-      'エピソード記録画面でみんなの評価を集計したバー表示を追加しました。。',
+      'エピソード記録画面でみんなの評価を集計したバー表示を追加しました。',
     ]
   },
   {
@@ -70,7 +71,7 @@ const updates = [
 export default function Todo() {
   return (
     <LayoutContainer>
-      <h1 className="mb-8 px-4 py-3 pt-1 sm:py-3 text-center text-lg font-bold border-b dark:border-white/25">{metadata.title}</h1>
+      <h1 className="mb-8 px-4 py-3 pt-1 sm:py-3 text-center text-lg font-bold border-b dark:border-stone-700">{metadata.title}</h1>
 
       <section className="mt-8 px-4">
         <h2 className="text-lg font-bold">やり残しTODO</h2>

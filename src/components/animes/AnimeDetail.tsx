@@ -56,13 +56,13 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
     <>
       <p><BackButton /></p>
 
-      {loading && <div className="pt-12 border-t dark:border-white/25 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="px-4 pt-6 border-t dark:border-white/25 text-red-500">{error.message}</p>}
+      {loading && <div className="pt-12 border-t dark:border-stone-700 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+      {error && <p className="px-4 pt-6 border-t dark:border-stone-700 text-red-500">{error.message}</p>}
 
       {!(loading || error) &&
         <>
           {!work && 
-            <div className="px-4 pt-6 dark:text-white/70 border-t dark:border-white/25">
+            <div className="px-4 pt-6 dark:text-white/70 border-t dark:border-stone-700">
               <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
               <p className="text-center">詳細取得できませんでした。</p>
             </div>
@@ -72,11 +72,11 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
               <SetStatusState work={work} />
               <Info work={work} />
               <div className="mt-6">
-                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-white/25">エピソード</h2>
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">エピソード</h2>
                 <Episodes work={work} />
               </div>
               <div className="mt-6">
-                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-white/25">キャスト</h2>
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">キャスト</h2>
                 <Cast work={work} />
               </div>
             </>

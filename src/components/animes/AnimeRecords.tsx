@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { Popover, PopoverPanel, PopoverButton } from '@headlessui/react';
 import { useQuery } from '@apollo/client';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
@@ -24,6 +25,7 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 import Cast from '~/components/animes/AnimeCast';
 import { InfoLite } from '~/components/animes/AnimeInfo';
 import Delete from '~/components/animes/AnimeRecordDelete';
+import Mute from '~/components/animes/AnimeRecordMute';
 import Edit from '~/components/animes/AnimeRecordEdit';
 import Favorite from '~/components/animes/AnimeRecordFavorite';
 import Twitter from '~/components/animes/AnimeRecordTwitter';
@@ -75,70 +77,110 @@ function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disa
   );
 }
 
-function Records({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
-  const [recordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
-  const [recordDeleteId] = useRecoilState(recordDeleteIdAtom);
-  const [recordEditId] = useRecoilState(recordEditIdAtom);
+function generateDateStyle({ date }: { date: Date }) {
+  if (!date) return 0;
+  return date.getFullYear() + date.getMonth() + date.getDate() + date.getHours() + date.getMinutes();
+}
 
-  function generateDateStyle({ date }: { date: Date }) {
-    if (!date) return 0;
-    return date.getFullYear() + date.getMonth() + date.getDate() + date.getHours() + date.getMinutes();
-  }
+const getMutedUsers = (): { annictId: number, username: string }[] => {
+  const mutedUsers = localStorage.getItem("mutedUsers");
+  return mutedUsers ? JSON.parse(mutedUsers) : [];
+};
+
+function Records({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
+  const mutedUsers = getMutedUsers();
+  const filteredRecords = records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId));
 
   return (
     <ul className="flex flex-wrap text-sm">
-      {records.map(record => {
-        const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
-        const isMyRecord = record.user.username === user.viewer?.username;
-        return (
-          <li
-            key={record.annictId}
-            className={`
-              p-4 border-t dark:border-white/25
-              ${isMyRecord && 'order-first'}
-              ${(record.comment || isMyRecord) ? 'w-full' : 'w-1/2 sm:w-1/3'}
-              ${(!record.comment && !recordShowNoComment && !isMyRecord) && 'hidden'}
-            `}
-          >
-            <div className={`
-              transition-opacity
-              ${recordDeleteId === record.id && 'opacity-50'}
-              ${recordEditId === record.id && 'opacity-50'}
-            `}>
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0 rounded-full overflow-hidden w-8 h-8">
-                    <img className="object-cover w-full h-full" src={record.user?.avatarUrl || ''} alt={`${record.user.name}さんのアイコン`} loading="lazy" />
-                  </div>
-                  <div>{record.user.name}</div>
-                </div>
-                {isMyRecord &&
-                  <>
-                    <Edit record={record} />
-                    <Delete record={record} />
-                    <Twitter record={record} episode={episode} user={user} />
-                  </>
-                }
-              </div>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
-                <Favorite record={record} />
-                {record.ratingState &&
-                  <div className={`inline-flex items-center px-2 py-0.5 rounded-full ${ratingstate?.bgColor} text-white dark:text-inherit`}>
-                    <Icons id={ratingstate?.id} type="rating_state" className="text-sm mr-1" />
-                    {ratingstate?.label}
-                  </div>
-                }
-                <div className="flex flex-wrap items-center gap-3">
-                  <span><DisplayDate date={record.createdAt} /></span>
-                  {generateDateStyle(record.createdAt) !== generateDateStyle(record.updatedAt) && <span className="dark:text-white/70 text-xs"><DisplayDate date={record.updatedAt} /></span>}
-                </div>
-              </div>
-              {record.comment && <p className="mt-3 whitespace-pre-wrap">{record.comment}</p>}
-            </div>
-          </li>
-        )
-      })}
+      {filteredRecords.map(record => <Record key={record.annictId} record={record} episode={episode} user={user} />)}
     </ul>
+  );
+}
+
+function Record({ record, episode, user }: { record: Record, episode: Episode, user: ViewerUserQuery }) {
+  const [mute, setMute] = useState(false);
+
+  const [recordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
+  const [recordDeleteId] = useRecoilState(recordDeleteIdAtom);
+  const [recordEditId] = useRecoilState(recordEditIdAtom);
+  
+  const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
+  const isMyRecord = record.user.username === user.viewer?.username;
+  const disabled = recordDeleteId === record.id || recordEditId === record.id;
+
+  return (
+    <li
+      className={`
+        p-4 border-t dark:border-stone-700
+        ${isMyRecord && 'order-first'}
+        ${(record.comment || isMyRecord) ? 'w-full' : 'w-1/2 sm:w-1/3'}
+        ${(!record.comment && !recordShowNoComment && !isMyRecord) && 'hidden'}
+      `}
+    >
+      <div className={`
+        transition-opacity
+        ${disabled ? 'opacity-50' : ''}
+      `}>
+        <div className="flex items-center gap-3">
+          {mute ? (
+            <div className="flex items-center gap-3">
+              このユーザーをミュートしました。
+            </div>
+          ): (
+            <figure className="flex items-center gap-3">
+              <div className="flex-shrink-0 rounded-full overflow-hidden w-8 h-8">
+                <img className="object-cover w-full h-full" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
+              </div>
+              <figcaption className="break-all">{record.user.name}</figcaption>
+            </figure>
+          )}
+          <div className="flex-none ml-auto">
+            <Popover className="relative">
+              {({ close }) => (
+                <>
+                  <PopoverPanel
+                    transition
+                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col gap-2 p-2 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                  >
+                    {isMyRecord ? (
+                      <>
+                        <Edit record={record} close={close} />
+                        <Delete record={record} close={close} />
+                        <Twitter record={record} episode={episode} user={user} close={close} />
+                      </>
+                    ) : (
+                      <Mute record={record} mute={mute} setMute={setMute} close={close} />
+                    )}
+                  </PopoverPanel>
+                  <PopoverButton disabled={disabled ? true : false}>
+                    <Icons id="more_horiz" type="navigation" />
+                  </PopoverButton>
+                </>
+              )}
+            </Popover>
+          </div>
+        </div>
+        {!mute && (
+          <>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <Favorite record={record} />
+              {record.ratingState &&
+                <div className={`inline-flex items-center px-2 py-0.5 rounded-full ${ratingstate?.bgColor} text-white dark:text-inherit`}>
+                  <Icons id={ratingstate?.id} type="rating_state" className="text-sm mr-1" />
+                  {ratingstate?.label}
+                </div>
+              }
+              <div className="flex flex-wrap items-center gap-3">
+                <span><DisplayDate date={record.createdAt} /></span>
+                {generateDateStyle(record.createdAt) !== generateDateStyle(record.updatedAt) && <span className="dark:text-white/70 text-xs"><DisplayDate date={record.updatedAt} /></span>}
+              </div>
+            </div>
+            {record.comment && <p className="mt-3 whitespace-pre-wrap">{record.comment}</p>}
+          </>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -148,7 +190,7 @@ function ViewerInInfoCast({ work }: { work: Work }) {
   const handleClick = useCallback(() => setRecordShowInfoCast(prevState => !prevState), []);
 
   return (
-    <div className="mb-4 border-t dark:border-white/25">
+    <div className="mb-4 border-t dark:border-stone-700">
       <div className="mt-4">
         <button
           onClick={handleClick}
@@ -163,7 +205,7 @@ function ViewerInInfoCast({ work }: { work: Work }) {
         <>
           <InfoLite work={work} />
           <div className="mt-6">
-            <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-white/25">キャスト</h2>
+            <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">キャスト</h2>
             <Cast work={work} />
           </div>
         </>
@@ -178,7 +220,7 @@ function NoCommentRecords({ otherRecords, episode, user }: { otherRecords: Recor
   const handleClick = useCallback(() => setRecordShowNoComment(prevState => !prevState), []);
 
   return (
-    <div className="border-t dark:border-white/25">
+    <div className="border-t dark:border-stone-700">
       <div className="my-6">
         <button
           onClick={handleClick}
@@ -217,7 +259,7 @@ function RatingStates({ records }: { records: Record[] }) {
   const maxValue = Math.max(...Object.values(ratings));
 
   return (
-    <div className="p-4 border-t dark:border-white/25 text-sm">
+    <div className="p-4 border-t dark:border-stone-700 text-sm">
       <p>★みんなの評価</p>
       <ul className="mt-2 flex text-center rounded-md overflow-hidden">
         {Object.entries(ratings).map(([key, value]) => {
@@ -254,9 +296,9 @@ function ViewerBody({ work, episode, user }: { work: Work, episode: Episode, use
         {episode && <Form episode={episode} />}
       </div>
       <ViewerInInfoCast work={work} />
-      <div className="grid grid-cols-2 border-t dark:border-white/25 text-xs text-center">
+      <div className="grid grid-cols-2 border-t dark:border-stone-700 text-xs text-center">
         <span className="p-4">全評価数：<span className="inline-block">{episode.recordsCount}</span></span>
-        <span className="p-4 border-l dark:border-white/25">コメントあり：<span className="inline-block">{records.filter(record => record?.comment).length}</span></span>
+        <span className="p-4 border-l dark:border-stone-700">コメントあり：<span className="inline-block">{records.filter(record => record?.comment).length}</span></span>
       </div>
       <RatingStates records={records} />
       <Records records={mainRecords} episode={episode} user={user} />

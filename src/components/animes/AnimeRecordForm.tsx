@@ -115,7 +115,7 @@ export default function Form({ episode }: { episode: Episode }) {
             <label
               key={RATINGSTATE.id}
               className={`
-                relative flex items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-white/25 cursor-pointer text-xs
+                relative flex items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-stone-700 cursor-pointer text-xs
                 transition-colors ${ratingState === RATINGSTATE.id ? `${RATINGSTATE.bgColor} text-white dark:text-inherit` : ''}
                 focus-within:outline focus-within:outline-1 focus-within:outline-offset-2
               `}

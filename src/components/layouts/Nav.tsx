@@ -43,7 +43,7 @@ function NavButton({ state }: {
 
 export default function Nav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 border-t sm:border-t-0 dark:border-white/25 dark:bg-black/60 backdrop-blur-md sm:bg-inherit sm:backdrop-blur-none sm:static">
+    <nav className="fixed bottom-0 left-0 right-0 border-t sm:border-t-0 dark:border-stone-700 dark:bg-black/60 backdrop-blur-md sm:bg-inherit sm:backdrop-blur-none sm:static">
       <ul className="grid grid-cols-5 sm:block">
         {Const.STATUSSTATE_LIST.map(state => <li key={state.id}><NavButton state={state} /></li>)}
       </ul>

@@ -1,8 +1,6 @@
-'use client';
-
 import Link from 'next/link';
 
-import { Popover, PopoverPanel, PopoverButton, Transition } from '@headlessui/react';
+import { Popover, PopoverPanel, PopoverButton } from '@headlessui/react';
 import { signOut, useSession } from 'next-auth/react';
 
 import Icons from '~/components/icons/Icons';
@@ -12,30 +10,24 @@ export default function User() {
 
   return (
     <Popover className="relative">
-      <Transition
-        enter="transition duration-100 ease-out"
-        enterFrom="transform scale-95 opacity-0"
-        enterTo="transform scale-100 opacity-100"
-        leave="transition duration-75 ease-out"
-        leaveFrom="transform scale-100 opacity-100"
-        leaveTo="transform scale-95 opacity-0"
+      <PopoverPanel
+        transition
+        className="absolute top-10 sm:top-auto sm:bottom-full right-0 sm:right-auto border dark:border-stone-700 bg-white dark:bg-black rounded-lg overflow-hidden shadow-xl whitespace-nowrap origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
       >
-        <PopoverPanel className="absolute top-10 sm:top-auto sm:bottom-full right-0 sm:right-auto border dark:border-white/25 bg-white dark:bg-black rounded-xl overflow-hidden shadow-xl whitespace-nowrap">
-          <Link className="flex items-center p-3 w-full font-bold border-b dark:border-white/25" href="/mypage">
-            マイページ
-          </Link>
-          <Link className="flex items-center p-3 w-full font-bold border-b dark:border-white/25" href="/howto">
-          初期設定
-          </Link>
-          <Link className="flex items-center p-3 w-full font-bold border-b dark:border-white/25" href="/todo">
-          やり残しと更新履歴
-          </Link>
-          <button onClick={() => signOut()} className="flex items-center p-3 w-full text-red-500 font-bold" type="button">
-            <Icons id="logout" type="form" className="flex-shrink-0 mr-1.5 text-lg" />
-            ログアウト
-          </button>
-        </PopoverPanel>
-      </Transition>
+        <Link className="flex items-center p-3 w-full font-bold border-b dark:border-stone-700" href="/mypage">
+          マイページ
+        </Link>
+        <Link className="flex items-center p-3 w-full font-bold border-b dark:border-stone-700" href="/howto">
+        初期設定
+        </Link>
+        <Link className="flex items-center p-3 w-full font-bold border-b dark:border-stone-700" href="/todo">
+        やり残しと更新履歴
+        </Link>
+        <button onClick={() => signOut()} className="flex items-center p-3 w-full text-red-500 font-bold" type="button">
+          <Icons id="logout" type="form" className="flex-shrink-0 mr-1.5 text-lg" />
+          ログアウト
+        </button>
+      </PopoverPanel>
       <PopoverButton className="group/user flex items-center gap-3 sm:p-3 w-full outline-none">
         <span className="
           order-last sm:order-none

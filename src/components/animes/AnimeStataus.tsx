@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { Listbox, Transition } from '@headlessui/react';
+import { Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headlessui/react';
 
 import { useQuery, useMutation } from '@apollo/client';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
@@ -26,7 +26,6 @@ type State = {
 };
 
 export default function Stataus({ work }: { work: Work }) {
-  const [changeStatusState, setChangeStatusState] = useState<State>();
   const [statusStateId, setStatusStateId] = useRecoilState(statusStateIdAtom);
 
   const { data, loading: ll, error: le } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
@@ -36,58 +35,18 @@ export default function Stataus({ work }: { work: Work }) {
     }
   });
   const entry = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
+  const state = Const.STATUSSTATE_LIST.find(state => state.id === entry?.status?.state);
+  const [changeStatusState, setChangeStatusState] = useState<State | undefined>(state);
 
   const [updateStatus, { loading: ul, error: ue }] = useMutation(updateStatusGql);
   
   if (ll || ul) return <div className="text-center text-3xl text-annict-100"><RingSpinner /></div>;
   if (le || ue) { console.error(le || ue); return <p className="text-red-500">{le?.message || ue?.message}</p>; }
 
-  const state = Const.STATUSSTATE_LIST.find(state => state.id === entry?.status?.state);
 
   return (
-    <Listbox>
-      <Transition
-        enter="transition duration-100 ease-out"
-        enterFrom="transform scale-95 opacity-0"
-        enterTo="transform scale-100 opacity-100"
-        leave="transition duration-75 ease-out"
-        leaveFrom="transform scale-100 opacity-100"
-        leaveTo="transform scale-95 opacity-0"
-      >
-        <Listbox.Options className="absolute bottom-full mb-2 right-0 min-w-full whitespace-nowrap border dark:border-white/25 bg-white dark:bg-black rounded-xl overflow-hidden shadow-xl">
-          {Const.STATUSSTATE_LIST.map(state => {
-            return (
-              <Listbox.Option
-                key={state.id}
-                value={state}
-                disabled={ul}
-              >
-                <button
-                  onClick={async () => {
-                    const result = await updateStatus({ variables: { state: state.id, workId: work.id }});
-                    if (result) {
-                      setStatusStateId(state.id);
-                      setChangeStatusState(state);
-                    }
-                  }}
-                  className={`
-                    flex items-center p-2 w-full
-                    ${statusStateId === state.id ? 'font-bold' : ''}
-                  `}
-                  type="button"
-                >
-                  {statusStateId === state.id ?
-                    <Icons id={`${state.id}_CURRENT`} type="status_state" className="text-[1.5em] mr-2" /> :
-                    <Icons id={state.id} type="status_state" className="text-[1.5em] mr-2" />
-                  }
-                  <span>{state.label}</span>
-                </button>
-              </Listbox.Option>
-            );
-          })}
-        </Listbox.Options>
-      </Transition>
-      <Listbox.Button className="flex items-center justify-center w-full pr-4 pl-3 py-2 bg-black text-white dark:bg-white dark:text-gray-900 rounded-lg">
+    <Listbox value={changeStatusState} onChange={setChangeStatusState}>
+      <ListboxButton className="flex items-center justify-center w-full pr-4 pl-3 py-2 bg-black text-white dark:bg-white dark:text-gray-900 rounded-lg">
         {!changeStatusState && !state ?
           <span>未選択</span> :
           <>
@@ -95,7 +54,37 @@ export default function Stataus({ work }: { work: Work }) {
             <span>{changeStatusState ? changeStatusState.label : state?.label}</span>
           </>
         }
-      </Listbox.Button>
+      </ListboxButton>
+      <ListboxOptions
+        anchor="bottom"
+        transition
+        className="mt-2 w-[calc(100%_-_2rem)] sm:w-auto border dark:border-white/25 bg-white dark:bg-black rounded-lg overflow-hidden shadow-xl origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+      >
+        {Const.STATUSSTATE_LIST.map((state) => (
+          <ListboxOption
+            key={state.id}
+            onClick={async () => {
+              const result = await updateStatus({ variables: { state: state.id, workId: work.id }});
+              if (result) {
+                setStatusStateId(state.id);
+                setChangeStatusState(state);
+              }
+            }}
+            value={state}
+            disabled={ul}
+            className={`
+              flex items-center p-2 w-full cursor-pointer
+              ${statusStateId === state.id ? 'font-bold' : ''}
+            `}
+          >
+            {statusStateId === state.id ?
+              <Icons id={`${state.id}_CURRENT`} type="status_state" className="text-[1.5em] mr-2" /> :
+              <Icons id={state.id} type="status_state" className="text-[1.5em] mr-2" />
+            }
+            <span>{state.label}</span>
+          </ListboxOption>
+        ))}
+      </ListboxOptions>
     </Listbox>
   )
 }

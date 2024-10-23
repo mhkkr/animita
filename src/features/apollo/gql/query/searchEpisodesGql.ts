@@ -24,6 +24,7 @@ export const searchEpisodesGql = gql`
 						updatedAt
 						likesCount
 						user {
+							annictId
 							name
 							username
 							avatarUrl

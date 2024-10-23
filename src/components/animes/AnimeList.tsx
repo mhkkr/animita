@@ -59,7 +59,7 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
         const startedAt = new Date(entry?.nextProgram?.startedAt);
         const isViewable = now > startedAt.getTime();
         return (
-          <li key={entry?.work.annictId} className={`flex gap-4 p-4 border-b dark:border-white/25`}>
+          <li key={entry?.work.annictId} className={`flex gap-4 p-4 border-b dark:border-stone-700`}>
             <div className="flex-shrink-0 w-28">
               <Link href={`/anime/${entry?.work.annictId}`}>
                 <figure className="bg-gray-300">
@@ -142,7 +142,7 @@ function UnDeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[
         <NotEntry /> :
         undeliveredEntries.map(entry => (
           <div key={entry.day} className="mt-12 first:mt-6">
-            <div className="border-b dark:border-white/25 p-4 text-lg font-bold">{entry.day}曜日</div>
+            <div className="border-b dark:border-stone-700 p-4 text-lg font-bold">{entry.day}曜日</div>
             <Detail entry={entry} now={now} />
           </div>
         ))
@@ -203,7 +203,7 @@ export default function AnimeList() {
           <Icons id={`${STATE?.id}_CURRENT`} type="status_state" className="mr-2 text-[1.5em]" />
           <span>{STATE?.label}</span>
         </h1>
-        <div className="flex border-b dark:border-white/25">
+        <div className="flex border-b dark:border-stone-700">
           <SwitchTab value="delivered" label="視聴可能" />
           <SwitchTab value="undelivered" label="未配信" />
         </div>
