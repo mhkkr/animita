@@ -5,17 +5,17 @@ import { useRouter } from 'next/navigation';
 
 import { useQuery } from '@apollo/client';
 import { viewerRecordsGql } from '~/features/apollo/gql/query/viewerRecordsGql';
-// import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
+import type { ViewerRecordsQuery } from '~/features/apollo/generated-types';
 
 import * as Record from '~/components/animes/AnimeRecords';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
 export default function MyRecords() {
-  const { data: user, loading: loading, error: error } = useQuery(viewerRecordsGql);
+  const { data: user, loading: loading, error: error } = useQuery<ViewerRecordsQuery>(viewerRecordsGql);
 
   return (
     <section className="mt-8">
-      <h2 className="px-4 text-lg font-bold">エピソード記録（{!user ? 0 : user.viewer.records.edges.length.toLocaleString()}件）</h2>
+      <h2 className="px-4 text-lg font-bold">エピソード記録（{!user ? 0 : user?.viewer?.records?.edges?.length.toLocaleString()}件）</h2>
 
       {loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
       {error && <p className="p-4 text-red-500">{error.message}</p>}
@@ -28,11 +28,11 @@ export default function MyRecords() {
           [&_div]:flex [&_div]:self-center [&_div]:gap-2 [&_div]:opacity-70 [&_div]:text-xs
           first:[&_div_span]:whitespace-nowrap
         '>
-          {user.viewer.records.edges.map(edge => {
-            const recode = edge.node;
+          {user?.viewer?.records?.edges?.map(edge => {
+            const recode = edge?.node;
             if (recode && recode.episode) {
               return (
-                <Record.ToggleButton key={`r-${recode.annictId}`} workAnnictId={recode.episode.work.annictId} episodeAnnictId={recode.episode.annictId} type="button">
+                <Record.ToggleButton key={`r-${recode.annictId}`} workAnnictId={recode.episode.work.annictId} episodeAnnictId={recode.episode.annictId}>
                   <p>{recode.episode.title || "未定"}</p>
                   <div>
                     <span>{recode.episode.numberText}</span>

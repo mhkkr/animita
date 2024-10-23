@@ -4,21 +4,23 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  DateTime: any;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
 };
 
 export type Activity = Node & {
   __typename?: 'Activity';
-  annictId: Scalars['Int'];
+  annictId: Scalars['Int']['output'];
   /** ID of the object. */
-  id: Scalars['ID'];
+  id: Scalars['ID']['output'];
   user: User;
 };
 
@@ -41,15 +43,12 @@ export type ActivityConnection = {
 export type ActivityEdge = {
   __typename?: 'ActivityEdge';
   action: ActivityAction;
-  annictId: Scalars['Int'];
+  annictId: Scalars['Int']['output'];
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   item?: Maybe<ActivityItem>;
-  /**
-   * Deprecated: Use `item` instead.
-   * @deprecated Use `item` instead.
-   */
-  node?: Maybe<ActivityItem>;
+  /** The item at the end of the edge. */
+  node?: Maybe<Activity>;
   user: User;
 };
 
@@ -66,13 +65,13 @@ export enum ActivityOrderField {
 
 export type Cast = Node & {
   __typename?: 'Cast';
-  annictId: Scalars['Int'];
+  annictId: Scalars['Int']['output'];
   character: Character;
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  nameEn: Scalars['String'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  nameEn: Scalars['String']['output'];
   person: Person;
-  sortNumber: Scalars['Int'];
+  sortNumber: Scalars['Int']['output'];
   work: Work;
 };
 
@@ -91,7 +90,7 @@ export type CastConnection = {
 export type CastEdge = {
   __typename?: 'CastEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Cast>;
 };
@@ -108,21 +107,21 @@ export enum CastOrderField {
 
 export type Channel = Node & {
   __typename?: 'Channel';
-  annictId: Scalars['Int'];
+  annictId: Scalars['Int']['output'];
   channelGroup: ChannelGroup;
-  id: Scalars['ID'];
-  name: Scalars['String'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
   programs?: Maybe<ProgramConnection>;
-  published: Scalars['Boolean'];
-  scChid: Scalars['Int'];
+  published: Scalars['Boolean']['output'];
+  scChid: Scalars['Int']['output'];
 };
 
 
 export type ChannelProgramsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** The connection type for Channel. */
@@ -140,57 +139,57 @@ export type ChannelConnection = {
 export type ChannelEdge = {
   __typename?: 'ChannelEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Channel>;
 };
 
 export type ChannelGroup = Node & {
   __typename?: 'ChannelGroup';
-  annictId: Scalars['Int'];
+  annictId: Scalars['Int']['output'];
   channels?: Maybe<ChannelConnection>;
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  sortNumber: Scalars['Int'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  sortNumber: Scalars['Int']['output'];
 };
 
 
 export type ChannelGroupChannelsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Character = Node & {
   __typename?: 'Character';
-  age: Scalars['String'];
-  ageEn: Scalars['String'];
-  annictId: Scalars['Int'];
-  birthday: Scalars['String'];
-  birthdayEn: Scalars['String'];
-  bloodType: Scalars['String'];
-  bloodTypeEn: Scalars['String'];
-  description: Scalars['String'];
-  descriptionEn: Scalars['String'];
-  descriptionSource: Scalars['String'];
-  descriptionSourceEn: Scalars['String'];
-  favoriteCharactersCount: Scalars['Int'];
-  height: Scalars['String'];
-  heightEn: Scalars['String'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  nameEn: Scalars['String'];
-  nameKana: Scalars['String'];
-  nationality: Scalars['String'];
-  nationalityEn: Scalars['String'];
-  nickname: Scalars['String'];
-  nicknameEn: Scalars['String'];
-  occupation: Scalars['String'];
-  occupationEn: Scalars['String'];
+  age: Scalars['String']['output'];
+  ageEn: Scalars['String']['output'];
+  annictId: Scalars['Int']['output'];
+  birthday: Scalars['String']['output'];
+  birthdayEn: Scalars['String']['output'];
+  bloodType: Scalars['String']['output'];
+  bloodTypeEn: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  descriptionEn: Scalars['String']['output'];
+  descriptionSource: Scalars['String']['output'];
+  descriptionSourceEn: Scalars['String']['output'];
+  favoriteCharactersCount: Scalars['Int']['output'];
+  height: Scalars['String']['output'];
+  heightEn: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  nameEn: Scalars['String']['output'];
+  nameKana: Scalars['String']['output'];
+  nationality: Scalars['String']['output'];
+  nationalityEn: Scalars['String']['output'];
+  nickname: Scalars['String']['output'];
+  nicknameEn: Scalars['String']['output'];
+  occupation: Scalars['String']['output'];
+  occupationEn: Scalars['String']['output'];
   series: Series;
-  weight: Scalars['String'];
-  weightEn: Scalars['String'];
+  weight: Scalars['String']['output'];
+  weightEn: Scalars['String']['output'];
 };
 
 /** The connection type for Character. */
@@ -208,7 +207,7 @@ export type CharacterConnection = {
 export type CharacterEdge = {
   __typename?: 'CharacterEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Character>;
 };
@@ -226,104 +225,104 @@ export enum CharacterOrderField {
 /** Autogenerated input type of CreateRecord */
 export type CreateRecordInput = {
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  comment?: InputMaybe<Scalars['String']>;
-  episodeId: Scalars['ID'];
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  episodeId: Scalars['ID']['input'];
   ratingState?: InputMaybe<RatingState>;
-  shareFacebook?: InputMaybe<Scalars['Boolean']>;
-  shareTwitter?: InputMaybe<Scalars['Boolean']>;
+  shareFacebook?: InputMaybe<Scalars['Boolean']['input']>;
+  shareTwitter?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** Autogenerated return type of CreateRecord */
+/** Autogenerated return type of CreateRecord. */
 export type CreateRecordPayload = {
   __typename?: 'CreateRecordPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']>;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
   record?: Maybe<Record>;
 };
 
 /** Autogenerated input type of CreateReview */
 export type CreateReviewInput = {
-  body: Scalars['String'];
+  body: Scalars['String']['input'];
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: InputMaybe<Scalars['String']>;
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
   ratingAnimationState?: InputMaybe<RatingState>;
   ratingCharacterState?: InputMaybe<RatingState>;
   ratingMusicState?: InputMaybe<RatingState>;
   ratingOverallState?: InputMaybe<RatingState>;
   ratingStoryState?: InputMaybe<RatingState>;
-  shareFacebook?: InputMaybe<Scalars['Boolean']>;
-  shareTwitter?: InputMaybe<Scalars['Boolean']>;
-  title?: InputMaybe<Scalars['String']>;
-  workId: Scalars['ID'];
+  shareFacebook?: InputMaybe<Scalars['Boolean']['input']>;
+  shareTwitter?: InputMaybe<Scalars['Boolean']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  workId: Scalars['ID']['input'];
 };
 
-/** Autogenerated return type of CreateReview */
+/** Autogenerated return type of CreateReview. */
 export type CreateReviewPayload = {
   __typename?: 'CreateReviewPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']>;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
   review?: Maybe<Review>;
 };
 
 /** Autogenerated input type of DeleteRecord */
 export type DeleteRecordInput = {
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  recordId: Scalars['ID'];
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  recordId: Scalars['ID']['input'];
 };
 
-/** Autogenerated return type of DeleteRecord */
+/** Autogenerated return type of DeleteRecord. */
 export type DeleteRecordPayload = {
   __typename?: 'DeleteRecordPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']>;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
   episode?: Maybe<Episode>;
 };
 
 /** Autogenerated input type of DeleteReview */
 export type DeleteReviewInput = {
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  reviewId: Scalars['ID'];
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  reviewId: Scalars['ID']['input'];
 };
 
-/** Autogenerated return type of DeleteReview */
+/** Autogenerated return type of DeleteReview. */
 export type DeleteReviewPayload = {
   __typename?: 'DeleteReviewPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']>;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
   work?: Maybe<Work>;
 };
 
 /** An episode of a work */
 export type Episode = Node & {
   __typename?: 'Episode';
-  annictId: Scalars['Int'];
-  id: Scalars['ID'];
+  annictId: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
   nextEpisode?: Maybe<Episode>;
-  number?: Maybe<Scalars['Int']>;
-  numberText?: Maybe<Scalars['String']>;
+  number?: Maybe<Scalars['Int']['output']>;
+  numberText?: Maybe<Scalars['String']['output']>;
   prevEpisode?: Maybe<Episode>;
-  recordCommentsCount: Scalars['Int'];
+  recordCommentsCount: Scalars['Int']['output'];
   records?: Maybe<RecordConnection>;
-  recordsCount: Scalars['Int'];
-  satisfactionRate?: Maybe<Scalars['Float']>;
-  sortNumber: Scalars['Int'];
-  title?: Maybe<Scalars['String']>;
-  viewerDidTrack: Scalars['Boolean'];
-  viewerRecordsCount: Scalars['Int'];
+  recordsCount: Scalars['Int']['output'];
+  satisfactionRate?: Maybe<Scalars['Float']['output']>;
+  sortNumber: Scalars['Int']['output'];
+  title?: Maybe<Scalars['String']['output']>;
+  viewerDidTrack: Scalars['Boolean']['output'];
+  viewerRecordsCount: Scalars['Int']['output'];
   work: Work;
 };
 
 
 /** An episode of a work */
 export type EpisodeRecordsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  hasComment?: InputMaybe<Scalars['Boolean']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  hasComment?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<RecordOrder>;
 };
 
@@ -342,7 +341,7 @@ export type EpisodeConnection = {
 export type EpisodeEdge = {
   __typename?: 'EpisodeEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Episode>;
 };
@@ -359,10 +358,10 @@ export enum EpisodeOrderField {
 
 export type LibraryEntry = Node & {
   __typename?: 'LibraryEntry';
-  id: Scalars['ID'];
+  id: Scalars['ID']['output'];
   nextEpisode?: Maybe<Episode>;
   nextProgram?: Maybe<Program>;
-  note: Scalars['String'];
+  note: Scalars['String']['output'];
   status?: Maybe<Status>;
   user: User;
   work: Work;
@@ -383,7 +382,7 @@ export type LibraryEntryConnection = {
 export type LibraryEntryEdge = {
   __typename?: 'LibraryEntryEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<LibraryEntry>;
 };
@@ -409,9 +408,9 @@ export enum Media {
 
 export type MultipleRecord = Node & {
   __typename?: 'MultipleRecord';
-  annictId: Scalars['Int'];
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
+  annictId: Scalars['Int']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
   records?: Maybe<RecordConnection>;
   user: User;
   work: Work;
@@ -419,10 +418,10 @@ export type MultipleRecord = Node & {
 
 
 export type MultipleRecordRecordsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Mutation = {
@@ -474,7 +473,7 @@ export type MutationUpdateStatusArgs = {
 /** An object with an ID. */
 export type Node = {
   /** ID of the object. */
-  id: Scalars['ID'];
+  id: Scalars['ID']['output'];
 };
 
 export enum OrderDirection {
@@ -484,19 +483,19 @@ export enum OrderDirection {
 
 export type Organization = Node & {
   __typename?: 'Organization';
-  annictId: Scalars['Int'];
-  favoriteOrganizationsCount: Scalars['Int'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  nameEn: Scalars['String'];
-  nameKana: Scalars['String'];
-  staffsCount: Scalars['Int'];
-  twitterUsername: Scalars['String'];
-  twitterUsernameEn: Scalars['String'];
-  url: Scalars['String'];
-  urlEn: Scalars['String'];
-  wikipediaUrl: Scalars['String'];
-  wikipediaUrlEn: Scalars['String'];
+  annictId: Scalars['Int']['output'];
+  favoriteOrganizationsCount: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  nameEn: Scalars['String']['output'];
+  nameKana: Scalars['String']['output'];
+  staffsCount: Scalars['Int']['output'];
+  twitterUsername: Scalars['String']['output'];
+  twitterUsernameEn: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+  urlEn: Scalars['String']['output'];
+  wikipediaUrl: Scalars['String']['output'];
+  wikipediaUrlEn: Scalars['String']['output'];
 };
 
 /** The connection type for Organization. */
@@ -514,7 +513,7 @@ export type OrganizationConnection = {
 export type OrganizationEdge = {
   __typename?: 'OrganizationEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Organization>;
 };
@@ -533,38 +532,38 @@ export enum OrganizationOrderField {
 export type PageInfo = {
   __typename?: 'PageInfo';
   /** When paginating forwards, the cursor to continue. */
-  endCursor?: Maybe<Scalars['String']>;
+  endCursor?: Maybe<Scalars['String']['output']>;
   /** When paginating forwards, are there more items? */
-  hasNextPage: Scalars['Boolean'];
+  hasNextPage: Scalars['Boolean']['output'];
   /** When paginating backwards, are there more items? */
-  hasPreviousPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean']['output'];
   /** When paginating backwards, the cursor to continue. */
-  startCursor?: Maybe<Scalars['String']>;
+  startCursor?: Maybe<Scalars['String']['output']>;
 };
 
 export type Person = Node & {
   __typename?: 'Person';
-  annictId: Scalars['Int'];
-  birthday: Scalars['String'];
-  bloodType: Scalars['String'];
-  castsCount: Scalars['Int'];
-  favoritePeopleCount: Scalars['Int'];
-  genderText: Scalars['String'];
-  height: Scalars['String'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  nameEn: Scalars['String'];
-  nameKana: Scalars['String'];
-  nickname: Scalars['String'];
-  nicknameEn: Scalars['String'];
+  annictId: Scalars['Int']['output'];
+  birthday: Scalars['String']['output'];
+  bloodType: Scalars['String']['output'];
+  castsCount: Scalars['Int']['output'];
+  favoritePeopleCount: Scalars['Int']['output'];
+  genderText: Scalars['String']['output'];
+  height: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  nameEn: Scalars['String']['output'];
+  nameKana: Scalars['String']['output'];
+  nickname: Scalars['String']['output'];
+  nicknameEn: Scalars['String']['output'];
   prefecture: Prefecture;
-  staffsCount: Scalars['Int'];
-  twitterUsername: Scalars['String'];
-  twitterUsernameEn: Scalars['String'];
-  url: Scalars['String'];
-  urlEn: Scalars['String'];
-  wikipediaUrl: Scalars['String'];
-  wikipediaUrlEn: Scalars['String'];
+  staffsCount: Scalars['Int']['output'];
+  twitterUsername: Scalars['String']['output'];
+  twitterUsernameEn: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+  urlEn: Scalars['String']['output'];
+  wikipediaUrl: Scalars['String']['output'];
+  wikipediaUrlEn: Scalars['String']['output'];
 };
 
 /** The connection type for Person. */
@@ -582,7 +581,7 @@ export type PersonConnection = {
 export type PersonEdge = {
   __typename?: 'PersonEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Person>;
 };
@@ -599,20 +598,20 @@ export enum PersonOrderField {
 
 export type Prefecture = Node & {
   __typename?: 'Prefecture';
-  annictId: Scalars['Int'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
+  annictId: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type Program = Node & {
   __typename?: 'Program';
-  annictId: Scalars['Int'];
+  annictId: Scalars['Int']['output'];
   channel: Channel;
   episode: Episode;
-  id: Scalars['ID'];
-  rebroadcast: Scalars['Boolean'];
-  scPid?: Maybe<Scalars['Int']>;
-  startedAt: Scalars['DateTime'];
+  id: Scalars['ID']['output'];
+  rebroadcast: Scalars['Boolean']['output'];
+  scPid?: Maybe<Scalars['Int']['output']>;
+  startedAt: Scalars['DateTime']['output'];
   state: ProgramState;
   work: Work;
 };
@@ -632,7 +631,7 @@ export type ProgramConnection = {
 export type ProgramEdge = {
   __typename?: 'ProgramEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Program>;
 };
@@ -668,72 +667,72 @@ export type Query = {
 
 
 export type QueryNodeArgs = {
-  id: Scalars['ID'];
+  id: Scalars['ID']['input'];
 };
 
 
 export type QueryNodesArgs = {
-  ids: Array<Scalars['ID']>;
+  ids: Array<Scalars['ID']['input']>;
 };
 
 
 export type QuerySearchCharactersArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  annictIds?: InputMaybe<Array<Scalars['Int']>>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  names?: InputMaybe<Array<Scalars['String']>>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  annictIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  names?: InputMaybe<Array<Scalars['String']['input']>>;
   orderBy?: InputMaybe<CharacterOrder>;
 };
 
 
 export type QuerySearchEpisodesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  annictIds?: InputMaybe<Array<Scalars['Int']>>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  annictIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<EpisodeOrder>;
 };
 
 
 export type QuerySearchOrganizationsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  annictIds?: InputMaybe<Array<Scalars['Int']>>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  names?: InputMaybe<Array<Scalars['String']>>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  annictIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  names?: InputMaybe<Array<Scalars['String']['input']>>;
   orderBy?: InputMaybe<OrganizationOrder>;
 };
 
 
 export type QuerySearchPeopleArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  annictIds?: InputMaybe<Array<Scalars['Int']>>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  names?: InputMaybe<Array<Scalars['String']>>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  annictIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  names?: InputMaybe<Array<Scalars['String']['input']>>;
   orderBy?: InputMaybe<PersonOrder>;
 };
 
 
 export type QuerySearchWorksArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  annictIds?: InputMaybe<Array<Scalars['Int']>>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  annictIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<WorkOrder>;
-  seasons?: InputMaybe<Array<Scalars['String']>>;
-  titles?: InputMaybe<Array<Scalars['String']>>;
+  seasons?: InputMaybe<Array<Scalars['String']['input']>>;
+  titles?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
 export type QueryUserArgs = {
-  username: Scalars['String'];
+  username: Scalars['String']['input'];
 };
 
 export enum RatingState {
@@ -745,19 +744,19 @@ export enum RatingState {
 
 export type Record = Node & {
   __typename?: 'Record';
-  annictId: Scalars['Int'];
-  comment?: Maybe<Scalars['String']>;
-  commentsCount: Scalars['Int'];
-  createdAt: Scalars['DateTime'];
+  annictId: Scalars['Int']['output'];
+  comment?: Maybe<Scalars['String']['output']>;
+  commentsCount: Scalars['Int']['output'];
+  createdAt: Scalars['DateTime']['output'];
   episode: Episode;
-  facebookClickCount: Scalars['Int'];
-  id: Scalars['ID'];
-  likesCount: Scalars['Int'];
-  modified: Scalars['Boolean'];
-  rating?: Maybe<Scalars['Float']>;
+  facebookClickCount: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  likesCount: Scalars['Int']['output'];
+  modified: Scalars['Boolean']['output'];
+  rating?: Maybe<Scalars['Float']['output']>;
   ratingState?: Maybe<RatingState>;
-  twitterClickCount: Scalars['Int'];
-  updatedAt: Scalars['DateTime'];
+  twitterClickCount: Scalars['Int']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   user: User;
   work: Work;
 };
@@ -777,7 +776,7 @@ export type RecordConnection = {
 export type RecordEdge = {
   __typename?: 'RecordEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Record>;
 };
@@ -794,20 +793,20 @@ export enum RecordOrderField {
 
 export type Review = Node & {
   __typename?: 'Review';
-  annictId: Scalars['Int'];
-  body: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  impressionsCount: Scalars['Int'];
-  likesCount: Scalars['Int'];
-  modifiedAt?: Maybe<Scalars['DateTime']>;
+  annictId: Scalars['Int']['output'];
+  body: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  impressionsCount: Scalars['Int']['output'];
+  likesCount: Scalars['Int']['output'];
+  modifiedAt?: Maybe<Scalars['DateTime']['output']>;
   ratingAnimationState?: Maybe<RatingState>;
   ratingCharacterState?: Maybe<RatingState>;
   ratingMusicState?: Maybe<RatingState>;
   ratingOverallState?: Maybe<RatingState>;
   ratingStoryState?: Maybe<RatingState>;
-  title?: Maybe<Scalars['String']>;
-  updatedAt: Scalars['DateTime'];
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   user: User;
   work: Work;
 };
@@ -827,7 +826,7 @@ export type ReviewConnection = {
 export type ReviewEdge = {
   __typename?: 'ReviewEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Review>;
 };
@@ -852,20 +851,20 @@ export enum SeasonName {
 
 export type Series = Node & {
   __typename?: 'Series';
-  annictId: Scalars['Int'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  nameEn: Scalars['String'];
-  nameRo: Scalars['String'];
+  annictId: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  nameEn: Scalars['String']['output'];
+  nameRo: Scalars['String']['output'];
   works?: Maybe<SeriesWorkConnection>;
 };
 
 
 export type SeriesWorksArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<SeriesWorkOrder>;
 };
 
@@ -884,7 +883,7 @@ export type SeriesConnection = {
 export type SeriesEdge = {
   __typename?: 'SeriesEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Series>;
 };
@@ -904,15 +903,12 @@ export type SeriesWorkConnection = {
 export type SeriesWorkEdge = {
   __typename?: 'SeriesWorkEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   item: Work;
-  /**
-   * Deprecated: Use `item` instead.
-   * @deprecated Use `item` instead.
-   */
-  node: Work;
-  summary?: Maybe<Scalars['String']>;
-  summaryEn?: Maybe<Scalars['String']>;
+  /** The item at the end of the edge. */
+  node?: Maybe<Work>;
+  summary?: Maybe<Scalars['String']['output']>;
+  summaryEn?: Maybe<Scalars['String']['output']>;
 };
 
 export type SeriesWorkOrder = {
@@ -926,15 +922,15 @@ export enum SeriesWorkOrderField {
 
 export type Staff = Node & {
   __typename?: 'Staff';
-  annictId: Scalars['Int'];
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  nameEn: Scalars['String'];
+  annictId: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  nameEn: Scalars['String']['output'];
   resource: StaffResourceItem;
-  roleOther: Scalars['String'];
-  roleOtherEn: Scalars['String'];
-  roleText: Scalars['String'];
-  sortNumber: Scalars['Int'];
+  roleOther: Scalars['String']['output'];
+  roleOtherEn: Scalars['String']['output'];
+  roleText: Scalars['String']['output'];
+  sortNumber: Scalars['Int']['output'];
   work: Work;
 };
 
@@ -953,7 +949,7 @@ export type StaffConnection = {
 export type StaffEdge = {
   __typename?: 'StaffEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Staff>;
 };
@@ -972,10 +968,10 @@ export type StaffResourceItem = Organization | Person;
 
 export type Status = Node & {
   __typename?: 'Status';
-  annictId: Scalars['Int'];
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  likesCount: Scalars['Int'];
+  annictId: Scalars['Int']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  likesCount: Scalars['Int']['output'];
   state: StatusState;
   user: User;
   work: Work;
@@ -993,173 +989,173 @@ export enum StatusState {
 /** Autogenerated input type of UpdateRecord */
 export type UpdateRecordInput = {
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: InputMaybe<Scalars['String']>;
-  comment?: InputMaybe<Scalars['String']>;
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
   ratingState?: InputMaybe<RatingState>;
-  recordId: Scalars['ID'];
-  shareFacebook?: InputMaybe<Scalars['Boolean']>;
-  shareTwitter?: InputMaybe<Scalars['Boolean']>;
+  recordId: Scalars['ID']['input'];
+  shareFacebook?: InputMaybe<Scalars['Boolean']['input']>;
+  shareTwitter?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** Autogenerated return type of UpdateRecord */
+/** Autogenerated return type of UpdateRecord. */
 export type UpdateRecordPayload = {
   __typename?: 'UpdateRecordPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']>;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
   record?: Maybe<Record>;
 };
 
 /** Autogenerated input type of UpdateReview */
 export type UpdateReviewInput = {
-  body: Scalars['String'];
+  body: Scalars['String']['input'];
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: InputMaybe<Scalars['String']>;
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
   ratingAnimationState: RatingState;
   ratingCharacterState: RatingState;
   ratingMusicState: RatingState;
   ratingOverallState: RatingState;
   ratingStoryState: RatingState;
-  reviewId: Scalars['ID'];
-  shareFacebook?: InputMaybe<Scalars['Boolean']>;
-  shareTwitter?: InputMaybe<Scalars['Boolean']>;
-  title?: InputMaybe<Scalars['String']>;
+  reviewId: Scalars['ID']['input'];
+  shareFacebook?: InputMaybe<Scalars['Boolean']['input']>;
+  shareTwitter?: InputMaybe<Scalars['Boolean']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Autogenerated return type of UpdateReview */
+/** Autogenerated return type of UpdateReview. */
 export type UpdateReviewPayload = {
   __typename?: 'UpdateReviewPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']>;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
   review?: Maybe<Review>;
 };
 
 /** Autogenerated input type of UpdateStatus */
 export type UpdateStatusInput = {
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: InputMaybe<Scalars['String']>;
+  clientMutationId?: InputMaybe<Scalars['String']['input']>;
   state: StatusState;
-  workId: Scalars['ID'];
+  workId: Scalars['ID']['input'];
 };
 
-/** Autogenerated return type of UpdateStatus */
+/** Autogenerated return type of UpdateStatus. */
 export type UpdateStatusPayload = {
   __typename?: 'UpdateStatusPayload';
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']>;
+  clientMutationId?: Maybe<Scalars['String']['output']>;
   work?: Maybe<Work>;
 };
 
 export type User = Node & {
   __typename?: 'User';
   activities?: Maybe<ActivityConnection>;
-  annictId: Scalars['Int'];
-  avatarUrl?: Maybe<Scalars['String']>;
-  backgroundImageUrl?: Maybe<Scalars['String']>;
-  createdAt: Scalars['DateTime'];
-  description: Scalars['String'];
-  email?: Maybe<Scalars['String']>;
+  annictId: Scalars['Int']['output'];
+  avatarUrl?: Maybe<Scalars['String']['output']>;
+  backgroundImageUrl?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  description: Scalars['String']['output'];
+  email?: Maybe<Scalars['String']['output']>;
   followers?: Maybe<UserConnection>;
-  followersCount: Scalars['Int'];
+  followersCount: Scalars['Int']['output'];
   following?: Maybe<UserConnection>;
   followingActivities?: Maybe<ActivityConnection>;
-  followingsCount: Scalars['Int'];
-  id: Scalars['ID'];
+  followingsCount: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
   libraryEntries?: Maybe<LibraryEntryConnection>;
-  name: Scalars['String'];
-  notificationsCount?: Maybe<Scalars['Int']>;
-  onHoldCount: Scalars['Int'];
+  name: Scalars['String']['output'];
+  notificationsCount?: Maybe<Scalars['Int']['output']>;
+  onHoldCount: Scalars['Int']['output'];
   programs?: Maybe<ProgramConnection>;
   records?: Maybe<RecordConnection>;
-  recordsCount: Scalars['Int'];
-  stopWatchingCount: Scalars['Int'];
-  url?: Maybe<Scalars['String']>;
-  username: Scalars['String'];
-  viewerCanFollow: Scalars['Boolean'];
-  viewerIsFollowing: Scalars['Boolean'];
-  wannaWatchCount: Scalars['Int'];
-  watchedCount: Scalars['Int'];
-  watchingCount: Scalars['Int'];
+  recordsCount: Scalars['Int']['output'];
+  stopWatchingCount: Scalars['Int']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+  username: Scalars['String']['output'];
+  viewerCanFollow: Scalars['Boolean']['output'];
+  viewerIsFollowing: Scalars['Boolean']['output'];
+  wannaWatchCount: Scalars['Int']['output'];
+  watchedCount: Scalars['Int']['output'];
+  watchingCount: Scalars['Int']['output'];
   works?: Maybe<WorkConnection>;
 };
 
 
 export type UserActivitiesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<ActivityOrder>;
 };
 
 
 export type UserFollowersArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
 export type UserFollowingArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
 export type UserFollowingActivitiesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<ActivityOrder>;
 };
 
 
 export type UserLibraryEntriesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<LibraryEntryOrder>;
-  seasonFrom?: InputMaybe<Scalars['String']>;
-  seasonUntil?: InputMaybe<Scalars['String']>;
-  seasons?: InputMaybe<Array<Scalars['String']>>;
+  seasonFrom?: InputMaybe<Scalars['String']['input']>;
+  seasonUntil?: InputMaybe<Scalars['String']['input']>;
+  seasons?: InputMaybe<Array<Scalars['String']['input']>>;
   states?: InputMaybe<Array<StatusState>>;
 };
 
 
 export type UserProgramsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<ProgramOrder>;
-  unwatched?: InputMaybe<Scalars['Boolean']>;
+  unwatched?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
 export type UserRecordsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  hasComment?: InputMaybe<Scalars['Boolean']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  hasComment?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<RecordOrder>;
 };
 
 
 export type UserWorksArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  annictIds?: InputMaybe<Array<Scalars['Int']>>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  annictIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<WorkOrder>;
-  seasons?: InputMaybe<Array<Scalars['String']>>;
+  seasons?: InputMaybe<Array<Scalars['String']['input']>>;
   state?: InputMaybe<StatusState>;
-  titles?: InputMaybe<Array<Scalars['String']>>;
+  titles?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** The connection type for User. */
@@ -1177,7 +1173,7 @@ export type UserConnection = {
 export type UserEdge = {
   __typename?: 'UserEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<User>;
 };
@@ -1185,95 +1181,95 @@ export type UserEdge = {
 /** An anime title */
 export type Work = Node & {
   __typename?: 'Work';
-  annictId: Scalars['Int'];
+  annictId: Scalars['Int']['output'];
   casts?: Maybe<CastConnection>;
   episodes?: Maybe<EpisodeConnection>;
-  episodesCount: Scalars['Int'];
-  id: Scalars['ID'];
+  episodesCount: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
   image?: Maybe<WorkImage>;
-  malAnimeId?: Maybe<Scalars['String']>;
+  malAnimeId?: Maybe<Scalars['String']['output']>;
   media: Media;
-  noEpisodes: Scalars['Boolean'];
-  officialSiteUrl?: Maybe<Scalars['String']>;
-  officialSiteUrlEn?: Maybe<Scalars['String']>;
+  noEpisodes: Scalars['Boolean']['output'];
+  officialSiteUrl?: Maybe<Scalars['String']['output']>;
+  officialSiteUrlEn?: Maybe<Scalars['String']['output']>;
   programs?: Maybe<ProgramConnection>;
   reviews?: Maybe<ReviewConnection>;
-  reviewsCount: Scalars['Int'];
-  satisfactionRate?: Maybe<Scalars['Float']>;
+  reviewsCount: Scalars['Int']['output'];
+  satisfactionRate?: Maybe<Scalars['Float']['output']>;
   seasonName?: Maybe<SeasonName>;
-  seasonYear?: Maybe<Scalars['Int']>;
+  seasonYear?: Maybe<Scalars['Int']['output']>;
   seriesList?: Maybe<SeriesConnection>;
   staffs?: Maybe<StaffConnection>;
-  syobocalTid?: Maybe<Scalars['Int']>;
-  title: Scalars['String'];
-  titleEn?: Maybe<Scalars['String']>;
-  titleKana?: Maybe<Scalars['String']>;
-  titleRo?: Maybe<Scalars['String']>;
-  twitterHashtag?: Maybe<Scalars['String']>;
-  twitterUsername?: Maybe<Scalars['String']>;
+  syobocalTid?: Maybe<Scalars['Int']['output']>;
+  title: Scalars['String']['output'];
+  titleEn?: Maybe<Scalars['String']['output']>;
+  titleKana?: Maybe<Scalars['String']['output']>;
+  titleRo?: Maybe<Scalars['String']['output']>;
+  twitterHashtag?: Maybe<Scalars['String']['output']>;
+  twitterUsername?: Maybe<Scalars['String']['output']>;
   viewerStatusState?: Maybe<StatusState>;
-  watchersCount: Scalars['Int'];
-  wikipediaUrl?: Maybe<Scalars['String']>;
-  wikipediaUrlEn?: Maybe<Scalars['String']>;
+  watchersCount: Scalars['Int']['output'];
+  wikipediaUrl?: Maybe<Scalars['String']['output']>;
+  wikipediaUrlEn?: Maybe<Scalars['String']['output']>;
 };
 
 
 /** An anime title */
 export type WorkCastsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<CastOrder>;
 };
 
 
 /** An anime title */
 export type WorkEpisodesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<EpisodeOrder>;
 };
 
 
 /** An anime title */
 export type WorkProgramsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<ProgramOrder>;
 };
 
 
 /** An anime title */
 export type WorkReviewsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  hasBody?: InputMaybe<Scalars['Boolean']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  hasBody?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<ReviewOrder>;
 };
 
 
 /** An anime title */
 export type WorkSeriesListArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
 /** An anime title */
 export type WorkStaffsArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<StaffOrder>;
 };
 
@@ -1292,29 +1288,29 @@ export type WorkConnection = {
 export type WorkEdge = {
   __typename?: 'WorkEdge';
   /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
+  cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node?: Maybe<Work>;
 };
 
 export type WorkImage = Node & {
   __typename?: 'WorkImage';
-  annictId?: Maybe<Scalars['Int']>;
-  copyright?: Maybe<Scalars['String']>;
-  facebookOgImageUrl?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  internalUrl?: Maybe<Scalars['String']>;
-  recommendedImageUrl?: Maybe<Scalars['String']>;
-  twitterAvatarUrl?: Maybe<Scalars['String']>;
-  twitterBiggerAvatarUrl?: Maybe<Scalars['String']>;
-  twitterMiniAvatarUrl?: Maybe<Scalars['String']>;
-  twitterNormalAvatarUrl?: Maybe<Scalars['String']>;
+  annictId?: Maybe<Scalars['Int']['output']>;
+  copyright?: Maybe<Scalars['String']['output']>;
+  facebookOgImageUrl?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  internalUrl?: Maybe<Scalars['String']['output']>;
+  recommendedImageUrl?: Maybe<Scalars['String']['output']>;
+  twitterAvatarUrl?: Maybe<Scalars['String']['output']>;
+  twitterBiggerAvatarUrl?: Maybe<Scalars['String']['output']>;
+  twitterMiniAvatarUrl?: Maybe<Scalars['String']['output']>;
+  twitterNormalAvatarUrl?: Maybe<Scalars['String']['output']>;
   work?: Maybe<Work>;
 };
 
 
 export type WorkImageInternalUrlArgs = {
-  size: Scalars['String'];
+  size: Scalars['String']['input'];
 };
 
 export type WorkOrder = {
@@ -1329,8 +1325,8 @@ export enum WorkOrderField {
 }
 
 export type CreateRecordMutationVariables = Exact<{
-  episodeId: Scalars['ID'];
-  comment?: InputMaybe<Scalars['String']>;
+  episodeId: Scalars['ID']['input'];
+  comment?: InputMaybe<Scalars['String']['input']>;
   ratingState?: InputMaybe<RatingState>;
 }>;
 
@@ -1338,15 +1334,15 @@ export type CreateRecordMutationVariables = Exact<{
 export type CreateRecordMutation = { __typename?: 'Mutation', createRecord?: { __typename?: 'CreateRecordPayload', record?: { __typename?: 'Record', id: string, annictId: number, ratingState?: RatingState | null, comment?: string | null, createdAt: any, updatedAt: any, likesCount: number, user: { __typename?: 'User', name: string, username: string, avatarUrl?: string | null }, episode: { __typename?: 'Episode', id: string, viewerRecordsCount: number, viewerDidTrack: boolean, recordsCount: number, records?: { __typename?: 'RecordConnection', nodes?: Array<{ __typename?: 'Record', id: string } | null> | null } | null } } | null } | null };
 
 export type DeleteRecordMutationVariables = Exact<{
-  recordId: Scalars['ID'];
+  recordId: Scalars['ID']['input'];
 }>;
 
 
 export type DeleteRecordMutation = { __typename?: 'Mutation', deleteRecord?: { __typename?: 'DeleteRecordPayload', episode?: { __typename?: 'Episode', id: string, viewerRecordsCount: number, viewerDidTrack: boolean, recordsCount: number, records?: { __typename?: 'RecordConnection', nodes?: Array<{ __typename?: 'Record', id: string } | null> | null } | null } | null } | null };
 
 export type UpdateRecordMutationVariables = Exact<{
-  recordId: Scalars['ID'];
-  comment?: InputMaybe<Scalars['String']>;
+  recordId: Scalars['ID']['input'];
+  comment?: InputMaybe<Scalars['String']['input']>;
   ratingState?: InputMaybe<RatingState>;
 }>;
 
@@ -1355,7 +1351,7 @@ export type UpdateRecordMutation = { __typename?: 'Mutation', updateRecord?: { _
 
 export type UpdateStatusMutationVariables = Exact<{
   state: StatusState;
-  workId: Scalars['ID'];
+  workId: Scalars['ID']['input'];
 }>;
 
 
@@ -1363,25 +1359,30 @@ export type UpdateStatusMutation = { __typename?: 'Mutation', updateStatus?: { _
 
 export type LibraryEntriesQueryVariables = Exact<{
   states?: InputMaybe<Array<StatusState> | StatusState>;
-  seasons?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+  seasons?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
 export type LibraryEntriesQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', libraryEntries?: { __typename?: 'LibraryEntryConnection', nodes?: Array<{ __typename?: 'LibraryEntry', id: string, note: string, status?: { __typename?: 'Status', state: StatusState } | null, work: { __typename?: 'Work', annictId: number, malAnimeId?: string | null, title: string, noEpisodes: boolean, image?: { __typename?: 'WorkImage', facebookOgImageUrl?: string | null, copyright?: string | null } | null }, nextProgram?: { __typename?: 'Program', startedAt: any, channel: { __typename?: 'Channel', name: string }, episode: { __typename?: 'Episode', annictId: number, numberText?: string | null, title?: string | null } } | null } | null> | null } | null } | null };
 
 export type SearchEpisodesQueryVariables = Exact<{
-  annictIds?: InputMaybe<Array<Scalars['Int']> | Scalars['Int']>;
+  annictIds?: InputMaybe<Array<Scalars['Int']['input']> | Scalars['Int']['input']>;
 }>;
 
 
 export type SearchEpisodesQuery = { __typename?: 'Query', searchEpisodes?: { __typename?: 'EpisodeConnection', nodes?: Array<{ __typename?: 'Episode', id: string, annictId: number, sortNumber: number, numberText?: string | null, title?: string | null, viewerDidTrack: boolean, viewerRecordsCount: number, recordsCount: number, records?: { __typename?: 'RecordConnection', nodes?: Array<{ __typename?: 'Record', id: string, annictId: number, ratingState?: RatingState | null, comment?: string | null, createdAt: any, updatedAt: any, likesCount: number, user: { __typename?: 'User', name: string, username: string, avatarUrl?: string | null } } | null> | null } | null, work: { __typename?: 'Work', annictId: number, twitterHashtag?: string | null } } | null> | null } | null };
 
 export type SearchWorksQueryVariables = Exact<{
-  annictIds?: InputMaybe<Array<Scalars['Int']> | Scalars['Int']>;
+  annictIds?: InputMaybe<Array<Scalars['Int']['input']> | Scalars['Int']['input']>;
 }>;
 
 
-export type SearchWorksQuery = { __typename?: 'Query', searchWorks?: { __typename?: 'WorkConnection', nodes?: Array<{ __typename?: 'Work', id: string, annictId: number, malAnimeId?: string | null, watchersCount: number, reviewsCount: number, twitterHashtag?: string | null, seasonName?: SeasonName | null, seasonYear?: number | null, officialSiteUrl?: string | null, title: string, media: Media, image?: { __typename?: 'WorkImage', facebookOgImageUrl?: string | null, copyright?: string | null } | null, casts?: { __typename?: 'CastConnection', nodes?: Array<{ __typename?: 'Cast', name: string, character: { __typename?: 'Character', name: string } } | null> | null } | null, episodes?: { __typename?: 'EpisodeConnection', nodes?: Array<{ __typename?: 'Episode', id: string, annictId: number, sortNumber: number, numberText?: string | null, title?: string | null, viewerDidTrack: boolean, viewerRecordsCount: number, recordsCount: number } | null> | null } | null, programs?: { __typename?: 'ProgramConnection', nodes?: Array<{ __typename?: 'Program', startedAt: any, channel: { __typename?: 'Channel', annictId: number, name: string } } | null> | null } | null } | null> | null } | null };
+export type SearchWorksQuery = { __typename?: 'Query', searchWorks?: { __typename?: 'WorkConnection', nodes?: Array<{ __typename?: 'Work', id: string, annictId: number, malAnimeId?: string | null, watchersCount: number, reviewsCount: number, twitterHashtag?: string | null, seasonName?: SeasonName | null, seasonYear?: number | null, officialSiteUrl?: string | null, title: string, media: Media, image?: { __typename?: 'WorkImage', facebookOgImageUrl?: string | null, copyright?: string | null } | null, staffs?: { __typename?: 'StaffConnection', nodes?: Array<{ __typename?: 'Staff', name: string, roleText: string } | null> | null } | null, casts?: { __typename?: 'CastConnection', nodes?: Array<{ __typename?: 'Cast', person: { __typename?: 'Person', annictId: number, name: string, nameKana: string }, character: { __typename?: 'Character', name: string } } | null> | null } | null, episodes?: { __typename?: 'EpisodeConnection', nodes?: Array<{ __typename?: 'Episode', id: string, annictId: number, sortNumber: number, numberText?: string | null, title?: string | null, viewerDidTrack: boolean, viewerRecordsCount: number, recordsCount: number } | null> | null } | null, programs?: { __typename?: 'ProgramConnection', nodes?: Array<{ __typename?: 'Program', startedAt: any, channel: { __typename?: 'Channel', annictId: number, name: string } } | null> | null } | null } | null> | null } | null };
+
+export type ViewerRecordsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ViewerRecordsQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', records?: { __typename?: 'RecordConnection', edges?: Array<{ __typename?: 'RecordEdge', node?: { __typename?: 'Record', annictId: number, episode: { __typename?: 'Episode', title?: string | null, numberText?: string | null, annictId: number, work: { __typename?: 'Work', title: string, annictId: number } } } | null } | null> | null } | null } | null };
 
 export type ViewerUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1395,5 +1396,6 @@ export const UpdateRecordDocument = {"kind":"Document","definitions":[{"kind":"O
 export const UpdateStatusDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateStatus"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"state"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StatusState"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateStatus"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"state"},"value":{"kind":"Variable","name":{"kind":"Name","value":"state"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"workId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workId"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"work"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateStatusMutation, UpdateStatusMutationVariables>;
 export const LibraryEntriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"libraryEntries"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"states"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"StatusState"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"seasons"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewer"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"libraryEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"states"},"value":{"kind":"Variable","name":{"kind":"Name","value":"states"}}},{"kind":"Argument","name":{"kind":"Name","value":"seasons"},"value":{"kind":"Variable","name":{"kind":"Name","value":"seasons"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"state"}}]}},{"kind":"Field","name":{"kind":"Name","value":"work"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"malAnimeId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"image"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"facebookOgImageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"copyright"}}]}},{"kind":"Field","name":{"kind":"Name","value":"noEpisodes"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nextProgram"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channel"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"episode"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"numberText"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"note"}}]}}]}}]}}]}}]} as unknown as DocumentNode<LibraryEntriesQuery, LibraryEntriesQueryVariables>;
 export const SearchEpisodesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"searchEpisodes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"annictIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchEpisodes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"annictIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"annictIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"sortNumber"}},{"kind":"Field","name":{"kind":"Name","value":"numberText"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"viewerDidTrack"}},{"kind":"Field","name":{"kind":"Name","value":"viewerRecordsCount"}},{"kind":"Field","name":{"kind":"Name","value":"recordsCount"}},{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"ratingState"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"likesCount"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"work"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"twitterHashtag"}}]}}]}}]}}]}}]} as unknown as DocumentNode<SearchEpisodesQuery, SearchEpisodesQueryVariables>;
-export const SearchWorksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"searchWorks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"annictIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchWorks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"annictIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"annictIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"malAnimeId"}},{"kind":"Field","name":{"kind":"Name","value":"watchersCount"}},{"kind":"Field","name":{"kind":"Name","value":"reviewsCount"}},{"kind":"Field","name":{"kind":"Name","value":"twitterHashtag"}},{"kind":"Field","name":{"kind":"Name","value":"seasonName"}},{"kind":"Field","name":{"kind":"Name","value":"seasonYear"}},{"kind":"Field","name":{"kind":"Name","value":"officialSiteUrl"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"media"}},{"kind":"Field","name":{"kind":"Name","value":"image"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"facebookOgImageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"copyright"}}]}},{"kind":"Field","name":{"kind":"Name","value":"casts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"character"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"episodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"sortNumber"}},{"kind":"Field","name":{"kind":"Name","value":"numberText"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"viewerDidTrack"}},{"kind":"Field","name":{"kind":"Name","value":"viewerRecordsCount"}},{"kind":"Field","name":{"kind":"Name","value":"recordsCount"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"programs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"channel"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SearchWorksQuery, SearchWorksQueryVariables>;
+export const SearchWorksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"searchWorks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"annictIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"searchWorks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"annictIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"annictIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"malAnimeId"}},{"kind":"Field","name":{"kind":"Name","value":"watchersCount"}},{"kind":"Field","name":{"kind":"Name","value":"reviewsCount"}},{"kind":"Field","name":{"kind":"Name","value":"twitterHashtag"}},{"kind":"Field","name":{"kind":"Name","value":"seasonName"}},{"kind":"Field","name":{"kind":"Name","value":"seasonYear"}},{"kind":"Field","name":{"kind":"Name","value":"officialSiteUrl"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"media"}},{"kind":"Field","name":{"kind":"Name","value":"image"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"facebookOgImageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"copyright"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"roleText"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"casts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameKana"}}]}},{"kind":"Field","name":{"kind":"Name","value":"character"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"episodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"sortNumber"}},{"kind":"Field","name":{"kind":"Name","value":"numberText"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"viewerDidTrack"}},{"kind":"Field","name":{"kind":"Name","value":"viewerRecordsCount"}},{"kind":"Field","name":{"kind":"Name","value":"recordsCount"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"programs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startedAt"}},{"kind":"Field","name":{"kind":"Name","value":"channel"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SearchWorksQuery, SearchWorksQueryVariables>;
+export const ViewerRecordsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"viewerRecords"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewer"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"episode"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"numberText"}},{"kind":"Field","name":{"kind":"Name","value":"annictId"}},{"kind":"Field","name":{"kind":"Name","value":"work"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"annictId"}}]}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ViewerRecordsQuery, ViewerRecordsQueryVariables>;
 export const ViewerUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"viewerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"viewer"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]} as unknown as DocumentNode<ViewerUserQuery, ViewerUserQueryVariables>;
