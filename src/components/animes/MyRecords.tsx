@@ -15,7 +15,8 @@ export default function MyRecords() {
 
   return (
     <div className="mt-4">
-      <p className="px-4 text-lg font-bold">全 {!user ? 0 : user?.viewer?.records?.edges?.length.toLocaleString()} 件</p>
+      {/* <p className="px-4 text-lg font-bold">一週間の記録 全 {!user ? 0 : user?.viewer?.records?.edges?.length.toLocaleString()} 件</p> */}
+      <p className="px-4 text-lg font-bold">直近の100件の記録</p>
 
       {loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
       {error && <p className="p-4 text-red-500">{error.message}</p>}

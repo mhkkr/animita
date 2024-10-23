@@ -29,7 +29,7 @@ export default function MyMute() {
       <p className="mt-2 mx-4 text-xs pl-[1em] indent-[-1em]">※ミュートした時点での UserName なので、変更があった場合はリンクが無効の場合があります。</p>
       <p className="mt-1 mx-4 text-xs pl-[1em] indent-[-1em]">※ミュート自体は AnnictId で行っているので対象者がズレることはありません。</p>
       
-      {!mutedUsers ? (
+      {mutedUsers.length === 0 ? (
         <p className="mt-4">ミュートしているユーザーはいません。</p>
       ) : (
         <ul className="mt-4">
