@@ -14,7 +14,7 @@ import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
-import * as Record from '~/components/animes/AnimeRecords';
+import * as AnimeEpisode from '~/components/animes/AnimeEpisode';
 import Thumbnail from '~/components/animes/AnimeThumbnail';
 
 import Const from '~/constants';
@@ -72,7 +72,7 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
               <p className="text-sm dark:text-white/70"><DisplayDate date={startedAt} /></p>
               <p className="mt-1 font-bold"><Link href={`/anime/${entry?.work.annictId}`}>{entry?.work.title}</Link></p>
               <div className={`${isViewable ? '' : 'cursor-text'}`}>
-                <Record.ToggleButton
+                <AnimeEpisode.ToggleButton
                   className={`
                     flex w-full text-sm
                     ${isViewable ? 'mt-1.5 px-4 py-2 border dark:border-white/30 rounded-3xl' : 'mt-1 pointer-events-none'}
@@ -82,8 +82,8 @@ function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
                   disabled={isViewable ? false : true}
                 >
                   <span className="flex-shrink-0 mr-2">{entry?.nextProgram?.episode.numberText}</span>
-                  <span className="flex-1 text-left">{entry?.nextProgram?.episode.title || '未定'}</span>
-                </Record.ToggleButton>
+                  <span className="flex-1 text-left">{entry?.nextProgram?.episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
+                </AnimeEpisode.ToggleButton>
               </div>
             </div>
           </li>

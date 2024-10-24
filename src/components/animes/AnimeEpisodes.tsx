@@ -11,7 +11,7 @@ import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
 import { RingSpinner } from '~/components/spinners/Spinner';
-import * as Record from '~/components/animes/AnimeRecords';
+import * as AnimeEpisode from '~/components/animes/AnimeEpisode';
 
 import Const from '~/constants';
 
@@ -67,13 +67,13 @@ export default function Episodes({ work }: { work: Work }) {
                 <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1.5 pt-[.55rem]">{episode?.numberText}</td>
 
                 <td className="pl-3 py-1.5 pt-[.55rem] align-top">
-                  <div>{episode?.title || '未定'}</div>
+                  <div>{episode?.title || Const.EPISODE_TITLE_UNDEFINED}</div>
                   {!viewTable.state && <div className="mt-1 text-sm">予定日時：<DisplayDate date={viewTable.startedAt} /></div>}
                 </td>
 
                 <td className="w-px whitespace-nowrap pl-3 pr-4 align-top text-xs py-1.5">
                   {viewTable.state &&
-                    <Record.ToggleButton
+                    <AnimeEpisode.ToggleButton
                       className={`
                         inline-flex w-full px-2 py-1.5 border dark:border-white/30 rounded-full
                         ${episode?.viewerDidTrack && 'bg-black text-white dark:bg-white dark:text-black'}
@@ -83,7 +83,7 @@ export default function Episodes({ work }: { work: Work }) {
                       <Icons id="edit" type="form" className="text-[1.25em]" />
                       <span className="ml-0.5 mr-1">{episode?.viewerRecordsCount}</span>
                       <span className="flex-1 text-right">記録する</span>
-                    </Record.ToggleButton>
+                    </AnimeEpisode.ToggleButton>
                   }
                 </td>
               </tr>
@@ -92,7 +92,7 @@ export default function Episodes({ work }: { work: Work }) {
         })}
       </table>
       <Tooltip id="episodes-tooltip" />
-      <Record.Viewer work={work} />
+      <AnimeEpisode.Episode work={work} />
     </>
   );
 }

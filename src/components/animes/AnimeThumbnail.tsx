@@ -3,7 +3,7 @@
 // TODO: 公式サイトのOGPイメージ直リンクのままでいいのかな…？
 //       できれば cdn.myanimelist.net に変えたがいい気がするけど。
 
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import type { Work } from '~/features/apollo/generated-types';
 
 // https://github.com/SlashNephy/annict-tracker
@@ -44,6 +44,6 @@ export default function Thumbnail({ work, className }: { work: Work, className: 
   // }
 
   return (
-    <img className={className} src={url} alt={`${work.title}のサムネイル`} loading="lazy" onError={e => (e.target as HTMLImageElement).src = noImage} />
+    <img className={className} src={url} alt={`${work.title}のキービジュアル`} loading="lazy" onError={e => (e.target as HTMLImageElement).src = noImage} />
   );
 }

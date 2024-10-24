@@ -3,6 +3,9 @@ class Const {
   TITLE = 'アニみた';
   DESCRIPTION = '「アニみた」は、Annict が提供する API を利用したユーザークライアントです。すぐ見れるアニメの把握と感想を書きやすくして、ちょっとだけアニメライフの充実に貢献する！';
 
+  EPISODE_TITLE_UNDEFINED = '（未登録）';
+  MY_RECORDS_LIMIT = 50;
+
   SEASON_LIST = [
     { id: 'SPRING', label: '春' },
     { id: 'SUMMER', label: '夏' },

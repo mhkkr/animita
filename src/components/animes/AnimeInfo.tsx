@@ -2,44 +2,64 @@
 
 import { useQuery } from '@apollo/client';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
-import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
+import type { Cast, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
 
-import Stataus from '~/components/animes/AnimeStataus';
-import Thumbnail from '~/components/animes/AnimeThumbnail';
-
 import Const from '~/constants';
-
-export {
-  Info,
-  InfoLite
-}
 
 const statusStateIdArray: string[] = [];
 Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
 
-function RelatedLink({ icon, className, test, href, label }: {
-  icon: string,
-  className: string,
-  test?: string | number | null,
-  href?: string | null,
-  label?: string | null
-}) {
-  if (test && href) {
-    return (
-      <li>
-        <a className="flex items-center" href={href} target="_blank" rel="noopener noreferrer">
-          <Icons id={icon} type="link" className={`text-[1.5em] ${className}`} />
-          {label}
-        </a>
-      </li>
-    );
+export function Link({ work }: { work: Work }) {
+  function RelatedLink({ icon, className, test, href, label }: {
+    icon: string,
+    className: string,
+    test?: string | number | null,
+    href?: string | null,
+    label?: string | null
+  }) {
+    if (test && href) {
+      return (
+        <li>
+          <a className="flex items-center" href={href} target="_blank" rel="noopener noreferrer">
+            <Icons id={icon} type="link" className={`text-[1.5em] ${className}`} />
+            {label}
+          </a>
+        </li>
+      );
+    }
+    return <></>;
   }
-  return <></>;
+
+  return (
+    <ul className="flex flex-wrap gap-x-4 gap-y-2 mt-4 px-4 text-xs">
+      <RelatedLink
+        icon="open_in_new"
+        className="mr-1"
+        test={work.annictId}
+        href={`https://annict.com/works/${work.annictId}`}
+        label="Annict"
+      />
+      <RelatedLink
+        icon="open_in_new"
+        className="mr-1"
+        test={work.officialSiteUrl}
+        href={work.officialSiteUrl}
+        label="公式サイト"
+      />
+      <RelatedLink
+        icon="hashtag"
+        className="mr-0.5"
+        test={work.twitterHashtag}
+        href={`https://twitter.com/hashtag/${work.twitterHashtag}?src=hashtag&f=live`}
+        label={work.twitterHashtag}
+      />
+    </ul>
+  );
 }
 
-function Channel({ work }: { work: Work }) {
+export function Channel({ work }: { work: Work }) {
   const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
     variables: {
       states: statusStateIdArray,
@@ -54,7 +74,7 @@ function Channel({ work }: { work: Work }) {
   return <>{entry?.nextProgram?.channel.name}</>;
 }
 
-function Staffs({ work }: { work: Work }) {
+export function Staff({ work }: { work: Work }) {
   const gensakuStaffs = work.staffs?.nodes ? work.staffs.nodes.filter(staff => staff?.roleText === '原作') : [];
   const kantokuStaffs = work.staffs?.nodes ? work.staffs.nodes.filter(staff => staff?.roleText === '監督') : [];
   const seisakuStaffs = work.staffs?.nodes ? work.staffs.nodes.filter(staff => staff?.roleText === 'アニメーション制作') : [];
@@ -83,85 +103,26 @@ function Staffs({ work }: { work: Work }) {
   );
 }
 
-function Info({ work }: { work: Work }) {
+export function Cast({ work }: { work: Work }) {
+  const casts = (work.casts?.nodes ? Array.from(work.casts?.nodes) : []) as Cast[];
   return (
-    <>
-      <figure className="bg-gray-300">
-        <Thumbnail work={work} className="mx-auto" />
-      </figure>
-      <ul className="flex flex-wrap gap-x-4 gap-y-2 mt-4 px-4 text-xs">
-        <RelatedLink
-          icon="open_in_new"
-          className="mr-1"
-          test={work.annictId}
-          href={`https://annict.com/works/${work.annictId}`}
-          label="Annict"
-        />
-        <RelatedLink
-          icon="open_in_new"
-          className="mr-1"
-          test={work.officialSiteUrl}
-          href={work.officialSiteUrl}
-          label="公式サイト"
-        />
-        <RelatedLink
-          icon="hashtag"
-          className="mr-0.5"
-          test={work.twitterHashtag}
-          href={`https://twitter.com/hashtag/${work.twitterHashtag}?src=hashtag&f=live`}
-          label={work.twitterHashtag}
-        />
-      </ul>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 mt-4">
-        <div className="flex-1">
-          <h1 className="font-bold text-lg">{work.title}</h1>
-        </div>
-        <div className="flex-shrink-0 order-first sm:order-none">
-          <Stataus work={work} />
-        </div>
-      </div>
-      <div className="px-4 mt-4">
-        <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
-          <li>視聴者数：{work.watchersCount}</li>
-          <li>評価数：{work.reviewsCount}</li>
-          <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
-          <li><Channel work={work} /></li>
-        </ul>
-        <Staffs work={work} />
-      </div>
-    </>
-  );
-}
-
-function InfoLite({ work }: { work: Work }) {
-  return (
-    <>
-      <ul className="flex flex-wrap gap-x-4 gap-y-2 mt-4 px-4 text-xs">
-        <RelatedLink
-          icon="open_in_new"
-          className="mr-1"
-          test={work.annictId}
-          href={`https://annict.com/works/${work.annictId}`}
-          label="Annict"
-        />
-        <RelatedLink
-          icon="open_in_new"
-          className="mr-1"
-          test={work.officialSiteUrl}
-          href={work.officialSiteUrl}
-          label="公式サイト"
-        />
-        <RelatedLink
-          icon="hashtag"
-          className="mr-0.5"
-          test={work.twitterHashtag}
-          href={`https://twitter.com/hashtag/${work.twitterHashtag}?src=hashtag&f=live`}
-          label={work.twitterHashtag}
-        />
-      </ul>
-      <div className="px-4 mt-4">
-        <Staffs work={work} />
-      </div>
-    </>
+    <table className="w-full">
+      <tbody>
+        {casts.map(cast => (
+          <tr key={cast.character.name + '-' + cast.person.annictId} className="hover:bg-stone-500/30">
+            <td className="align-top py-1.5 px-2 pl-4 text-right">{cast.character.name}</td>
+            <td className="align-top py-1.5 px-2 pr-4">
+              <div className="flex flex-wrap items-center gap-1">
+                <span>{cast.person.name}</span>
+                {cast.person.nameKana && <span className="inline-block text-sm">（{cast.person.nameKana}）</span>}
+                <a href={`https://annict.com/people/${cast.person.annictId}`} target="_blank" rel="noopener noreferrer">
+                  <Icons id="open_in_new" type="link" />
+                </a>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
