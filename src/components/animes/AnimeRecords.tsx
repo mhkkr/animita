@@ -50,9 +50,28 @@ export function Records({ records, episode, user }: { records: Record[], episode
   const mutedUsers = getMutedUsers();
   const filteredRecords = records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId));
 
+  // ratingStateに対する優先順位を定義
+  const ratingPriority = {
+    GREAT: 4,
+    GOOD: 3,
+    AVERAGE: 2,
+    BAD: 1,
+  };
+
   return (
     <ul className="flex flex-wrap text-sm">
-      {filteredRecords.map(record => <Record key={record.annictId} record={record} episode={episode} user={user} />)}
+      {filteredRecords
+        .sort((a, b) => {
+          const ratingComparison = (b?.ratingState ? ratingPriority[b.ratingState] : 0) - (a?.ratingState ? ratingPriority[a.ratingState] : 0)
+
+          if (ratingComparison === 0) {
+            return b.likesCount - a.likesCount;
+          }
+          
+          return ratingComparison;
+        })
+        .map(record => <Record key={record.annictId} record={record} episode={episode} user={user} />)
+      }
     </ul>
   );
 }
@@ -65,7 +84,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
   const [recordEditId] = useRecoilState(recordEditIdAtom);
   
   const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
-  const isMyRecord = record.user.username === user.viewer?.username;
+  const isMyRecord = record.user.annictId === user.viewer?.annictId;
   const disabled = recordDeleteId === record.id || recordEditId === record.id;
 
   return (
@@ -87,9 +106,9 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
               このユーザーをミュートしました。
             </div>
           ) : (
-            <a className="group hover:underline" href={`https://annict.com/@${record.user?.username}`} target="_blank" rel="noopener noreferrer">
+            <a className="group hover:underline" href={`https://annict.com/@${record.user?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
               <figure className="flex items-center gap-3">
-                <div className="flex-shrink-0 rounded-full overflow-hidden w-8 h-8">
+                <div className="flex-shrink-0 rounded-full overflow-hidden [contain:content] w-8 h-8">
                   <img className="object-cover w-full h-full group-hover:opacity-70" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
                 </div>
                 <figcaption className="break-all">{record.user.name}</figcaption>
@@ -102,7 +121,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                 <>
                   <PopoverPanel
                     transition
-                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col gap-2 p-2 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col gap-2 p-2 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden [contain:content] shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
                   >
                     {isMyRecord ? (
                       <>
@@ -133,6 +152,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                 </div>
               }
               <div className="flex flex-wrap items-center gap-3">
+                {/* TODO: リンク付ける */}
                 <span><DisplayDate date={record.createdAt} /></span>
                 {generateDateStyle(record.createdAt) !== generateDateStyle(record.updatedAt) && <span className="dark:text-white/70 text-xs"><DisplayDate date={record.updatedAt} /></span>}
               </div>

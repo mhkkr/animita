@@ -7,9 +7,10 @@ export const viewerRecordsGql = gql`
         edges {
           node {
             annictId
+						ratingState
             episode {
               title
-              numberText
+              number
               annictId
               work {
                 title

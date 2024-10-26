@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useQuery } from '@apollo/client';
@@ -9,6 +9,7 @@ import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
 import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
+import { muteUpdateAtom } from '~/atoms/muteUpdateAtom';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
 import { recordCurrentEpisodeAnnictIdAtom } from '~/atoms/recordCurrentEpisodeAnnictIdAtom';
 import { recordOpenerEpisodeAnnictIdAtom } from '~/atoms/recordOpenerEpisodeAnnictIdAtom';
@@ -21,6 +22,8 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 import { NoCommentRecords, Records } from '~/components/animes/AnimeRecords';
 import { Link, Staff, Cast } from '~/components/animes/AnimeInfo';
 import Form from '~/components/animes/AnimeRecordForm';
+
+import { getMutedUsers } from '~/libs/function';
 
 import Const from '~/constants';
 
@@ -58,6 +61,15 @@ function InfoCast({ work }: { work: Work }) {
 }
 
 function RatingStates({ records }: { records: Record[] }) {
+  const [muteUpdate, setMuteUpdate] = useRecoilState(muteUpdateAtom);
+  const mutedUsers = getMutedUsers();
+  const [filteredRecords, setFilteredRecords] = useState<Record[]>(records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId)));
+
+  useEffect(() => {
+    const mutedUsers = getMutedUsers();
+    setFilteredRecords(records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId)));
+  }, [muteUpdate]);
+
   let allCount = 0;
   const ratings = {
     'BAD' : 0,
@@ -66,7 +78,7 @@ function RatingStates({ records }: { records: Record[] }) {
     'GREAT' : 0
   };
 
-  records.forEach(record => {
+  filteredRecords.forEach(record => {
     if (record.ratingState) {
       ratings[record.ratingState]++;
       allCount++;
@@ -82,7 +94,7 @@ function RatingStates({ records }: { records: Record[] }) {
   return (
     <div className="p-4 border-t dark:border-stone-700 text-sm">
       <p>★みんなの評価</p>
-      <ul className="mt-2 flex text-center rounded-md overflow-hidden">
+      <ul className="mt-2 flex text-center rounded-md overflow-hidden [contain:content]">
         {Object.entries(ratings).map(([key, value]) => {
           const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === key);
           return (
@@ -193,7 +205,7 @@ export function Episode({ work }: { work: Work }) {
         {/* 背景クリックで閉じる用 */}
         <ToggleButton className="absolute inset-0" />
 
-        <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>
+        <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden [contain:content] sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>
           {(el || ul) && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
           {(ee || ue) && <p className="p-4 text-red-500">{ee?.message || ue?.message}</p>}
 

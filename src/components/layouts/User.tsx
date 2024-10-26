@@ -12,7 +12,7 @@ export default function User() {
     <Popover className="relative">
       <PopoverPanel
         transition
-        className="absolute top-10 sm:top-auto sm:bottom-full right-0 sm:right-auto border dark:border-stone-700 bg-white dark:bg-black rounded-lg overflow-hidden shadow-xl whitespace-nowrap origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+        className="absolute top-10 sm:top-auto sm:bottom-full right-0 sm:right-auto border dark:border-stone-700 bg-white dark:bg-black rounded-lg overflow-hidden [contain:content] shadow-xl whitespace-nowrap origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
       >
         <Link className="flex items-center p-3 w-full font-bold border-b dark:border-stone-700" href="/mypage">
           マイページ
@@ -31,7 +31,7 @@ export default function User() {
       <PopoverButton className="group/user flex items-center gap-3 sm:p-3 w-full outline-none">
         <span className="
           order-last sm:order-none
-          dark:bg-white rounded-full overflow-hidden w-8 h-8 sm:w-12 sm:h-12
+          dark:bg-white rounded-full overflow-hidden [contain:content] w-8 h-8 sm:w-12 sm:h-12
           group-focus-visible/user:outline group-focus-visible/user:outline-1 group-focus-visible/user:outline-offset-2
         ">
           <img className="object-cover w-full h-full" src={data?.user?.image || ''} alt={`${data?.user?.name}さんのアイコン`} />

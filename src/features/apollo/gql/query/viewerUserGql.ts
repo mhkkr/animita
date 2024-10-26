@@ -4,6 +4,7 @@ export const viewerUserGql = gql`
   query viewerUser {
     viewer {
       username
+      annictId
     }
   }
 `;

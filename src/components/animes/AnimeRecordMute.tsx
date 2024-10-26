@@ -1,12 +1,17 @@
 import type { Dispatch, SetStateAction } from 'react';
+import { useRecoilState } from 'recoil';
 
 import { Record, User } from '~/features/apollo/generated-types';
+
+import { muteUpdateAtom } from '~/atoms/muteUpdateAtom';
 
 import Icons from '~/components/icons/Icons';
 
 import { getMutedUsers } from '~/libs/function';
 
 export default function Mute({ record, mute, setMute, close }: { record: Record, mute: boolean, setMute: Dispatch<SetStateAction<boolean>>, close: () => void }) {
+  const [muteUpdate, setMuteUpdate] = useRecoilState(muteUpdateAtom);
+
   const addMuteUser = (user: User) => {
     const mutedUsers = getMutedUsers();
     const annictId = user.annictId;
@@ -15,6 +20,7 @@ export default function Mute({ record, mute, setMute, close }: { record: Record,
       mutedUsers.push({ annictId, username });
       localStorage.setItem('mutedUsers', JSON.stringify(mutedUsers));
       setMute(true);
+      setMuteUpdate(muteUpdate + 1);
     }
     close();
   };
@@ -25,6 +31,7 @@ export default function Mute({ record, mute, setMute, close }: { record: Record,
     mutedUsers = mutedUsers.filter(user => user.annictId !== annictId);
     localStorage.setItem("mutedUsers", JSON.stringify(mutedUsers));
     setMute(false);
+    setMuteUpdate(muteUpdate - 1);
     close();
   };
 

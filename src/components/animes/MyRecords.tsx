@@ -24,22 +24,28 @@ export default function MyRecords() {
       {error && <p className="p-4 text-red-500">{error.message}</p>}
 
       {!(loading || error) && (
-        <div className='
-          mt-2 grid text-sm [&_*]:text-left
-          [&_button]:flex [&_button]:gap-2 [&_button]:justify-between [&_button]:px-4 [&_button]:py-1 [&_button]:border-t [&_button]:dark:border-stone-700
-          hover:[&_button]:bg-black/10 hover:[&_button]:dark:bg-white/20
-          [&_div]:flex [&_div]:self-center [&_div]:gap-2 [&_div]:opacity-70 [&_div]:text-xs
-          first:[&_div_span]:whitespace-nowrap
-        '>
+        <div className='mt-2 grid text-sm'>
           {user?.viewer?.records?.edges?.map(edge => {
-            const recode = edge?.node;
-            if (recode && recode.episode) {
+            const record = edge?.node;
+            if (!record) {
+              return null;
+            }
+            const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
+            if (record && record.episode) {
               return (
-                <Record.ToggleButton key={`r-${recode.annictId}`} workAnnictId={recode.episode.work.annictId} episodeAnnictId={recode.episode.annictId}>
-                  <p>{recode.episode.title || Const.EPISODE_TITLE_UNDEFINED}</p>
-                  <div>
-                    <span>{recode.episode.numberText}</span>
-                    <span>{recode.episode.work.title}</span>
+                <Record.ToggleButton
+                key={`r-${record.annictId}`}
+                className='flex gap-2 px-4 py-1 border-t dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20 '
+                workAnnictId={record.episode.work.annictId}
+                episodeAnnictId={record.episode.annictId}
+              >
+                  {record.ratingState && (
+                    <span className={`flex-none mt-[.2em] w-[1em] h-[1em] rounded-full ${ratingstate?.bgColor}`} title={ratingstate?.label}></span>
+                  )}
+                  <p className='flex-grow text-left'>{record.episode.title || Const.EPISODE_TITLE_UNDEFINED}</p>
+                  <div className='flex-none mt-[.2em] w-2/5 flex gap-2 opacity-70 text-left text-xs'>
+                    <span className='whitespace-nowrap'>#{String(record.episode.number).padStart(2, '0')}</span>
+                    <span>{record.episode.work.title}</span>
                   </div>
                 </Record.ToggleButton>
               )
