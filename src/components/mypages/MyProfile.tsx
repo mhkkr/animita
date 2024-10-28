@@ -13,8 +13,8 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 export default function MyProfile() {
   const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql);
 
-  if (ul) return <div className="p-4 text-center text-5xl text-annict-100"><RingSpinner /></div>;
-  if (ue) return <p className="p-4 text-red-500">{ue?.message}</p>;
+  if (ul) return <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>;
+  if (ue) return <p className="p-8 text-red-500">{ue?.message}</p>;
 
   if (user) {
     return (
