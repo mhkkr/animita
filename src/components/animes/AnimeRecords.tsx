@@ -153,6 +153,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
               }
               <div className="flex flex-wrap items-center gap-3">
                 {/* TODO: リンク付ける */}
+                {/* <a className="hover:underline" href={`https://annict.com/@${record.user?.username}/records/${record.annictId}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーのエピソード記録ページへ"><DisplayDate date={record.createdAt} /></a> */}
                 <span><DisplayDate date={record.createdAt} /></span>
                 {generateDateStyle(record.createdAt) !== generateDateStyle(record.updatedAt) && <span className="dark:text-white/70 text-xs"><DisplayDate date={record.updatedAt} /></span>}
               </div>

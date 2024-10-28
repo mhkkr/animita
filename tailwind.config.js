@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
   content: [
     './src/**/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -18,5 +20,12 @@ module.exports = {
     }
   },
   plugins: [
+    plugin(function({ addUtilities }) {
+      addUtilities({
+        '.leading-trim': {
+          marginBlock: 'calc((1em - 1lh) / 2)',
+        },
+      })
+    }),
   ]
 }

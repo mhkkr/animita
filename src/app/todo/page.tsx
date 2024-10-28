@@ -6,6 +6,12 @@ export const metadata = {
 
 const updates = [
   {
+    date: '2024/10/28 (月)',
+    comments: [
+      'マイページにプロフィールページを追加しました。',
+    ]
+  },
+  {
     date: '2024/10/26 (土)',
     comments: [
       'エピソード履歴に評価を表示しました。',

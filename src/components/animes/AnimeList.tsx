@@ -19,7 +19,7 @@ import Thumbnail from '~/components/animes/AnimeThumbnail';
 
 import Const from '~/constants';
 
-type EntryEachDate = {
+type EntriesDate = {
   day: string,
   list: LibraryEntry[]
 };
@@ -49,10 +49,11 @@ function SwitchTab({ value, label }: { value: string, label: string }) {
   );
 }
 
-function Detail({ entry, now }: { entry: EntryEachDate, now: number }) {
+function Detail({ entry, now }: { entry: EntriesDate, now: number }) {
   if (entry.list.length === 0) {
     return <p className="p-4 dark:text-white/70">エピソードがありません！</p>;
   }
+  
   return (
     <ul>
       {entry.list?.map((entry: LibraryEntry) => {
@@ -102,51 +103,55 @@ function NotEntry() {
   );
 }
 
-function DeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[], now: number }) {
+function DeliveredList({ entriesDate, now }: { entriesDate: EntriesDate[], now: number }) {
   const [statusStateId] = useRecoilState(statusStateIdAtom);
   const [tabState] = useRecoilState(tabStateAtom);
   const tab = tabState.find(tab => tab.id === statusStateId);
 
   // 視聴可能
-  const deliveredEntry = entryEachDate.find(entry => entry.day === '視聴可能');
+  const deliveredEntry = entriesDate.find(entry => entry.day === '視聴可能');
 
   if (!deliveredEntry) return <></>;
 
   return (
     <div className={`${tab?.value === 'delivered' ? '' : 'hidden'}`}>
-      {deliveredEntry.list.length === 0 ?
-        <NotEntry /> :
+      {deliveredEntry.list.length === 0 ? (
+        <NotEntry />
+      ) : (
         <Detail entry={deliveredEntry} now={now} />
-      }
+      )}
     </div>
   );
 }
 
-function UnDeliveredList({ entryEachDate, now }: { entryEachDate: EntryEachDate[], now: number }) {
+function UnDeliveredList({ entriesDate, now }: { entriesDate: EntriesDate[], now: number }) {
   const [statusStateId] = useRecoilState(statusStateIdAtom);
   const [tabState] = useRecoilState(tabStateAtom);
   const tab = tabState.find(tab => tab.id === statusStateId);
 
-  // 未配信を曜日で並び替え
-  const undeliveredEntries =
-    (
-      // 今日の曜日から最後まで取得
-      entryEachDate.slice(new Date().getDay() + 1)
-      // 視聴可能の次から今日の曜日の前まで取得
-      .concat(entryEachDate.slice(1, new Date().getDay() + 1))
-    );
+  // 予定を曜日で並び替え
+  const undeliveredEntries = (
+    entriesDate
+
+    // 今日の曜日から最後まで取得
+    .slice(new Date().getDay() + 1)
+    
+    // 視聴可能の次から今日の曜日の前まで取得
+    .concat(entriesDate.slice(1, new Date().getDay() + 1))
+  );
 
   return (
     <div className={`${tab?.value === 'undelivered' ? '' : 'hidden'}`}>
-      {undeliveredEntries.filter(entry => entry.list.length).length === 0 ?
-        <NotEntry /> :
+      {undeliveredEntries.filter(entry => entry.list.length).length === 0 ? (
+        <NotEntry />
+      ) : (
         undeliveredEntries.map(entry => (
           <div key={entry.day} className="mt-12 first:mt-6">
             <div className="border-b dark:border-stone-700 p-4 text-lg font-bold">{entry.day}曜日</div>
             <Detail entry={entry} now={now} />
           </div>
         ))
-      }
+      )}
     </div>
   );
 }
@@ -161,7 +166,7 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
   hasNextPrograms?.sort((a, b) => new Date(a?.nextProgram?.startedAt).getTime() - new Date(b?.nextProgram?.startedAt).getTime());
 
   // 視聴可能または予定曜日ごとに格納する
-  const entryEachDate: EntryEachDate[] = [
+  const entriesDate: EntriesDate[] = [
     { day: '視聴可能', list: [] },
     { day: '日', list: [] },
     { day: '月', list: [] },
@@ -174,8 +179,8 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
   hasNextPrograms?.forEach(program => {
     const startedAt = new Date(program?.nextProgram?.startedAt);
     const isViewable = now > startedAt.getTime();
-    const day = ['日','月','火','水','木','金','土'][startedAt.getDay()];
-    const entry = isViewable ? entryEachDate.find(entry => entry.day === '視聴可能') : entryEachDate.find(entry => entry.day === day);
+    const day = ['日', '月', '火', '水', '木', '金', '土'][startedAt.getDay()];
+    const entry = isViewable ? entriesDate.find(entry => entry.day === '視聴可能') : entriesDate.find(entry => entry.day === day);
     if (entry && program) {
       entry.list.push(program as LibraryEntry);
     }
@@ -183,8 +188,8 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
 
   return (
     <>
-      <DeliveredList entryEachDate={entryEachDate} now={now} />
-      <UnDeliveredList entryEachDate={entryEachDate} now={now} />
+      <DeliveredList entriesDate={entriesDate} now={now} />
+      <UnDeliveredList entriesDate={entriesDate} now={now} />
     </>
   );
 }
@@ -205,7 +210,7 @@ export default function AnimeList() {
         </h1>
         <div className="flex border-b dark:border-stone-700">
           <SwitchTab value="delivered" label="視聴可能" />
-          <SwitchTab value="undelivered" label="未配信" />
+          <SwitchTab value="undelivered" label="予定" />
         </div>
       </header>
       

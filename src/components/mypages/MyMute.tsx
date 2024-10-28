@@ -34,7 +34,7 @@ export default function MyMute() {
             return (
               <li key={`mute-${user.username}`} className="flex items-center gap-4 py-2 px-4 hover:bg-black/10 hover:dark:bg-white/20">
                 <a className="flex items-center hover:underline" href={`https://annict.com/@${user.username}`} target="_blank" rel="noopener noreferrer">
-                  <Icons id="open_in_new" type="link" className="text-[1.5em] mr-1" />
+                  <Icons id="open_in_new" type="link" className="text-[1.25em] mr-1" />
                   @{user.username}
                 </a>
                 <button onClick={() => unMuteUser(user)} className="ml-auto text-sm hover:text-red-500" type="button">ミュートを解除する</button>
