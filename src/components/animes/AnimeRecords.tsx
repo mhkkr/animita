@@ -106,14 +106,12 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
               このユーザーをミュートしました。
             </div>
           ) : (
-            <a className="group hover:underline" href={`https://annict.com/@${record.user?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
-              <figure className="flex items-center gap-3">
-                <div className="flex-shrink-0 rounded-full overflow-hidden [contain:content] w-8 h-8">
-                  <img className="object-cover w-full h-full group-hover:opacity-70" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
-                </div>
-                <figcaption className="break-all">{record.user.name}</figcaption>
-              </figure>
-            </a>
+            <figure className="flex items-center gap-3">
+              <div className="flex-shrink-0 rounded-full overflow-hidden [contain:content] w-8 h-8">
+                <img className="object-cover w-full h-full" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
+              </div>
+              <figcaption className="break-all">{record.user.name}</figcaption>
+            </figure>
           )}
           <div className="flex-none ml-auto">
             <Popover className="relative">
@@ -121,8 +119,16 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                 <>
                   <PopoverPanel
                     transition
-                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col gap-2 p-2 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden [contain:content] shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col py-0.5 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden [contain:content] shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
                   >
+                    <a className="px-2 py-1.5 group hover:underline" href={`https://annict.com/@${record.user?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
+                      <figure className="flex items-center gap-2">
+                        <div className="flex-shrink-0 rounded-full overflow-hidden [contain:content] w-8 h-8">
+                          <img className="object-cover w-full h-full group-hover:opacity-70" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
+                        </div>
+                        <figcaption className="break-all">{record.user.name}</figcaption>
+                      </figure>
+                    </a>
                     {isMyRecord ? (
                       <>
                         <Edit record={record} close={close} />

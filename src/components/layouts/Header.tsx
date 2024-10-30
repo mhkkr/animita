@@ -19,6 +19,8 @@ export default function Header({ className }: { className: string }) {
               width={600 * .1}
               height={500 * .1}
               alt={Const.TITLE}
+              priority
+              loading="eager"
             />
           </Link>
         </h1>

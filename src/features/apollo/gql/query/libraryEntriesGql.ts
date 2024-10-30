@@ -20,7 +20,6 @@ export const libraryEntriesGql = gql`
               facebookOgImageUrl
               copyright
             }
-            noEpisodes
           }
           nextProgram {
             channel {

@@ -68,7 +68,7 @@ function RatingStates({ records }: { records: Record[] }) {
   useEffect(() => {
     const mutedUsers = getMutedUsers();
     setFilteredRecords(records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId)));
-  }, [muteUpdate]);
+  }, [muteUpdate, records]);
 
   let allCount = 0;
   const ratings = {

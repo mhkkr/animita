@@ -48,7 +48,7 @@ export default function Delete({ record, close }: { record: Record, close: () =>
         }
         close();
       }}
-      className={`inline-flex items-center ${loading ? 'cursor-not-allowed grayscale' : ''}`}
+      className={`flex items-center px-2 py-1.5 hover:underline ${loading ? 'cursor-not-allowed grayscale' : ''}`}
       type="button"
       disabled={loading}
     >

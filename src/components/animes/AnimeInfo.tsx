@@ -44,6 +44,13 @@ export function Link({ work }: { work: Work }) {
       <RelatedLink
         icon="open_in_new"
         className="mr-1"
+        test={work.malAnimeId}
+        href={`https://myanimelist.net/anime/${work.malAnimeId}`}
+        label="MyAnimeList"
+      />
+      <RelatedLink
+        icon="open_in_new"
+        className="mr-1"
         test={work.officialSiteUrl}
         href={work.officialSiteUrl}
         label="公式サイト"

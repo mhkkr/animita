@@ -88,9 +88,7 @@ function Card({ url, id, type, label, value }: { url: string, id: string, type: 
         <span className="leading-trim whitespace-nowrap">{label}</span>
       </h2>
       <div className="flex-grow flex items-center justify-center">
-        <p className="leading-trim text-xl lg:text-3xl font-bold">
-          {value ?? 0}
-        </p>
+        <p className="leading-trim text-xl lg:text-3xl font-bold">{value ?? 0}</p>
       </div>
     </a>
   );

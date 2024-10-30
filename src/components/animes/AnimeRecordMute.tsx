@@ -38,7 +38,7 @@ export default function Mute({ record, mute, setMute, close }: { record: Record,
   return (
     <button
       onClick={() => mute ? unMuteUser(record.user) : addMuteUser(record.user)}
-      className="inline-flex items-center"
+      className="flex items-center px-2 py-1.5 hover:underline"
       type="button"
     >
       {mute ? (

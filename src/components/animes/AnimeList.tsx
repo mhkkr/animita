@@ -63,9 +63,7 @@ function Detail({ entry, now }: { entry: EntriesDate, now: number }) {
           <li key={entry?.work.annictId} className={`flex gap-4 p-4 border-b dark:border-stone-700`}>
             <div className="flex-shrink-0 w-28">
               <Link href={`/anime/${entry?.work.annictId}`}>
-                <figure className="bg-gray-300">
-                  <Thumbnail work={entry?.work} className="mx-auto object-contain max-h-28 max-w-28" />
-                </figure>
+                <Thumbnail work={entry?.work} />
               </Link>
               <p className="mt-2 text-center text-xs dark:text-white/70">{entry?.nextProgram?.channel.name}</p>
             </div>

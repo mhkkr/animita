@@ -29,7 +29,7 @@ export default function Twitter({ record, episode, user, close }: { record: Reco
     <TwitterShareButton
       url={url}
       title={title}
-      className="inline-flex items-center"
+      className="flex items-center !px-2 !py-1.5 hover:underline"
       type="button"
       onClick={close}
     >

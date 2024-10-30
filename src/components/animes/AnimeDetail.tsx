@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
@@ -17,6 +17,7 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 
 import Stataus from '~/components/animes/AnimeStataus';
 import Thumbnail from '~/components/animes/AnimeThumbnail';
+import AllEpisodes from '~/components/animes/AnimeAllEpisodes';
 import Episodes from '~/components/animes/AnimeEpisodes';
 import { Link, Channel, Staff, Cast } from '~/components/animes/AnimeInfo';
 
@@ -65,9 +66,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
           {work ? (
             <>
               <SetStatusState work={work} />
-              <figure className="bg-gray-300">
-                <Thumbnail work={work} className="mx-auto" />
-              </figure>
+              <Thumbnail work={work} />
               <Link work={work} />
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 mt-4">
                 <div className="flex-1">
@@ -87,7 +86,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                 <Staff work={work} />
               </div>
               <div className="mt-6">
-                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">エピソード</h2>
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">エピソード{work.malAnimeId && <AllEpisodes malAnimeId={work.malAnimeId} />}</h2>
                 <Episodes work={work} />
               </div>
               <div className="mt-6">

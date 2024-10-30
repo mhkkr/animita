@@ -13,7 +13,7 @@ export default function Edit({ record, close }: { record: Record, close: () => v
         setRecordEditId(record.id);
         close();
       }}
-      className="inline-flex items-center"
+      className="flex items-center px-2 py-1.5 hover:underline"
       type="button"
     >
       <Icons id="edit" type="form" className="mr-1" />

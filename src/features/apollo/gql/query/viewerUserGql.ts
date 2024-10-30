@@ -3,6 +3,7 @@ import { gql } from '@apollo/client';
 export const viewerUserGql = gql`
   query viewerUser {
     viewer {
+      id
       annictId
 
       username           # ユーザー名

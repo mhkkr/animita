@@ -6,6 +6,16 @@ export const metadata = {
 
 const updates = [
   {
+    date: '2024/10/30 (水)',
+    comments: [
+      'ApolloClient のキャッシュ設定を最適化。',
+      '作品画像が取得できない場合は MyAnimeList の画像を取得するようにしました。',
+      'エピソード一覧にて全何話の表示を追加しました。',
+      'エピソード記録時にみんなの評価が変動しない不具合を訂正。',
+      'Annict のユーザーページへのリンクの設置場所をパネル内に移動しました。',
+    ]
+  },
+  {
     date: '2024/10/28 (月)',
     comments: [
       'マイページにプロフィールページを追加しました。',
@@ -91,14 +101,6 @@ export default function Todo() {
   return (
     <LayoutContainer>
       <h1 className="mb-8 px-4 py-3 pt-1 sm:py-3 text-center text-lg font-bold border-b dark:border-stone-700">{metadata.title}</h1>
-
-      <section className="mt-8 px-4">
-        <h2 className="text-lg font-bold">やり残しTODO</h2>
-        <ul className="list-disc mt-2 ml-6">
-          <li>画像の取得を cdn.myanimelist.net へ変更する？</li>
-          <li>パフォーマンスを上げる！</li>
-        </ul>
-      </section>
 
       <section className="mt-8 px-4">
         <h2 className="text-lg font-bold">やりたかったけどできなかったこと</h2>

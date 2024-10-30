@@ -71,6 +71,8 @@ export default function Login({ status }: { status: string }) {
               width={600}
               height={500}
               alt={Const.TITLE}
+              priority
+              loading="eager"
             />
           </h1>
           <div className="px-6 mt-8 mb-10">

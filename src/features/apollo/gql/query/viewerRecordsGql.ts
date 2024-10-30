@@ -6,6 +6,7 @@ export const viewerRecordsGql = gql`
       records(first: $first, orderBy: { field: CREATED_AT, direction: DESC }) {
         edges {
           node {
+            id
             annictId
 						ratingState
             episode {
