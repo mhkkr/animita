@@ -35,7 +35,7 @@ function InfoCast({ work }: { work: Work }) {
       <div className="mt-4">
         <button
           onClick={handleClick}
-          className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
+          className="flex items-center my-5 mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
           type="button"
         >
           <span>アニメ情報とキャストを{visible ? '非表示にする' : '表示する'}</span>
@@ -144,7 +144,7 @@ export function Episode({ work }: { work: Work }) {
       fixed inset-0 z-40 bg-slate-700/70 overflow-y-auto
       ${recordOpenerEpisodeAnnictId === 0 ? 'hidden' : 'block'}
     `}>
-      <div className={`relative sm:py-24 sm:px-4 ${el && 'py-24 px-4'}`}>
+      <div className={`min-h-svh relative sm:py-24 sm:px-4 ${el ? 'py-24 px-4' : ''}`}>
         {/* 背景クリックで閉じる用 */}
         <ToggleButton className="absolute inset-0" />
 
