@@ -75,10 +75,13 @@ function Profile({ user }: { user: ViewerUserQuery }) {
   );
 }
 
-function Card({ url, id, type, label, value }: { url: string, id: string, type: string, label: string, value: number | null | undefined }) {
+function Card(
+  { direction, url, id, type, label, value }:
+  { direction?: string, url: string, id: string, type: string, label: string, value: number | null | undefined }
+) {
   return (
     <a
-      className="flex flex-col gap-2 p-2.5 lg:p-3 border dark:border-stone-700 rounded-md hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+      className={`flex ${direction === "col" ? "flex-col" : "items-center"} gap-2 p-2.5 lg:p-3 border dark:border-stone-700 rounded-md hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black`}
       href={url}
       target="_blank"
       rel="noopener noreferrer"
@@ -87,7 +90,7 @@ function Card({ url, id, type, label, value }: { url: string, id: string, type: 
         <Icons id={id} type={type} className="flex-shrink-0 relative -top-[.05em]" />
         <span className="leading-trim whitespace-nowrap">{label}</span>
       </h2>
-      <div className="flex-grow flex items-center justify-center">
+      <div className={`${direction === "col" ? "flex-grow" : "ml-auto text-right"} flex items-center justify-center break-all`}>
         <p className="leading-trim text-xl lg:text-3xl font-bold">{value ?? 0}</p>
       </div>
     </a>
@@ -97,9 +100,9 @@ function Card({ url, id, type, label, value }: { url: string, id: string, type: 
 function Communication({ user }: { user: ViewerUserQuery }) {
   return (
     <div className="grid gap-2 lg:gap-4 grid-cols-3">
-      <Card url="https://annict.com/notifications" id="bell" type="notification" label="通知" value={user.viewer?.notificationsCount} />
-      <Card url={`https://annict.com/@${user.viewer?.username}/following`} id="reguser" type="notification" label="フォロイー" value={user.viewer?.followingsCount} />
-      <Card url={`https://annict.com/@${user.viewer?.username}/followers`} id="user" type="notification" label="フォロワー" value={user.viewer?.followersCount} />
+      <Card url="https://annict.com/notifications" id="bell" type="notification" label="通知" value={user.viewer?.notificationsCount} direction="col" />
+      <Card url={`https://annict.com/@${user.viewer?.username}/following`} id="reguser" type="notification" label="フォロイー" value={user.viewer?.followingsCount} direction="col" />
+      <Card url={`https://annict.com/@${user.viewer?.username}/followers`} id="user" type="notification" label="フォロワー" value={user.viewer?.followersCount} direction="col" />
     </div>
   );
 }
@@ -107,7 +110,7 @@ function Communication({ user }: { user: ViewerUserQuery }) {
 function Records({ user }: { user: ViewerUserQuery }) {
   return (
     <div className="grid gap-2 lg:gap-4 grid-cols-2">
-      <Card url={`https://annict.com/@${user.viewer?.username}/records`} id="edit" type="form" label="記録数" value={user.viewer?.recordsCount} />
+      <Card url={`https://annict.com/@${user.viewer?.username}/records`} id="edit" type="form" label="記録数" value={user.viewer?.recordsCount} direction="col" />
       <div className="grid gap-2 lg:gap-4">
         <Card url={`https://annict.com/@${user.viewer?.username}/watching`} id="WATCHING_CURRENT" type="status_state" label="見たい" value={user.viewer?.wannaWatchCount} />
         <Card url={`https://annict.com/@${user.viewer?.username}/wanna_watch`} id="WANNA_WATCH_CURRENT" type="status_state" label="見てる" value={user.viewer?.watchingCount} />

@@ -18,10 +18,10 @@ import Icons from '~/components/icons/Icons';
 
 import { RingSpinner } from '~/components/spinners/Spinner';
 
-import { NoCommentRecords, Records } from '~/components/animes/AnimeRecords';
 import { Link, Staff, Cast } from '~/components/animes/AnimeInfo';
 import Form from '~/components/animes/AnimeRecordForm';
 import Evaluation from '~/components/animes/AnimeEvaluation';
+import Records from '~/components/animes/AnimeRecords';
 
 import Const from '~/constants';
 
@@ -78,8 +78,7 @@ function Contents({ work, episode, user }: { work: Work, episode: Episode, user:
       </div>
       <InfoCast work={work} />
       <Evaluation records={records} episode={episode} user={user} />
-      <Records records={mainRecords} episode={episode} user={user} />
-      <NoCommentRecords otherRecords={otherRecords} episode={episode} user={user} />
+      <Records records={mainRecords} otherRecords={otherRecords} episode={episode} user={user} />
     </>
   );
 }

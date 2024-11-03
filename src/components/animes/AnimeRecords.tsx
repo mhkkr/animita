@@ -21,10 +21,31 @@ import Favorite from '~/components/animes/AnimeRecordFavorite';
 import Twitter from '~/components/animes/AnimeRecordTwitter';
 
 import { generateDateStyle, getMutedUsers } from '~/libs/function';
+import { getSetting } from '~/libs/settings';
 
 import Const from '~/constants';
 
-export function NoCommentRecords({ otherRecords, episode, user }: { otherRecords: Record[], episode: Episode, user: ViewerUserQuery }) {
+export default function WrapperRecords({ records, otherRecords, episode, user }: { records: Record[], otherRecords: Record[], episode: Episode, user: ViewerUserQuery }) {
+  const peoplesRecords = getSetting("displays", "peoples-records");
+
+  if (peoplesRecords === "invisible") {
+    return <></>;
+  } else if (peoplesRecords === "record-after-visible") {
+    const isMyRecord = records.find(record => record.user.annictId === user.viewer?.annictId);
+    if (!isMyRecord) {
+      return <></>;
+    }
+  }
+
+  return (
+    <>
+      <Records records={records} episode={episode} user={user} />
+      <NoCommentRecords records={otherRecords} episode={episode} user={user} />
+    </>
+  );
+}
+
+function NoCommentRecords({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
   const [recordShowNoComment, setRecordShowNoComment] = useAtom(recordShowNoCommentAtom);
 
   const handleClick = useCallback(() => setRecordShowNoComment(prevState => !prevState), []);
@@ -41,16 +62,15 @@ export function NoCommentRecords({ otherRecords, episode, user }: { otherRecords
           <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
         </button>
       </div>
-      <Records records={otherRecords} episode={episode} user={user} />
+      <Records records={records} episode={episode} user={user} />
     </div>
   )
 }
 
-export function Records({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
+function Records({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
   const mutedUsers = getMutedUsers();
   const filteredRecords = records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId));
 
-  // ratingStateに対する優先順位を定義
   const ratingPriority = {
     GREAT: 4,
     GOOD: 3,
