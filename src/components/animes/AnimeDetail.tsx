@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
@@ -66,7 +66,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
           {work ? (
             <>
               <SetStatusState work={work} />
-              <Thumbnail work={work} />
+              <Thumbnail work={work} view="detail" />
               <Link work={work} />
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 mt-4">
                 <div className="flex-1">
@@ -89,6 +89,9 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">エピソード{work.malAnimeId && <AllEpisodes malAnimeId={work.malAnimeId} />}</h2>
                 <Episodes work={work} />
               </div>
+              {/* <div className="mt-6">
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">作品の感想</h2>
+              </div> */}
               <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">キャスト</h2>
                 <Cast work={work} />

@@ -1,14 +1,23 @@
 'use client';
 
+import { useState } from 'react';
+
 import type { Work } from '~/features/apollo/generated-types';
+
+import { RingSpinner } from '~/components/spinners/Spinner';
 
 import { targetMal, getMal, setMal, fetchJikanAnime } from '~/libs/mal';
 
 const noImage = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>';
 
-export default function Thumbnail({ work }: { work: Work }) {
+export default function Thumbnail({ work, view }: { work: Work, view: "list" | "detail" }) {
+  const [loading, setLoading] = useState(true);
+
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const element = e.target as HTMLImageElement;
+
+    setLoading(false);
+
     if (element.src === noImage) {
       handleError(e);
     }
@@ -24,6 +33,8 @@ export default function Thumbnail({ work }: { work: Work }) {
       if (m) {
         element.src = m.largeImageUrl;
       } else {
+        setLoading(true);
+        
         fetchJikanAnime(work.malAnimeId)
           .then(response => {
             if (response.data.images) {
@@ -42,6 +53,9 @@ export default function Thumbnail({ work }: { work: Work }) {
 
   return (
     <figure className="-z-10 relative pt-[52.5%] bg-gray-700/70 text-gray-700/70 overflow-hidden [contain:content]">
+      {loading && (
+        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ${view === "detail" ? "text-5xl" : "text-3xl"} text-annict-100`}><RingSpinner /></div>
+      )}
       <img
         className="absolute left-0 top-0 w-full h-full object-contain"
         src={work.image?.facebookOgImageUrl || noImage}
