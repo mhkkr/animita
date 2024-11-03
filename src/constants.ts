@@ -8,7 +8,7 @@ class Const {
   MY_PAGES = [
     { id: 'profile', path: '/', title: 'プロフィール' },
     { id: 'records', path: '/records', title: '記録' },
-    { id: 'mute', path: '/mute', title: 'ミュート' },
+    { id: 'setting', path: '/setting', title: '設定' },
   ];
   MY_RECORDS_LIMIT = 50;
 
@@ -19,7 +19,7 @@ class Const {
     { id: 'WINTER', label: '冬' },
   ];
 
-  STATUSSTATE_LIST = [
+  STATUS_STATE_LIST = [
     { id: 'WATCHING', label: '見てる' },
     { id: 'WANNA_WATCH', label: '見たい' },
     { id: 'WATCHED', label: '見た' },
@@ -27,7 +27,7 @@ class Const {
     { id: 'STOP_WATCHING', label: '視聴中止' }
   ];
 
-  RATINGSTATE_LIST = [
+  RATING_STATE_LIST = [
     { id: 'BAD', label: '良くない', bgColor: 'bg-gray-500' },
     { id: 'AVERAGE', label: '普通', bgColor: 'bg-orange-500' },
     { id: 'GOOD', label: '良い', bgColor: 'bg-green-500' },

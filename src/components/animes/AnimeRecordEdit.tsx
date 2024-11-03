@@ -1,11 +1,11 @@
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
 import { Record } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
 
 export default function Edit({ record, close }: { record: Record, close: () => void }) {
-  const setRecordEditId = useSetRecoilState(recordEditIdAtom);
+  const setRecordEditId = useSetAtom(recordEditIdAtom);
 
   return (
     <button

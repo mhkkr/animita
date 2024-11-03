@@ -9,7 +9,7 @@ import Icons from '~/components/icons/Icons';
 import Const from '~/constants';
 
 const statusStateIdArray: string[] = [];
-Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
+Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
 
 export function Link({ work }: { work: Work }) {
   function RelatedLink({ icon, className, test, href, label }: {

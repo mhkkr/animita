@@ -3,7 +3,7 @@ import LayoutContainer from '~/components/layouts/Container';
 import AnimeDetail from '~/components/animes/AnimeDetail';
 
 type Params = {
-  params: { annictId: string }
+  params: Promise<{ annictId: string }>
 };
 
 export const metadata = {
@@ -16,11 +16,11 @@ export const metadata = {
 //   return { title: work?.title }
 // }
 
-export default function Works({ params }: Params) {
-  const annictIdInt = parseInt(params.annictId, 10);
+export default async function Works({ params }: Params) {
+  const annictId = parseInt((await params).annictId, 10);
   return (
     <LayoutContainer>
-      <AnimeDetail annictId={annictIdInt} />
+      <AnimeDetail annictId={annictId} />
     </LayoutContainer>
   );
 }

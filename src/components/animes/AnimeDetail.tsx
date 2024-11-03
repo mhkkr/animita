@@ -7,7 +7,7 @@ import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
 
 import Icons from '~/components/icons/Icons';
@@ -24,11 +24,11 @@ import { Link, Channel, Staff, Cast } from '~/components/animes/AnimeInfo';
 import Const from '~/constants';
 
 const statusStateIdArray: string[] = [];
-Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
+Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
 
 // TODO: setStatusStateId を実行したいだけで、この実装は苦しい気がする…。
 function SetStatusState({ work }: { work: Work }) {
-  const setStatusStateId = useSetRecoilState(statusStateIdAtom);
+  const setStatusStateId = useSetAtom(statusStateIdAtom);
   const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
     variables: {
       states: statusStateIdArray,

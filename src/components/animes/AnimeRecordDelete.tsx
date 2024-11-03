@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { deleteRecordGql } from '~/features/apollo/gql/mutation/deleteRecordGql';
 
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
 import { Record } from '~/features/apollo/generated-types';
@@ -9,8 +9,8 @@ import { Record } from '~/features/apollo/generated-types';
 import Icons from '~/components/icons/Icons';
 
 export default function Delete({ record, close }: { record: Record, close: () => void }) {
-  const [recordDeleteId, setRecordDeleteId] = useRecoilState(recordDeleteIdAtom);
-  const [recordEditId, setRecordEditId] = useRecoilState(recordEditIdAtom);
+  const [recordDeleteId, setRecordDeleteId] = useAtom(recordDeleteIdAtom);
+  const [recordEditId, setRecordEditId] = useAtom(recordEditIdAtom);
 
   const [deleteRecord, { loading, error }] = useMutation(deleteRecordGql, {
     update(cache, { data: { deleteRecord } }) {

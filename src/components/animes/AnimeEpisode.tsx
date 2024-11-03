@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useQuery } from '@apollo/client';
@@ -8,8 +8,7 @@ import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
 import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { muteUpdateAtom } from '~/atoms/muteUpdateAtom';
+import { useAtom, useSetAtom } from 'jotai';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
 import { recordCurrentEpisodeAnnictIdAtom } from '~/atoms/recordCurrentEpisodeAnnictIdAtom';
 import { recordOpenerEpisodeAnnictIdAtom } from '~/atoms/recordOpenerEpisodeAnnictIdAtom';
@@ -22,15 +21,14 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 import { NoCommentRecords, Records } from '~/components/animes/AnimeRecords';
 import { Link, Staff, Cast } from '~/components/animes/AnimeInfo';
 import Form from '~/components/animes/AnimeRecordForm';
-
-import { getMutedUsers } from '~/libs/function';
+import Evaluation from '~/components/animes/AnimeEvaluation';
 
 import Const from '~/constants';
 
 function InfoCast({ work }: { work: Work }) {
-  const [recordShowInfoCast, setRecordShowInfoCast] = useRecoilState(recordShowInfoCastAtom);
+  const [visible, setVisible] = useAtom(recordShowInfoCastAtom);
 
-  const handleClick = useCallback(() => setRecordShowInfoCast(prevState => !prevState), []);
+  const handleClick = useCallback(() => setVisible(prevState => !prevState), []);
 
   return (
     <div className="mb-4 border-t dark:border-stone-700">
@@ -40,11 +38,11 @@ function InfoCast({ work }: { work: Work }) {
           className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
           type="button"
         >
-          <span>アニメ情報とキャストを{recordShowInfoCast ? '非表示にする' : '表示する'}</span>
-          <Icons id={recordShowInfoCast ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
+          <span>アニメ情報とキャストを{visible ? '非表示にする' : '表示する'}</span>
+          <Icons id={visible ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
         </button>
       </div>
-      {recordShowInfoCast && (
+      {visible && (
         <>
           <Link work={work} />
           <div className="px-4 mt-4">
@@ -56,56 +54,6 @@ function InfoCast({ work }: { work: Work }) {
           </div>
         </>
       )}
-    </div>
-  )
-}
-
-function RatingStates({ records }: { records: Record[] }) {
-  const [muteUpdate, setMuteUpdate] = useRecoilState(muteUpdateAtom);
-  const mutedUsers = getMutedUsers();
-  const [filteredRecords, setFilteredRecords] = useState<Record[]>(records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId)));
-
-  useEffect(() => {
-    const mutedUsers = getMutedUsers();
-    setFilteredRecords(records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId)));
-  }, [muteUpdate, records]);
-
-  let allCount = 0;
-  const ratings = {
-    'BAD' : 0,
-    'AVERAGE' : 0,
-    'GOOD' : 0,
-    'GREAT' : 0
-  };
-
-  filteredRecords.forEach(record => {
-    if (record.ratingState) {
-      ratings[record.ratingState]++;
-      allCount++;
-    }
-  });
-
-  if (allCount === 0) {
-    return <></>;
-  }
-
-  const maxValue = Math.max(...Object.values(ratings));
-
-  return (
-    <div className="p-4 border-t dark:border-stone-700 text-sm">
-      <p>★みんなの評価</p>
-      <ul className="mt-2 flex text-center rounded-md overflow-hidden [contain:content]">
-        {Object.entries(ratings).map(([key, value]) => {
-          const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === key);
-          return (
-            value !== 0 && (
-              <li key={key} className={`min-w-4 py-2 ${ratingstate?.bgColor} ${maxValue == value ? "font-bold" : ""}`} style={{ width: value / allCount * 100 + "%" }} title={ratingstate?.label}>
-                {value}
-              </li>
-            )
-          )
-        })}
-      </ul>
     </div>
   )
 }
@@ -129,11 +77,7 @@ function Contents({ work, episode, user }: { work: Work, episode: Episode, user:
         {episode && <Form episode={episode} />}
       </div>
       <InfoCast work={work} />
-      <div className="grid grid-cols-2 border-t dark:border-stone-700 text-xs text-center">
-        <span className="p-4">全評価数：<span className="inline-block">{episode.recordsCount}</span></span>
-        <span className="p-4 border-l dark:border-stone-700">コメントあり：<span className="inline-block">{records.filter(record => record?.comment).length}</span></span>
-      </div>
-      <RatingStates records={records} />
+      <Evaluation records={records} episode={episode} user={user} />
       <Records records={mainRecords} episode={episode} user={user} />
       <NoCommentRecords otherRecords={otherRecords} episode={episode} user={user} />
     </>
@@ -147,9 +91,9 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
   workAnnictId?: number | undefined,
   disabled?: boolean
 }) {
-  const setRecordEditId = useSetRecoilState(recordEditIdAtom);
-  const setRecordCurrentEpisodeAnnictId = useSetRecoilState(recordCurrentEpisodeAnnictIdAtom);
-  const setRecordOpenerEpisodeAnnictId = useSetRecoilState(recordOpenerEpisodeAnnictIdAtom);
+  const setRecordEditId = useSetAtom(recordEditIdAtom);
+  const setRecordCurrentEpisodeAnnictId = useSetAtom(recordCurrentEpisodeAnnictIdAtom);
+  const setRecordOpenerEpisodeAnnictId = useSetAtom(recordOpenerEpisodeAnnictIdAtom);
   const router = useRouter();
 
   return (
@@ -180,8 +124,8 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
 }
 
 export function Episode({ work }: { work: Work }) {
-  const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useRecoilState(recordOpenerEpisodeAnnictIdAtom);
-  const [recordCurrentEpisodeAnnictId] = useRecoilState(recordCurrentEpisodeAnnictIdAtom);
+  const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useAtom(recordOpenerEpisodeAnnictIdAtom);
+  const [recordCurrentEpisodeAnnictId] = useAtom(recordCurrentEpisodeAnnictIdAtom);
 
   const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql);
   const { data: episodes, loading: el, error: ee } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {

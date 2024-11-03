@@ -1,6 +1,3 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-export const recordShowNoCommentAtom = atom({
-  key: 'recordShowNoComment',
-  default: false
-});
+export const recordShowNoCommentAtom = atom(false);

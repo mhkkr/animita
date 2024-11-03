@@ -5,7 +5,7 @@ import { useState, useCallback } from 'react';
 import { Popover, PopoverPanel, PopoverButton } from '@headlessui/react';
 import type { ViewerUserQuery, Episode, Record } from '~/features/apollo/generated-types';
 
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
 import { recordShowNoCommentAtom } from '~/atoms/recordShowNoCommentAtom';
@@ -25,7 +25,7 @@ import { generateDateStyle, getMutedUsers } from '~/libs/function';
 import Const from '~/constants';
 
 export function NoCommentRecords({ otherRecords, episode, user }: { otherRecords: Record[], episode: Episode, user: ViewerUserQuery }) {
-  const [recordShowNoComment, setRecordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
+  const [recordShowNoComment, setRecordShowNoComment] = useAtom(recordShowNoCommentAtom);
 
   const handleClick = useCallback(() => setRecordShowNoComment(prevState => !prevState), []);
 
@@ -79,11 +79,11 @@ export function Records({ records, episode, user }: { records: Record[], episode
 function Record({ record, episode, user }: { record: Record, episode: Episode, user: ViewerUserQuery }) {
   const [mute, setMute] = useState(false);
 
-  const [recordShowNoComment] = useRecoilState(recordShowNoCommentAtom);
-  const [recordDeleteId] = useRecoilState(recordDeleteIdAtom);
-  const [recordEditId] = useRecoilState(recordEditIdAtom);
+  const [recordShowNoComment] = useAtom(recordShowNoCommentAtom);
+  const [recordDeleteId] = useAtom(recordDeleteIdAtom);
+  const [recordEditId] = useAtom(recordEditIdAtom);
   
-  const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
+  const ratingState = Const.RATING_STATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
   const isMyRecord = record.user.annictId === user.viewer?.annictId;
   const disabled = recordDeleteId === record.id || recordEditId === record.id;
 
@@ -152,9 +152,9 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <Favorite record={record} />
               {record.ratingState &&
-                <div className={`inline-flex items-center px-2 py-0.5 rounded-full ${ratingstate?.bgColor} text-white dark:text-inherit`}>
-                  <Icons id={ratingstate?.id} type="rating_state" className="text-sm mr-1" />
-                  {ratingstate?.label}
+                <div className={`inline-flex items-center px-2 py-0.5 rounded-full ${ratingState?.bgColor} text-white dark:text-inherit`}>
+                  <Icons id={ratingState?.id} type="rating_state" className="text-sm mr-1" />
+                  {ratingState?.label}
                 </div>
               }
               <div className="flex flex-wrap items-center gap-3">

@@ -6,7 +6,7 @@ import { useQuery } from '@apollo/client';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { LibraryEntriesQuery, LibraryEntry } from '~/features/apollo/generated-types';
 
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
 import { tabStateAtom } from '~/atoms/tabStateAtom';
 
@@ -25,8 +25,8 @@ type EntriesDate = {
 };
 
 function SwitchTab({ value, label }: { value: string, label: string }) {
-  const [statusStateId] = useRecoilState(statusStateIdAtom);
-  const [tabState, setTabState] = useRecoilState(tabStateAtom);
+  const [statusStateId] = useAtom(statusStateIdAtom);
+  const [tabState, setTabState] = useAtom(tabStateAtom);
 
   const tab = tabState.find(tab => tab.id === statusStateId);
   const tabIndex = tabState.findIndex(tab => tab.id === statusStateId);
@@ -102,8 +102,8 @@ function NotEntry() {
 }
 
 function DeliveredList({ entriesDate, now }: { entriesDate: EntriesDate[], now: number }) {
-  const [statusStateId] = useRecoilState(statusStateIdAtom);
-  const [tabState] = useRecoilState(tabStateAtom);
+  const [statusStateId] = useAtom(statusStateIdAtom);
+  const [tabState] = useAtom(tabStateAtom);
   const tab = tabState.find(tab => tab.id === statusStateId);
 
   // 視聴可能
@@ -123,8 +123,8 @@ function DeliveredList({ entriesDate, now }: { entriesDate: EntriesDate[], now: 
 }
 
 function UnDeliveredList({ entriesDate, now }: { entriesDate: EntriesDate[], now: number }) {
-  const [statusStateId] = useRecoilState(statusStateIdAtom);
-  const [tabState] = useRecoilState(tabStateAtom);
+  const [statusStateId] = useAtom(statusStateIdAtom);
+  const [tabState] = useAtom(tabStateAtom);
   const tab = tabState.find(tab => tab.id === statusStateId);
 
   // 予定を曜日で並び替え
@@ -193,11 +193,11 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
 }
 
 export default function AnimeList() {
-  const [statusStateId] = useRecoilState(statusStateIdAtom);
+  const [statusStateId] = useAtom(statusStateIdAtom);
   const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
     variables: { states: [statusStateId] }
   });
-  const STATE = Const.STATUSSTATE_LIST.find(state => state.id === statusStateId);
+  const STATE = Const.STATUS_STATE_LIST.find(state => state.id === statusStateId);
 
   return (
     <div className="relative">

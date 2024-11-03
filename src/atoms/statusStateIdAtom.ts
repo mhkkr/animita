@@ -1,6 +1,3 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-export const statusStateIdAtom = atom({
-  key: 'statusStateId',
-  default: 'WATCHING'
-});
+export const statusStateIdAtom = atom('WATCHING');

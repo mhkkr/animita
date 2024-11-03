@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react';
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 
 import { Record, User } from '~/features/apollo/generated-types';
 
@@ -10,7 +10,7 @@ import Icons from '~/components/icons/Icons';
 import { getMutedUsers } from '~/libs/function';
 
 export default function Mute({ record, mute, setMute, close }: { record: Record, mute: boolean, setMute: Dispatch<SetStateAction<boolean>>, close: () => void }) {
-  const [muteUpdate, setMuteUpdate] = useRecoilState(muteUpdateAtom);
+  const [muteUpdate, setMuteUpdate] = useAtom(muteUpdateAtom);
 
   const addMuteUser = (user: User) => {
     const mutedUsers = getMutedUsers();

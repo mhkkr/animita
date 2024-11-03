@@ -16,7 +16,7 @@ import * as AnimeEpisode from '~/components/animes/AnimeEpisode';
 import Const from '~/constants';
 
 const statusStateIdArray: string[] = [];
-Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
+Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
 
 function checkViewTable(libraryEntries: LibraryEntriesQuery, work: Work, episodeIndex: number, now: number) {
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);

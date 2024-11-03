@@ -30,7 +30,7 @@ export default function MyRecords() {
             if (!record) {
               return null;
             }
-            const ratingstate = Const.RATINGSTATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
+            const ratingState = Const.RATING_STATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
             if (record && record.episode) {
               return (
                 <Record.ToggleButton
@@ -40,7 +40,7 @@ export default function MyRecords() {
                 episodeAnnictId={record.episode.annictId}
               >
                   {record.ratingState && (
-                    <span className={`flex-none mt-[.2em] w-[1em] h-[1em] rounded-full ${ratingstate?.bgColor}`} title={ratingstate?.label}></span>
+                    <span className={`flex-none mt-[.2em] w-[1em] h-[1em] rounded-full ${ratingState?.bgColor}`} title={ratingState?.label}></span>
                   )}
                   <p className='flex-grow text-left'>{record.episode.title || Const.EPISODE_TITLE_UNDEFINED}</p>
                   <div className='flex-none mt-[.2em] w-2/5 flex gap-2 opacity-70 text-left text-xs'>

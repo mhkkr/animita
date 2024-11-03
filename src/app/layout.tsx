@@ -3,7 +3,6 @@ import '~/app/globals.scss';
 import ApolloProviderWrapper from '~/features/apollo/components/Provider';
 import SessionProviderWrapper from '~/features/oauth/components/Provider';
 import LoginController from '~/features/oauth/components/Controller';
-import RecoilRoot from '~/features/recoli/components/Root';
 
 import Analytics from '~/components/Analytics';
 
@@ -61,9 +60,7 @@ export default function RootLayout({
         <ApolloProviderWrapper>
           <SessionProviderWrapper>
             <LoginController>
-              <RecoilRoot>
-                {children}
-              </RecoilRoot>
+              {children}
             </LoginController>
           </SessionProviderWrapper>
         </ApolloProviderWrapper>

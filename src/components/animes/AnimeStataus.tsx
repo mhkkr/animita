@@ -9,7 +9,7 @@ import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql
 import { updateStatusGql } from '~/features/apollo/gql/mutation/updateStatusGql';
 import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
 
 import Icons from '~/components/icons/Icons';
@@ -18,7 +18,7 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 import Const from '~/constants';
 
 const statusStateIdArray: string[] = [];
-Const.STATUSSTATE_LIST.map(state => statusStateIdArray.push(state.id));
+Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
 
 type State = {
   id: string,
@@ -26,7 +26,7 @@ type State = {
 };
 
 export default function Stataus({ work }: { work: Work }) {
-  const [statusStateId, setStatusStateId] = useRecoilState(statusStateIdAtom);
+  const [statusStateId, setStatusStateId] = useAtom(statusStateIdAtom);
 
   const { data, loading: ll, error: le } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
     variables: {
@@ -35,7 +35,7 @@ export default function Stataus({ work }: { work: Work }) {
     }
   });
   const entry = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
-  const state = Const.STATUSSTATE_LIST.find(state => state.id === entry?.status?.state);
+  const state = Const.STATUS_STATE_LIST.find(state => state.id === entry?.status?.state);
   const [changeStatusState, setChangeStatusState] = useState<State | undefined>(state);
 
   const [updateStatus, { loading: ul, error: ue }] = useMutation(updateStatusGql);
@@ -60,7 +60,7 @@ export default function Stataus({ work }: { work: Work }) {
         transition
         className="mt-2 w-[calc(100%_-_2rem)] sm:w-auto border dark:border-white/25 bg-white dark:bg-black rounded-lg overflow-hidden [contain:content] shadow-xl origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
       >
-        {Const.STATUSSTATE_LIST.map((state) => (
+        {Const.STATUS_STATE_LIST.map((state) => (
           <ListboxOption
             key={state.id}
             onClick={async () => {

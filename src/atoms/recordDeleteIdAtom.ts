@@ -1,6 +1,3 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-export const recordDeleteIdAtom = atom({
-  key: 'recordDeleteId',
-  default: ''
-});
+export const recordDeleteIdAtom = atom('');

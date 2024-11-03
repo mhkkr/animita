@@ -7,7 +7,7 @@ import { createRecordGql } from '~/features/apollo/gql/mutation/createRecordGql'
 import { updateRecordGql } from '~/features/apollo/gql/mutation/updateRecordGql';
 import type { Episode } from '~/features/apollo/generated-types';
 
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
 
 import 'react-tooltip/dist/react-tooltip.css';
@@ -17,10 +17,12 @@ import Icons from '~/components/icons/Icons';
 
 import { RingSpinner } from '~/components/spinners/Spinner';
 
+import { isBrowser } from 'react-device-detect';
+
 import Const from '~/constants';
 
 export default function Form({ episode }: { episode: Episode }) {
-  const [recordEditId, setRecordEditId] = useRecoilState(recordEditIdAtom);
+  const [recordEditId, setRecordEditId] = useAtom(recordEditIdAtom);
 
   const textarea = useRef<HTMLTextAreaElement>(null);
   const [comment, setComment] = useState('');
@@ -107,15 +109,15 @@ export default function Form({ episode }: { episode: Episode }) {
         value={comment}
         disabled={cl || ul}
         placeholder="ここに感想を書きましょう！"
-        autoFocus={episode.viewerRecordsCount ? false : true}
+        autoFocus={isBrowser ? true : false}
       />
       <div className="mt-4 grid grid-cols-4">
-        {Const.RATINGSTATE_LIST.map((RATINGSTATE) => {
+        {Const.RATING_STATE_LIST.map((RATINGSTATE) => {
           return (
             <label
               key={RATINGSTATE.id}
               className={`
-                relative flex items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-stone-700 cursor-pointer text-xs
+                relative flex flex-col sm:flex-row gap-1 items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-stone-700 cursor-pointer text-xs
                 transition-colors ${ratingState === RATINGSTATE.id ? `${RATINGSTATE.bgColor} text-white dark:text-inherit` : ''}
                 focus-within:outline focus-within:outline-1 focus-within:outline-offset-2
               `}
@@ -134,7 +136,7 @@ export default function Form({ episode }: { episode: Episode }) {
                 checked={ratingState === RATINGSTATE.id}
                 disabled={cl || ul}
               />
-              <Icons id={RATINGSTATE.id} type="rating_state" className={`mr-1 text-[1.25em] transition-transform ${ratingState === RATINGSTATE.id ? 'scale-110' : ''}`} />
+              <Icons id={RATINGSTATE.id} type="rating_state" className={`text-[1.25em] transition-transform ${ratingState === RATINGSTATE.id ? 'scale-125' : ''}`} />
               {RATINGSTATE.label}
             </label>
           );

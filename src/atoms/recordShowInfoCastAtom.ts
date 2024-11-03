@@ -1,6 +1,3 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-export const recordShowInfoCastAtom = atom({
-  key: 'recordShowInfoCast',
-  default: false
-});
+export const recordShowInfoCastAtom = atom(false);

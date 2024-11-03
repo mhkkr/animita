@@ -1,6 +1,3 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-export const muteUpdateAtom = atom({
-  key: 'muteUpdate',
-  default: 0
-});
+export const muteUpdateAtom = atom(0);

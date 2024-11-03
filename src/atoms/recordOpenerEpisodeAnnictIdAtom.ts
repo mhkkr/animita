@@ -1,6 +1,3 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-export const recordOpenerEpisodeAnnictIdAtom = atom({
-  key: 'recordOpenerEpisodeAnnictId',
-  default: 0
-});
+export const recordOpenerEpisodeAnnictIdAtom = atom(0);

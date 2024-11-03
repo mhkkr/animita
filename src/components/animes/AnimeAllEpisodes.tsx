@@ -4,17 +4,27 @@ import { useState, useEffect } from "react";
 
 import { RingSpinner } from '~/components/spinners/Spinner';
 
-import { fetchJikanAnime } from '~/libs/function';
+import { targetMal, getMal, setMal, fetchJikanAnime } from '~/libs/mal';
 
 export default function AllEpisodes({ malAnimeId }: { malAnimeId: string }) {
   const [episodes, setEpisodes] = useState<number>(0);
 
   useEffect(() => {
-    fetchJikanAnime(malAnimeId)
-      .then(response => {
-        setEpisodes(response.data.episodes);
-      })
-      .catch(console.error);
+    const mal = getMal();
+    const m = targetMal(mal, malAnimeId);
+
+    if (m) {
+      setEpisodes(m.episodes);
+    } else {
+      fetchJikanAnime(malAnimeId)
+        .then(response => {
+          if (response.data.images) {
+            setEpisodes(response.data.episodes);
+            setMal(malAnimeId, response.data);
+          }
+        })
+        .catch(console.error);
+    }
   }, []);
 
   if (episodes === null) {
