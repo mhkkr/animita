@@ -15,7 +15,7 @@ import Icons from '~/components/icons/Icons';
 import BackButton from '~/components/buttons/BackButton';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
-import Stataus from '~/components/animes/AnimeStataus';
+import Status from '~/components/animes/AnimeStatus';
 import Thumbnail from '~/components/animes/AnimeThumbnail';
 import AllEpisodes from '~/components/animes/AnimeAllEpisodes';
 import Episodes from '~/components/animes/AnimeEpisodes';
@@ -73,7 +73,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                   <h1 className="font-bold text-lg">{work.title}</h1>
                 </div>
                 <div className="flex-shrink-0 order-first sm:order-none">
-                  <Stataus work={work} />
+                  <Status work={work} />
                 </div>
               </div>
               <div className="px-4 mt-4">

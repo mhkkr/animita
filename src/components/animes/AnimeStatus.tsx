@@ -25,7 +25,7 @@ type State = {
   label: string
 };
 
-export default function Stataus({ work }: { work: Work }) {
+export default function Status({ work }: { work: Work }) {
   const [statusStateId, setStatusStateId] = useAtom(statusStateIdAtom);
 
   const { data, loading: ll, error: le } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
