@@ -19,6 +19,7 @@ import Status from '~/components/animes/AnimeStatus';
 import Thumbnail from '~/components/animes/AnimeThumbnail';
 import AllEpisodes from '~/components/animes/AnimeAllEpisodes';
 import Episodes from '~/components/animes/AnimeEpisodes';
+import Review from '~/components/animes/AnimeReview';
 import { Link, Channel, Staff, Cast } from '~/components/animes/AnimeInfo';
 
 import Const from '~/constants';
@@ -90,8 +91,12 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                 <Episodes work={work} />
               </div>
               {/* <div className="mt-6">
-                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">作品の感想</h2>
-                <Episodes work={work} />
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">記録</h2>
+                <Review work={work} />
+              </div>
+              <div className="mt-6">
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">視聴動向</h2>
+                <Review work={work} />
               </div> */}
               <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">キャスト</h2>

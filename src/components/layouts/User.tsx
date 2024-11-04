@@ -18,10 +18,10 @@ export default function User() {
           マイページ
         </Link>
         <Link className="flex items-center p-3 w-full font-bold border-b dark:border-stone-700" href="/howto">
-        初期設定
+          初期設定
         </Link>
         <Link className="flex items-center p-3 w-full font-bold border-b dark:border-stone-700" href="/todo">
-        やり残しと更新履歴
+          更新履歴
         </Link>
         <button onClick={() => signOut()} className="flex items-center p-3 w-full text-red-500 font-bold" type="button">
           <Icons id="logout" type="form" className="flex-shrink-0 mr-1.5 text-lg" />

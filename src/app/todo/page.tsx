@@ -1,7 +1,7 @@
 import LayoutContainer from '~/components/layouts/Container';
 
 export const metadata = {
-  title: 'やり残しと更新履歴',
+  title: '更新履歴',
 };
 
 const updates = [
@@ -129,32 +129,19 @@ export default function Todo() {
           <li>他の人のエピソードの記録に対して、いいねを押したかったが API がなかったので断念しました。</li>
         </ul>
       </section>
-
-      <section className="mt-8 px-4">
-        <h2 className="text-lg font-bold">確認している不具合</h2>
-        <ul className="list-disc mt-2 ml-6">
-          <li>
-            <p>エピソードの取得が上手くいかない作品が存在する。</p>
-            <p className="mt-2 p-2 border rounded-md text-sm">API の nextProgram が null ではないエピソードだけを抽出しているので、そこに登録がないとアニみたでは表示されません。<br />
-            その場合 Annict にて一度だけ記録を作ってもらうとフラグが動くので、それ以降は正常に取得できるのを確認しております。</p>
-          </li>
-        </ul>
-      </section>
       
       <section className="mt-8 px-4">
         <h2 className="text-lg font-bold">更新履歴</h2>
-        <div>
-          {updates.map((update, updateIndex) => (
-            <dl key={updateIndex} className="mt-2">
-              <dt className="font-bold">{update.date}</dt>
-              <dd>
-                <ul className="list-disc mt-1 ml-6">
-                  {update.comments.map((comment, commentIndex) => <li key={`${updateIndex}-${commentIndex}`}>{comment}</li>)}
-                </ul>
-              </dd>
-            </dl>
-          ))}
-        </div>
+        {updates.map((update, updateIndex) => (
+          <dl key={updateIndex} className="mt-2">
+            <dt className="font-bold">{update.date}</dt>
+            <dd>
+              <ul className="list-disc mt-1 ml-6">
+                {update.comments.map((comment, commentIndex) => <li key={`${updateIndex}-${commentIndex}`}>{comment}</li>)}
+              </ul>
+            </dd>
+          </dl>
+        ))}
       </section>
     </LayoutContainer>
   );
