@@ -11,7 +11,7 @@ export default function AllEpisodes({ malAnimeId }: { malAnimeId: string }) {
 
   useEffect(() => {
     const mal = getMal();
-    const m = targetMal(mal, malAnimeId);
+    const m = targetMal(malAnimeId, mal);
 
     if (m) {
       setEpisodes(m.episodes);

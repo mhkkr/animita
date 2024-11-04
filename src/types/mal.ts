@@ -1,15 +1,16 @@
 export interface Mal {
   malAnimeId: string
   fetchDate: Date
-  largeImageUrl: string
+  image: {
+    url: string
+    active: boolean | undefined
+  }
   episodes: 0
 }
 
-export interface FetchMal {
+export interface Jikan {
   images: {
     webp: {
-      image_url: string,
-      small_image_url: string,
       large_image_url: string
     }
   }

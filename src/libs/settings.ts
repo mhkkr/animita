@@ -1,5 +1,7 @@
 import type { Setting, Category, Id } from '~/types/settings';
 
+import Const from '~/constants';
+
 export const displays = {
   ["peoples-records"]: {
     value: [
@@ -20,14 +22,14 @@ export const displays = {
 };
 
 export function setSetting(category: Category, id: Id, newValue: any) {
-  const storage = localStorage.getItem("settings");
+  const storage = localStorage.getItem(Const.STORAGE_SETTINGS);
   const settings: Setting = storage ? JSON.parse(storage) : { [category]: { [id]: undefined } };
   settings[category][id] = newValue;
-  localStorage.setItem("settings", JSON.stringify(settings));
+  localStorage.setItem(Const.STORAGE_SETTINGS, JSON.stringify(settings));
 }
 
 export function getSetting(category: Category, id: Id) {
-  const storage = localStorage.getItem("settings");
+  const storage = localStorage.getItem(Const.STORAGE_SETTINGS);
   if (storage) {
     const settings = JSON.parse(storage) as Setting;
     if (settings[category] && settings[category][id]) {

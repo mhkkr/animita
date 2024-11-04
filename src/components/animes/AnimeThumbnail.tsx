@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { Work } from '~/features/apollo/generated-types';
 
@@ -12,6 +12,17 @@ const noImage = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 
 
 export default function Thumbnail({ work, view }: { work: Work, view: "list" | "detail" }) {
   const [loading, setLoading] = useState(true);
+  const [url, setUrl] = useState(work.image?.facebookOgImageUrl || noImage);
+
+  // facebookOgImageUrl に値は入っていてもリンク切れなどで読み込めないパターンがあり、
+  // その場合、非常に長いロード時間を要するため、一度 MyAnimeList の画像を表示した履歴があればそちらを参照させる仕組み。
+  useEffect(() => {
+    const mal = getMal();
+    const m = targetMal(work.malAnimeId as string, mal);
+    if (m?.image.active) {
+      setUrl(m.image.url);
+    }
+  }, []);
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const element = e.target as HTMLImageElement;
@@ -28,18 +39,18 @@ export default function Thumbnail({ work, view }: { work: Work, view: "list" | "
 
     if (work.malAnimeId) {
       const mal = getMal();
-      const m = targetMal(mal, work.malAnimeId);
+      const m = targetMal(work.malAnimeId, mal);
 
       if (m) {
-        element.src = m.largeImageUrl;
+        element.src = m.image.url;
       } else {
         setLoading(true);
         
         fetchJikanAnime(work.malAnimeId)
           .then(response => {
-            if (response.data.images) {
+            if (response && response.data && response.data.images) {
               element.src = response.data.images.webp.large_image_url;
-              setMal((work.malAnimeId as string), response.data);
+              setMal((work.malAnimeId as string), response.data, true);
             } else {
               element.src = noImage;
             }
@@ -52,13 +63,13 @@ export default function Thumbnail({ work, view }: { work: Work, view: "list" | "
   };
 
   return (
-    <figure className="-z-10 relative pt-[52.5%] bg-gray-700/70 text-gray-700/70 overflow-hidden [contain:content]">
+    <figure className="-z-10 relative pt-[52.5%] bg-gray-400/70 dark:bg-gray-700/70 text-gray-700/70 overflow-hidden [contain:content]">
       {loading && (
         <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ${view === "detail" ? "text-5xl" : "text-3xl"} text-annict-100`}><RingSpinner /></div>
       )}
       <img
         className="absolute left-0 top-0 w-full h-full object-contain"
-        src={work.image?.facebookOgImageUrl || noImage}
+        src={url}
         alt={`${work.title}のキービジュアル`}
         loading="lazy"
         onLoad={handleLoad}

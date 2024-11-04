@@ -14,7 +14,7 @@ export default function HowTo() {
 
       <section className="mt-8 px-4">
         <h2 className="text-lg font-bold">1. Annict でチャンネル一覧からチャンネルを設定してください。</h2>
-        <p><a href="https://annict.com/channels" target="_blank" rel="noopener noreferrer"><Icons className="inline mr-1" id="open_in_new" type="link" />https://annict.com/channels</a></p>
+        <p><a className="hover:underline" href="https://annict.com/channels" target="_blank" rel="noopener noreferrer"><Icons className="inline -mt-0.5 mr-1" id="open_in_new" type="link" />https://annict.com/channels</a></p>
       </section>
 
       <section className="mt-8 px-4">

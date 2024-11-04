@@ -6,6 +6,8 @@ import Icons from '~/components/icons/Icons';
 
 import { getMutedUsers } from '~/libs/function';
 
+import Const from '~/constants';
+
 export default function MyMute() {
   const [mutedUsers, setMutedUsers] = useState(getMutedUsers());
 
@@ -16,7 +18,7 @@ export default function MyMute() {
     let mutedUsers = getMutedUsers();
     const annictId = user.annictId;
     mutedUsers = mutedUsers.filter(user => user.annictId !== annictId);
-    localStorage.setItem("mutedUsers", JSON.stringify(mutedUsers));
+    localStorage.setItem(Const.STORAGE_MUTED_USERS, JSON.stringify(mutedUsers));
     setMutedUsers(mutedUsers);
   };
 
@@ -25,7 +27,7 @@ export default function MyMute() {
       <header className="px-4">
         <h1 className="text-lg font-bold">ミュート</h1>
         <p className="mt-2 text-sm">API では Annict のミュート設定が考慮されていないため、独自にローカルストレージを使ってユーザーのミュートを管理します。</p>
-        <p className="mt-2 text-xs pl-[1em] indent-[-1em]">※記録とみんなの評価から対象者を除外します。</p>
+        <p className="mt-2 text-xs pl-[1em] indent-[-1em]">※記録一覧とみんなの評価から対象者を除外します。</p>
         <p className="mt-2 text-xs pl-[1em] indent-[-1em]">※ミュートした時点のユーザーネームのため、変更があった場合はリンクが無効になることがありますが、除外判定は AnnictId で行っているので対象者がズレることはありません。</p>
       </header>
       

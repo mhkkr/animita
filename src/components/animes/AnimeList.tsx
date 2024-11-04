@@ -69,7 +69,7 @@ function Detail({ entry, now }: { entry: EntriesDate, now: number }) {
             </div>
             <div className="flex-1">
               <p className="text-sm dark:text-white/70"><DisplayDate date={startedAt} /></p>
-              <p className="mt-1 font-bold"><Link href={`/anime/${entry?.work.annictId}`}>{entry?.work.title}</Link></p>
+              <p className="mt-1 font-bold"><Link className="inline-block" href={`/anime/${entry?.work.annictId}`}>{entry?.work.title}</Link></p>
               <div className={`${isViewable ? '' : 'cursor-text'}`}>
                 <AnimeEpisode.ToggleButton
                   className={`

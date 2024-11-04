@@ -9,6 +9,8 @@ import Icons from '~/components/icons/Icons';
 
 import { getMutedUsers } from '~/libs/function';
 
+import Const from '~/constants';
+
 export default function Mute({ record, mute, setMute, close }: { record: Record, mute: boolean, setMute: Dispatch<SetStateAction<boolean>>, close: () => void }) {
   const [muteUpdate, setMuteUpdate] = useAtom(muteUpdateAtom);
 
@@ -18,7 +20,7 @@ export default function Mute({ record, mute, setMute, close }: { record: Record,
     const username = user.username;
     if (!mutedUsers.some(user => user.annictId === annictId)) {
       mutedUsers.push({ annictId, username });
-      localStorage.setItem('mutedUsers', JSON.stringify(mutedUsers));
+      localStorage.setItem(Const.STORAGE_MUTED_USERS, JSON.stringify(mutedUsers));
       setMute(true);
       setMuteUpdate(muteUpdate + 1);
     }
@@ -29,7 +31,7 @@ export default function Mute({ record, mute, setMute, close }: { record: Record,
     let mutedUsers = getMutedUsers();
     const annictId = user.annictId;
     mutedUsers = mutedUsers.filter(user => user.annictId !== annictId);
-    localStorage.setItem("mutedUsers", JSON.stringify(mutedUsers));
+    localStorage.setItem(Const.STORAGE_MUTED_USERS, JSON.stringify(mutedUsers));
     setMute(false);
     setMuteUpdate(muteUpdate - 1);
     close();
