@@ -126,11 +126,11 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
               このユーザーをミュートしました。
             </div>
           ) : (
-            <figure className="flex items-center gap-3">
+            <figure className="flex items-center gap-2.5">
               <div className="flex-shrink-0 rounded-full overflow-hidden [contain:content] w-8 h-8">
                 <img className="object-cover w-full h-full" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
               </div>
-              <figcaption className="break-all">{record.user.name}</figcaption>
+              <figcaption className="line-clamp-2 break-all">{record.user.name}</figcaption>
             </figure>
           )}
           <div className="flex-none ml-auto">
@@ -141,13 +141,9 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                     transition
                     className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col py-0.5 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden [contain:content] shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
                   >
-                    <a className="px-2 py-1.5 group hover:underline" href={`https://annict.com/@${record.user?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
-                      <figure className="flex items-center gap-2">
-                        <div className="flex-shrink-0 rounded-full overflow-hidden [contain:content] w-8 h-8">
-                          <img className="object-cover w-full h-full group-hover:opacity-70" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
-                        </div>
-                        <figcaption className="break-all">{record.user.name}</figcaption>
-                      </figure>
+                    <a className="flex items-center px-2 py-1.5 hover:underline" href={`https://annict.com/@${record.user?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
+                      <Icons id="open_in_new" type="link" className="mr-1" />
+                      Annict
                     </a>
                     {isMyRecord ? (
                       <>

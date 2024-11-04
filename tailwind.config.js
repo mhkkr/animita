@@ -22,6 +22,20 @@ module.exports = {
   plugins: [
     plugin(function({ addUtilities }) {
       addUtilities({
+        '.line-clamp': {
+          display: '-webkit-box',
+          '-webkit-line-clamp': '1',
+          '-webkit-box-orient': 'vertical',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        '.line-clamp-2': {
+          display: '-webkit-box',
+          '-webkit-line-clamp': '2',
+          '-webkit-box-orient': 'vertical',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
         '.leading-trim': {
           marginBlock: 'calc((1em - 1lh) / 2)',
         },
