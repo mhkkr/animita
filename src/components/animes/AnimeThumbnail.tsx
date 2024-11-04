@@ -19,7 +19,7 @@ export default function Thumbnail({ work, view }: { work: Work, view: "list" | "
   useEffect(() => {
     const mal = getMal();
     const m = targetMal(work.malAnimeId as string, mal);
-    if (m && m.image.active) {
+    if (m && m.image && m.image.active) {
       setUrl(m.image.url);
     }
   }, []);
