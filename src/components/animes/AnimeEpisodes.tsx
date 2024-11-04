@@ -22,7 +22,7 @@ Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
 function episodeStatus(libraryEntries: LibraryEntriesQuery, work: Work, episodeIndex: number, now: number) {
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
 
-  const channelSomePrograms = work.programs?.nodes?.filter(program => program?.channel.name === entry?.nextProgram?.channel.name);
+  const channelSomePrograms = work.programs?.nodes?.filter(program => program?.channel.annictId === entry?.nextProgram?.channel.annictId);
   if (!channelSomePrograms) return { available: true, startedAt: '' };
 
   const program = channelSomePrograms[episodeIndex];

@@ -23,6 +23,7 @@ export const libraryEntriesGql = gql`
           }
           nextProgram {
             channel {
+							annictId
               name
             }
             startedAt
