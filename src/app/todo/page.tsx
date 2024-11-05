@@ -5,12 +5,6 @@ export const metadata = {
 };
 
 const updates = [
-  // {
-  //   date: '2024/11/4 (月)',
-  //   comments: [
-  //     '作品の記録が付けれるようになりました！',
-  //   ]
-  // },
   {
     date: '2024/11/4 (月)',
     comments: [

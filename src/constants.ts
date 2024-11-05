@@ -7,7 +7,7 @@ class Const {
 
   MY_PAGES = [
     { id: 'profile', path: '/', title: 'ユーザー' },
-    { id: 'records', path: '/records', title: '記録' },
+    { id: 'records', path: '/records', title: '履歴' },
     { id: 'setting', path: '/setting', title: '設定' },
   ];
   MY_RECORDS_LIMIT = 50;

@@ -91,7 +91,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                 <Episodes work={work} />
               </div>
               {/* <div className="mt-6">
-                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">記録</h2>
+                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">レビュー</h2>
                 <Review work={work} />
               </div>
               <div className="mt-6">
