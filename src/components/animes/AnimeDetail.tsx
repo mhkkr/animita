@@ -93,8 +93,8 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
               {/* <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">レビュー</h2>
                 <Review work={work} />
-              </div>
-              <div className="mt-6">
+              </div> */}
+              {/* <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">視聴動向</h2>
                 <Review work={work} />
               </div> */}

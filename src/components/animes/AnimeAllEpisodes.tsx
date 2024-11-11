@@ -7,7 +7,7 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 import { targetMal, getMal, setMal, fetchJikanAnime } from '~/libs/mal';
 
 export default function AllEpisodes({ malAnimeId }: { malAnimeId: string }) {
-  const [episodes, setEpisodes] = useState<number>(0);
+  const [episodes, setEpisodes] = useState<number | null>(0);
 
   useEffect(() => {
     const mal = getMal();
@@ -18,9 +18,11 @@ export default function AllEpisodes({ malAnimeId }: { malAnimeId: string }) {
     } else {
       fetchJikanAnime(malAnimeId)
         .then(response => {
-          if (response.data.images) {
+          if (response && response.data && response.data.episodes) {
             setEpisodes(response.data.episodes);
             setMal(malAnimeId, response.data);
+          } else {
+            setEpisodes(null);
           }
         })
         .catch(console.error);
