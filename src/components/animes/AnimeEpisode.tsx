@@ -113,7 +113,7 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
       onClick={() => {
         if (workAnnictId) {
           router.push(`/anime/${workAnnictId}`);
-          setTimeout(formOpen, 1000);
+          setTimeout(formOpen, 1500);
         } else {
           formOpen();
         }
