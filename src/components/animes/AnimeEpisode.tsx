@@ -95,22 +95,27 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
   const setRecordOpenerEpisodeAnnictId = useSetAtom(recordOpenerEpisodeAnnictIdAtom);
   const router = useRouter();
 
+  const formOpen = () => {
+    setRecordEditId('');
+
+    if (!episodeAnnictId) {
+      document.body.style.overflow = 'visible';
+      setRecordOpenerEpisodeAnnictId(0);
+    } else {
+      document.body.style.overflow = 'hidden';
+      setRecordCurrentEpisodeAnnictId(episodeAnnictId ?? 0);
+      setRecordOpenerEpisodeAnnictId(episodeAnnictId ?? 0);
+    }
+  };
+
   return (
     <button 
       onClick={() => {
         if (workAnnictId) {
           router.push(`/anime/${workAnnictId}`);
-        }
-
-        setRecordEditId('');
-
-        if (!episodeAnnictId) {
-          document.body.style.overflow = 'visible';
-          setRecordOpenerEpisodeAnnictId(0);
+          setTimeout(formOpen, 1000);
         } else {
-          document.body.style.overflow = 'hidden';
-          setRecordCurrentEpisodeAnnictId(episodeAnnictId ?? 0);
-          setRecordOpenerEpisodeAnnictId(episodeAnnictId ?? 0);
+          formOpen();
         }
       }}
       className={className}
