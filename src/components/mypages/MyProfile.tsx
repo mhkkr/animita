@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
 import type { ViewerUserQuery } from '~/features/apollo/generated-types';
 

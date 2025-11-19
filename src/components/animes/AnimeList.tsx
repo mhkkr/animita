@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { LibraryEntriesQuery, LibraryEntry } from '~/features/apollo/generated-types';
 

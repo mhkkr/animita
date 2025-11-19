@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { Cast, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 

@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { createRecordGql } from '~/features/apollo/gql/mutation/createRecordGql';
 import { updateRecordGql } from '~/features/apollo/gql/mutation/updateRecordGql';
-import type { Episode } from '~/features/apollo/generated-types';
+import type { Episode, CreateRecordMutation, CreateRecordMutationVariables, UpdateRecordMutation, UpdateRecordMutationVariables, RatingState } from '~/features/apollo/generated-types';
 
 import { useAtom } from 'jotai';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
@@ -50,10 +50,12 @@ export default function Form({ episode }: { episode: Episode }) {
     });
   }, []);
 
-  const [createRecord, { loading: cl, error: ce }] = useMutation(createRecordGql, {
-    update(cache, { data: { createRecord } }) {
+  const [createRecord, { loading: cl, error: ce }] = useMutation<CreateRecordMutation, CreateRecordMutationVariables>(createRecordGql, {
+    update(cache, { data }) {
+      if (!data?.createRecord?.record?.episode) return;
+      const episode = data.createRecord.record.episode;
       cache.modify({
-        id: cache.identify({ id: createRecord.record.episode.id, __typename: 'Episode' }),
+        id: cache.identify({ id: episode.id, __typename: 'Episode' }),
         fields: {}
       });
     },
@@ -63,10 +65,12 @@ export default function Form({ episode }: { episode: Episode }) {
     }
   });
 
-  const [updateRecord, { loading: ul, error: ue }] = useMutation(updateRecordGql, {
-    update(cache, { data: { updateRecord } }) {
+  const [updateRecord, { loading: ul, error: ue }] = useMutation<UpdateRecordMutation, UpdateRecordMutationVariables>(updateRecordGql, {
+    update(cache, { data }) {
+      if (!data?.updateRecord?.record?.episode) return;
+      const episode = data.updateRecord.record.episode;
       cache.modify({
-        id: cache.identify({ id: updateRecord.record.episode.id, __typename: 'Episode' }),
+        id: cache.identify({ id: episode.id, __typename: 'Episode' }),
         fields: {}
       });
     },
@@ -89,17 +93,11 @@ export default function Form({ episode }: { episode: Episode }) {
   
       if (recordEditId && episode?.records?.nodes) {
         const record = episode?.records?.nodes.find(record => record?.id === recordEditId);
-        if (ratingState) {
-          updateRecord({ variables: { recordId: record?.id, comment: comment, ratingState: ratingState }});
-        } else {
-          updateRecord({ variables: { recordId: record?.id, comment: comment }});
+        if (record?.id) {
+          updateRecord({ variables: { recordId: record.id, comment: comment, ratingState: (ratingState || undefined) as RatingState | undefined }});
         }
       } else {
-        if (ratingState) {
-          createRecord({ variables: { episodeId: episode.id, comment: comment, ratingState: ratingState }});
-        } else {
-          createRecord({ variables: { episodeId: episode.id, comment: comment }});
-        }
+        createRecord({ variables: { episodeId: episode.id, comment: comment, ratingState: (ratingState || undefined) as RatingState | undefined }});
       }
     }}>
       <textarea

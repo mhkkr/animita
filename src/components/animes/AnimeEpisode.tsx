@@ -3,7 +3,7 @@
 import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
 import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';

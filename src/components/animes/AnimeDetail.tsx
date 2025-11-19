@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
@@ -90,10 +90,10 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">エピソード{work.malAnimeId && <AllEpisodes malAnimeId={work.malAnimeId} />}</h2>
                 <Episodes work={work} />
               </div>
-              {/* <div className="mt-6">
+              <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">レビュー</h2>
                 <Review work={work} />
-              </div> */}
+              </div>
               {/* <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">視聴動向</h2>
                 <Review work={work} />

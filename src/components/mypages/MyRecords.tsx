@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { viewerRecordsGql } from '~/features/apollo/gql/query/viewerRecordsGql';
 import type { ViewerRecordsQuery } from '~/features/apollo/generated-types';
 

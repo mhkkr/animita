@@ -1,10 +1,10 @@
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { deleteRecordGql } from '~/features/apollo/gql/mutation/deleteRecordGql';
 
 import { useAtom } from 'jotai';
 import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
-import { Record } from '~/features/apollo/generated-types';
+import type { Record, DeleteRecordMutation, DeleteRecordMutationVariables } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
 
@@ -12,20 +12,22 @@ export default function Delete({ record, close }: { record: Record, close: () =>
   const [recordDeleteId, setRecordDeleteId] = useAtom(recordDeleteIdAtom);
   const [recordEditId, setRecordEditId] = useAtom(recordEditIdAtom);
 
-  const [deleteRecord, { loading, error }] = useMutation(deleteRecordGql, {
-    update(cache, { data: { deleteRecord } }) {
-      cache.evict({ id: cache.identify(deleteRecord) });
-      cache.gc();
-
+  const [deleteRecord, { loading, error }] = useMutation<DeleteRecordMutation, DeleteRecordMutationVariables>(deleteRecordGql, {
+    update(cache, { data }) {
+      if (!data?.deleteRecord?.episode) return;
+      const episode = data.deleteRecord.episode;
+      
       cache.modify({
-        id: cache.identify({ id: deleteRecord.episode.id, __typename: 'Episode' }),
+        id: cache.identify({ id: episode.id, __typename: 'Episode' }),
         fields: {
           recordsCount() {
-            // return deleteRecord.episode.recordsCount; // なんか値が変わってない？
-            return deleteRecord.episode.records.nodes.length;
+            // return episode.recordsCount; // なんか値が変わってない？
+            return episode.records?.nodes?.length ?? 0;
           }
         }
       });
+      
+      cache.gc();
     },
     onCompleted() {
       if (recordDeleteId) setRecordDeleteId('');

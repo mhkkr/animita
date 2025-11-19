@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { Work, Episode, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
@@ -64,10 +64,17 @@ export default function Episodes({ work }: { work: Work }) {
                   w-px whitespace-nowrap pl-4 py-1.5 pt-[.55rem] align-top
                   ${!episode?.viewerDidTrack && '!w-0 !pl-2' /* 一話も視聴していない場合アイコンがすべて表示されないので幅の調整をしている */}
                 `}>
-                  {episode?.viewerDidTrack && <Icons id="WATCHED_CURRENT" type="status_state" className="text-[1.25em] align-[-.2em]" data-tooltip-id="episodes-tooltip" data-tooltip-content="視聴済み" data-tooltip-place="top" />}
+                  {episode?.viewerDidTrack && <Icons id="WATCHED_CURRENT" type="status_state" className="text-[1.25em] mt-[.15em]" data-tooltip-id="episodes-tooltip" data-tooltip-content="視聴済み" data-tooltip-place="top" />}
                 </td>
                 
-                <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1.5 pt-[.55rem]">{episode?.numberText}</td>
+                <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1.5 pt-[.55rem]">
+                  <div className="relative">
+                    {episode?.number !== episodeIndex + 1 && 
+                      <span className="absolute bottom-full left-0 text-[.65rem] leading-tight dark:text-white/70">今期<span className="px-px">{episodeIndex + 1}</span>話</span>
+                    }
+                    {episode?.numberText}
+                  </div>
+                </td>
 
                 <td className="pl-3 py-1.5 pt-[.55rem] align-top">
                   <div>{episode?.title || Const.EPISODE_TITLE_UNDEFINED}</div>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headlessui/react';
 
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import { updateStatusGql } from '~/features/apollo/gql/mutation/updateStatusGql';
 import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';

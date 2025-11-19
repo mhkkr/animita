@@ -9,6 +9,7 @@ export const searchEpisodesGql = gql`
 				id
         annictId
         sortNumber
+        number
         numberText
         title
 				viewerDidTrack

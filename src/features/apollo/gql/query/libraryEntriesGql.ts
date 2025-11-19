@@ -29,6 +29,7 @@ export const libraryEntriesGql = gql`
             startedAt
             episode {
               annictId
+              number
               numberText
               title
             }

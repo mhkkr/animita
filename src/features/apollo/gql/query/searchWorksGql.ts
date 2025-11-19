@@ -44,6 +44,7 @@ export const searchWorksGql = gql`
             id
             annictId
             sortNumber
+            number
             numberText
             title
 						viewerDidTrack
