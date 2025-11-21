@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 
 import { useQuery } from '@apollo/client/react';
 import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
-import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
+import { useLibraryEntries } from '~/features/apollo/hooks/useLibraryEntries';
 
 import { useSetAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
@@ -19,41 +19,41 @@ import Status from '~/components/animes/AnimeStatus';
 import Thumbnail from '~/components/animes/AnimeThumbnail';
 import AllEpisodes from '~/components/animes/AnimeAllEpisodes';
 import Episodes from '~/components/animes/AnimeEpisodes';
-import Review from '~/components/animes/AnimeReview';
+// import Review from '~/components/animes/AnimeReview';
 import { Link, Channel, Staff, Cast } from '~/components/animes/AnimeInfo';
 
 import Const from '~/constants';
 
-const statusStateIdArray: string[] = [];
-Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
-
 // TODO: setStatusStateId を実行したいだけで、この実装は苦しい気がする…。
-function SetStatusState({ work }: { work: Work }) {
+type LibraryEntryNode = NonNullable<NonNullable<NonNullable<LibraryEntriesQuery['viewer']>['libraryEntries']>['nodes']>[number];
+
+function SetStatusState({ entry }: { entry: LibraryEntryNode | undefined }) {
   const setStatusStateId = useSetAtom(statusStateIdAtom);
-  const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
-    variables: {
-      states: statusStateIdArray,
-      seasons: [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`]
-    }
-  });
-  const entry = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
 
   useEffect(() => {
     if (entry?.status?.state) {
       setStatusStateId(entry?.status?.state);
     }
-  }, [entry]);
+  }, [entry, setStatusStateId]);
   
-  if (loading) return <></>;
-  if (error) { console.error(error); return <></>; }
   return <></>;
 }
 
 export default function AnimeDetail({ annictId }: { annictId: number }) {
-  const { data, loading, error } = useQuery<SearchWorksQuery>(searchWorksGql, {
+  const { data: worksData, loading: worksLoading, error: worksError } = useQuery<SearchWorksQuery>(searchWorksGql, {
     variables: { annictIds: [annictId] }
   });
-  const work = data?.searchWorks?.nodes ? (data?.searchWorks?.nodes[0] as Work) : null;
+  const work = worksData?.searchWorks?.nodes ? (worksData?.searchWorks?.nodes[0] as Work) : null;
+
+  const { data: libraryEntries, loading: libraryEntriesLoading, error: libraryEntriesError } = useLibraryEntries({
+    seasons: work ? [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`] : [],
+    skip: !work
+  });
+  const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work?.annictId);
+
+  // workが取得された後は、libraryEntriesのローディングを表示しない
+  const loading = worksLoading || (!work && libraryEntriesLoading);
+  const error = worksError || libraryEntriesError;
 
   return (
     <>
@@ -66,7 +66,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
         <>
           {work ? (
             <>
-              <SetStatusState work={work} />
+              <SetStatusState entry={entry} />
               <Thumbnail work={work} view="detail" />
               <Link work={work} />
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 mt-4">
@@ -74,7 +74,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                   <h1 className="font-bold text-lg">{work.title}</h1>
                 </div>
                 <div className="flex-shrink-0 order-first sm:order-none">
-                  <Status work={work} />
+                  <Status work={work} libraryEntries={libraryEntries} />
                 </div>
               </div>
               <div className="px-4 mt-4">
@@ -82,18 +82,18 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                   <li>視聴者数：{work.watchersCount}</li>
                   <li>評価数：{work.reviewsCount}</li>
                   <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
-                  <li><Channel work={work} /></li>
+                  <li><Channel work={work} libraryEntries={libraryEntries} /></li>
                 </ul>
                 <Staff work={work} />
               </div>
               <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">エピソード{work.malAnimeId && <AllEpisodes malAnimeId={work.malAnimeId} />}</h2>
-                <Episodes work={work} />
+                <Episodes work={work} libraryEntries={libraryEntries} />
               </div>
-              <div className="mt-6">
+              {/* <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">レビュー</h2>
                 <Review work={work} />
-              </div>
+              </div> */}
               {/* <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">視聴動向</h2>
                 <Review work={work} />

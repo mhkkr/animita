@@ -1,15 +1,8 @@
 'use client';
 
-import { useQuery } from '@apollo/client/react';
-import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { Cast, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
-
-import Const from '~/constants';
-
-const statusStateIdArray: string[] = [];
-Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
 
 export function Link({ work }: { work: Work }) {
   function RelatedLink({ icon, className, test, href, label }: {
@@ -66,18 +59,8 @@ export function Link({ work }: { work: Work }) {
   );
 }
 
-export function Channel({ work }: { work: Work }) {
-  const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
-    variables: {
-      states: statusStateIdArray,
-      seasons: [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`]
-    }
-  });
-  const entry = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
-  
-  if (loading) return <></>;
-  if (error) { console.error(error); return <></>; }
-
+export function Channel({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery }) {
+  const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
   return <>{entry?.nextProgram?.channel.name}</>;
 }
 

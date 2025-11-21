@@ -43,11 +43,17 @@ export default function Form({ episode }: { episode: Episode }) {
   }, [recordEditId]);
 
   useEffect(() => {
-    window.addEventListener('beforeunload', function(event){
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (textarea.current?.value) {
         event.preventDefault();
       }
-    });
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
   const [createRecord, { loading: cl, error: ce }] = useMutation<CreateRecordMutation, CreateRecordMutationVariables>(createRecordGql, {

@@ -1,7 +1,5 @@
 'use client';
 
-import { useQuery } from '@apollo/client/react';
-import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { Work, Episode, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
 import 'react-tooltip/dist/react-tooltip.css';
@@ -14,9 +12,6 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 import * as AnimeEpisode from '~/components/animes/AnimeEpisode';
 
 import Const from '~/constants';
-
-const statusStateIdArray: string[] = [];
-Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
 
 // エピソードが視聴可能かの判定と配信開始時刻を返却する
 function episodeStatus(libraryEntries: LibraryEntriesQuery, work: Work, episodeIndex: number, now: number) {
@@ -36,15 +31,8 @@ function episodeStatus(libraryEntries: LibraryEntriesQuery, work: Work, episodeI
   };
 }
 
-export default function Episodes({ work }: { work: Work }) {
-  const { data: libraryEntries, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
-    variables: {
-      states: statusStateIdArray,
-      seasons: [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`]
-    }
-  });
-  if (loading || !libraryEntries) return <div className="mt-6 text-center text-5xl text-annict-100"><RingSpinner /></div>;
-  if (error) { console.error(error); return <></>; }
+export default function Episodes({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery }) {
+  if (!libraryEntries) return <div className="mt-6 text-center text-5xl text-annict-100"><RingSpinner /></div>;
 
   const episodes = (work.episodes?.nodes ? Array.from(work.episodes?.nodes) : []) as Episode[];
   const now = Date.now();
@@ -54,11 +42,11 @@ export default function Episodes({ work }: { work: Work }) {
   return (
     <>
       <table className="w-full">
-        {episodes.map((episode, episodeIndex) => {
-          const status = episodeStatus(libraryEntries, work, episodeIndex, now);
-          return (
-            <tbody key={episode?.annictId} className="relative">
-              <tr className={`hover:bg-stone-500/30 ${!status.available && 'dark:text-white/70'}`}>
+        <tbody>
+          {episodes.map((episode, episodeIndex) => {
+            const status = episodeStatus(libraryEntries, work, episodeIndex, now);
+            return (
+              <tr key={episode?.annictId} className={`hover:bg-stone-500/30 ${!status.available && 'dark:text-white/70'}`}>
                 <td className={`
                   hidden sm:table-cell
                   w-px whitespace-nowrap pl-4 py-1.5 pt-[.55rem] align-top
@@ -97,9 +85,9 @@ export default function Episodes({ work }: { work: Work }) {
                   }
                 </td>
               </tr>
-            </tbody>
-          );
-        })}
+            );
+          })}
+        </tbody>
       </table>
       <Tooltip id="episodes-tooltip" />
       <AnimeEpisode.Episode work={work} />

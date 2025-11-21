@@ -1,8 +1,6 @@
 'use client';
 
-import { useQuery } from '@apollo/client/react';
-import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
-import type { Work, Episode, LibraryEntriesQuery } from '~/features/apollo/generated-types';
+import type { Work } from '~/features/apollo/generated-types';
 
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';

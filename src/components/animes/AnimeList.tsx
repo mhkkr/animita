@@ -2,9 +2,8 @@
 
 import Link from 'next/link';
 
-import { useQuery } from '@apollo/client/react';
-import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
 import type { LibraryEntriesQuery, LibraryEntry } from '~/features/apollo/generated-types';
+import { useLibraryEntries } from '~/features/apollo/hooks/useLibraryEntries';
 
 import { useAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
@@ -194,8 +193,8 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
 
 export default function AnimeList() {
   const [statusStateId] = useAtom(statusStateIdAtom);
-  const { data, loading, error } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
-    variables: { states: [statusStateId] }
+  const { data, loading, error } = useLibraryEntries({
+    states: [statusStateId]
   });
   const STATE = Const.STATUS_STATE_LIST.find(state => state.id === statusStateId);
 

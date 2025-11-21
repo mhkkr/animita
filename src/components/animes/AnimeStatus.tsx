@@ -4,8 +4,7 @@ import { useState } from 'react';
 
 import { Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headlessui/react';
 
-import { useQuery, useMutation } from '@apollo/client/react';
-import { libraryEntriesGql } from '~/features/apollo/gql/query/libraryEntriesGql';
+import { useMutation } from '@apollo/client/react';
 import { updateStatusGql } from '~/features/apollo/gql/mutation/updateStatusGql';
 import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
@@ -17,32 +16,22 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 
 import Const from '~/constants';
 
-const statusStateIdArray: string[] = [];
-Const.STATUS_STATE_LIST.map(state => statusStateIdArray.push(state.id));
-
 type State = {
   id: string,
   label: string
 };
 
-export default function Status({ work }: { work: Work }) {
+export default function Status({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery }) {
   const [statusStateId, setStatusStateId] = useAtom(statusStateIdAtom);
 
-  const { data, loading: ll, error: le } = useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
-    variables: {
-      states: statusStateIdArray,
-      seasons: [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`]
-    }
-  });
-  const entry = data?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
+  const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
   const state = Const.STATUS_STATE_LIST.find(state => state.id === entry?.status?.state);
   const [changeStatusState, setChangeStatusState] = useState<State | undefined>(state);
 
   const [updateStatus, { loading: ul, error: ue }] = useMutation(updateStatusGql);
   
-  if (ll || ul) return <div className="text-center text-3xl text-annict-100"><RingSpinner /></div>;
-  if (le || ue) { console.error(le || ue); return <p className="text-red-500">{le?.message || ue?.message}</p>; }
-
+  if (ul) return <div className="text-center text-3xl text-annict-100"><RingSpinner /></div>;
+  if (ue) { console.error(ue); return <p className="text-red-500">{ue?.message}</p>; }
 
   return (
     <Listbox value={changeStatusState} onChange={setChangeStatusState}>
