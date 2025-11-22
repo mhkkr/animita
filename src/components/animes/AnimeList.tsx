@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 
-import type { LibraryEntriesQuery, LibraryEntry, LibraryEntriesSimpleQuery, Work } from '~/features/apollo/generated-types';
+import type { LibraryEntriesQuery, LibraryEntry, ViewerUserQuery } from '~/features/apollo/generated-types';
 import { useLibraryEntries } from '~/features/apollo/hooks/useLibraryEntries';
-import { useLibraryEntriesSimple } from '~/features/apollo/hooks/useLibraryEntriesSimple';
+import { useQuery } from '@apollo/client/react';
+import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
 
 import { useAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
@@ -124,35 +125,51 @@ function NotEntry() {
   );
 }
 
-function SimpleList({ data }: { data: LibraryEntriesSimpleQuery | undefined }) {
-  const entries = data?.viewer?.libraryEntries?.nodes || [];
+function SimpleList({ statusStateId }: { statusStateId: string }) {
+  const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql);
 
-  if (entries.length === 0) {
+  if (ul) {
+    return <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>;
+  }
+  if (ue) {
+    return <p className="p-4 text-red-500">{ue?.message}</p>;
+  }
+
+  const username = user?.viewer?.username;
+  if (!username) {
     return (
       <div className="px-4 pt-6 dark:text-white/70">
-        <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
-        <p className="text-center">アニメがありません！</p>
+        <p className="text-center">ユーザー情報を取得できませんでした</p>
       </div>
     );
   }
 
+  // ステータスに応じたURLを決定
+  const getAnnictUrl = (statusId: string): string => {
+    switch (statusId) {
+      case 'WATCHED':
+        return `https://annict.com/@${username}/watched`;
+      case 'ON_HOLD':
+        return `https://annict.com/@${username}/on_hold`;
+      case 'STOP_WATCHING':
+        return `https://annict.com/@${username}/stop_watching`;
+      default:
+        return `https://annict.com/@${username}`;
+    }
+  };
+
   return (
-    <ul className="grid grid-cols-3 gap-4 p-4">
-      {entries.map((entry) => {
-        if (!entry?.work) return null;
-        const work = entry.work as Work;
-        return (
-          <li key={work.annictId}>
-            <Link href={`/anime/${work.annictId}`}>
-              <Thumbnail work={work} view="list" />
-              <p className="mt-2 text-sm font-bold text-center line-clamp-2">
-                {work.title}
-              </p>
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    <div className="px-4 pt-6">
+      <a
+        href={getAnnictUrl(statusStateId)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 w-full py-4 px-6 border dark:border-white/30 rounded-lg hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+      >
+        <Icons id="open_in_new" type="link" className="text-[1.25em]" />
+        <span className="font-bold">Annictで確認してください</span>
+      </a>
+    </div>
   );
 }
 
@@ -258,14 +275,6 @@ export default function AnimeList() {
     states: [statusStateId],
     skip: isSimpleView
   });
-  
-  const { data: simpleData, loading: simpleLoading, error: simpleError } = useLibraryEntriesSimple({
-    states: [statusStateId],
-    skip: !isSimpleView
-  });
-
-  const isLoading = isSimpleView ? simpleLoading : loading;
-  const errorMessage = isSimpleView ? simpleError : error;
 
   return (
     <div className="relative">
@@ -282,11 +291,14 @@ export default function AnimeList() {
         )}
       </header>
       
-      {isLoading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {errorMessage && <p className="p-4 text-red-500">{errorMessage.message}</p>}
-      
-      {!(isLoading || errorMessage) && (
-        isSimpleView ? <SimpleList data={simpleData} /> : <EntryList data={data} />
+      {isSimpleView ? (
+        <SimpleList statusStateId={statusStateId} />
+      ) : (
+        <>
+          {loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+          {error && <p className="p-4 text-red-500">{error.message}</p>}
+          {!(loading || error) && <EntryList data={data} />}
+        </>
       )}
     </div>
   );
