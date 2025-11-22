@@ -34,11 +34,11 @@ export default function MyRecords() {
             if (record && record.episode) {
               return (
                 <Record.ToggleButton
-                key={`r-${record.annictId}`}
-                className='flex gap-2 px-4 py-1 border-t dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20 '
-                workAnnictId={record.episode.work.annictId}
-                episodeAnnictId={record.episode.annictId}
-              >
+                  key={`r-${record.annictId}`}
+                  className='flex gap-2 px-4 py-1 border-t dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20 '
+                  workAnnictId={record.episode.work.annictId}
+                  episodeAnnictId={record.episode.annictId}
+                >
                   {record.ratingState && (
                     <span className={`flex-none mt-[.2em] w-[1em] h-[1em] rounded-full ${ratingState?.bgColor}`} title={ratingState?.label}></span>
                   )}

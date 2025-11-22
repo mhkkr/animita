@@ -58,7 +58,7 @@ function Evaluation({ records, episode }: { records: Record[], episode: Episode 
         </div>
       </div>
       {ratingCount > 0 && (
-        <ul className="mt-2 flex text-center rounded-md overflow-hidden [contain:content]">
+        <ul className="mt-2 flex text-center rounded-md overflow-hidden">
           {Object.entries(ratings).map(([key, value]) => {
             const ratingState = Const.RATING_STATE_LIST.find(RATINGSTATE => RATINGSTATE.id === key);
             return (

@@ -127,7 +127,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
             </div>
           ) : (
             <figure className="flex items-center gap-2.5">
-              <div className="flex-shrink-0 rounded-full overflow-hidden [contain:content] w-8 h-8">
+              <div className="flex-shrink-0 rounded-full overflow-hidden w-8 h-8">
                 <img className="object-cover w-full h-full" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
               </div>
               <figcaption className="line-clamp-2 break-all">{record.user.name}</figcaption>
@@ -139,7 +139,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                 <>
                   <PopoverPanel
                     transition
-                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col py-0.5 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden [contain:content] shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col py-0.5 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
                   >
                     <a className="flex items-center px-2 py-1.5 hover:underline" href={`https://annict.com/@${record.user?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
                       <Icons id="open_in_new" type="link" className="mr-1" />

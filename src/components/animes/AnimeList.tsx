@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 
-import type { LibraryEntriesQuery, LibraryEntry } from '~/features/apollo/generated-types';
+import type { LibraryEntriesQuery, LibraryEntry, LibraryEntriesSimpleQuery, Work } from '~/features/apollo/generated-types';
 import { useLibraryEntries } from '~/features/apollo/hooks/useLibraryEntries';
+import { useLibraryEntriesSimple } from '~/features/apollo/hooks/useLibraryEntriesSimple';
 
 import { useAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
@@ -69,6 +70,29 @@ function Detail({ entry, now }: { entry: EntriesDate, now: number }) {
             <div className="flex-1">
               <p className="text-sm dark:text-white/70"><DisplayDate date={startedAt} /></p>
               <p className="mt-1 font-bold"><Link className="inline-block" href={`/anime/${entry?.work.annictId}`}>{entry?.work.title}</Link></p>
+              {(() => {
+                const episodes = (entry?.work.episodes?.nodes ? Array.from(entry.work.episodes.nodes) : []) as Array<{ annictId?: number | null, sortNumber?: number | null, viewerDidTrack?: boolean | null }>;
+                const sortedEpisodes = [...episodes].sort((a, b) => (a?.sortNumber as number || 0) - (b?.sortNumber as number || 0));
+                
+                // 同じチャンネルのプログラムを取得
+                const channelId = entry?.nextProgram?.channel.annictId;
+                const channelPrograms = entry?.work.programs?.nodes?.filter(program => program?.channel.annictId === channelId) || [];
+                
+                // 視聴可能かつ未視聴のエピソードをカウント
+                const unwatchedCount = sortedEpisodes.filter((episode, episodeIndex) => {
+                  if (episode?.viewerDidTrack) return false; // 視聴済みは除外
+                  
+                  const program = channelPrograms[episodeIndex];
+                  if (!program) return false; // プログラムがない場合は除外
+                  
+                  const programStartedAt = new Date(program?.startedAt);
+                  return now > programStartedAt.getTime(); // 視聴可能なもののみ
+                }).length;
+                
+                return unwatchedCount > 0 ? (
+                  <p className="mt-1 text-sm dark:text-white/70">未視聴：{unwatchedCount}話</p>
+                ) : null;
+              })()}
               <div className={`${isViewable ? '' : 'cursor-text'}`}>
                 <AnimeEpisode.ToggleButton
                   className={`
@@ -97,6 +121,38 @@ function NotEntry() {
       <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
       <p className="text-center">エピソードがありません！</p>
     </div>
+  );
+}
+
+function SimpleList({ data }: { data: LibraryEntriesSimpleQuery | undefined }) {
+  const entries = data?.viewer?.libraryEntries?.nodes || [];
+
+  if (entries.length === 0) {
+    return (
+      <div className="px-4 pt-6 dark:text-white/70">
+        <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
+        <p className="text-center">アニメがありません！</p>
+      </div>
+    );
+  }
+
+  return (
+    <ul className="grid grid-cols-3 gap-4 p-4">
+      {entries.map((entry) => {
+        if (!entry?.work) return null;
+        const work = entry.work as Work;
+        return (
+          <li key={work.annictId}>
+            <Link href={`/anime/${work.annictId}`}>
+              <Thumbnail work={work} view="list" />
+              <p className="mt-2 text-sm font-bold text-center line-clamp-2">
+                {work.title}
+              </p>
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -193,10 +249,23 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
 
 export default function AnimeList() {
   const [statusStateId] = useAtom(statusStateIdAtom);
-  const { data, loading, error } = useLibraryEntries({
-    states: [statusStateId]
-  });
   const STATE = Const.STATUS_STATE_LIST.find(state => state.id === statusStateId);
+  
+  // 見てる、見たいは詳細な表示、それ以外は簡素な表示
+  const isSimpleView = statusStateId === 'WATCHED' || statusStateId === 'ON_HOLD' || statusStateId === 'STOP_WATCHING';
+  
+  const { data, loading, error } = useLibraryEntries({
+    states: [statusStateId],
+    skip: isSimpleView
+  });
+  
+  const { data: simpleData, loading: simpleLoading, error: simpleError } = useLibraryEntriesSimple({
+    states: [statusStateId],
+    skip: !isSimpleView
+  });
+
+  const isLoading = isSimpleView ? simpleLoading : loading;
+  const errorMessage = isSimpleView ? simpleError : error;
 
   return (
     <div className="relative">
@@ -205,16 +274,20 @@ export default function AnimeList() {
           <Icons id={`${STATE?.id}_CURRENT`} type="status_state" className="mr-2 text-[1.5em]" />
           <span>{STATE?.label}</span>
         </h1>
-        <div className="flex border-b dark:border-stone-700">
-          <SwitchTab value="delivered" label="視聴可能" />
-          <SwitchTab value="undelivered" label="予定" />
-        </div>
+        {!isSimpleView && (
+          <div className="flex border-b dark:border-stone-700">
+            <SwitchTab value="delivered" label="視聴可能" />
+            <SwitchTab value="undelivered" label="予定" />
+          </div>
+        )}
       </header>
       
-      {loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="p-4 text-red-500">{error.message}</p>}
+      {isLoading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+      {errorMessage && <p className="p-4 text-red-500">{errorMessage.message}</p>}
       
-      {!(loading || error) && <EntryList data={data} />}
+      {!(isLoading || errorMessage) && (
+        isSimpleView ? <SimpleList data={simpleData} /> : <EntryList data={data} />
+      )}
     </div>
   );
 }

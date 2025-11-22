@@ -63,12 +63,12 @@ export default function Thumbnail({ work, view }: { work: Work, view: "list" | "
   };
 
   return (
-    <figure className="-z-10 relative pt-[52.5%] bg-gray-400/70 dark:bg-gray-700/70 text-gray-700/70 overflow-hidden [contain:content]">
+    <figure className="-z-10 relative aspect-video bg-gray-400/70 dark:bg-gray-700/70 text-gray-700/70 overflow-hidden">
       {loading && (
         <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ${view === "detail" ? "text-5xl" : "text-3xl"} text-annict-100`}><RingSpinner /></div>
       )}
       <img
-        className="absolute left-0 top-0 w-full h-full object-contain"
+        className="w-full h-full object-contain"
         src={url}
         alt={`${work.title}のキービジュアル`}
         loading="lazy"

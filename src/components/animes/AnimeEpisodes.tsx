@@ -57,7 +57,7 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
                 
                 <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1.5 pt-[.55rem]">
                   <div className="relative">
-                    {episode?.number !== episodeIndex + 1 && 
+                    {(!!episode?.number && episode?.number > episodeIndex + 1) && 
                       <span className="absolute bottom-full left-0 text-[.65rem] leading-tight dark:text-white/70">今期<span className="px-px">{episodeIndex + 1}</span>話</span>
                     }
                     {episode?.numberText}
@@ -77,6 +77,7 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
                         ${episode?.viewerDidTrack && 'bg-black text-white dark:bg-white dark:text-black'}
                       `}
                       episodeAnnictId={episode?.annictId}
+                      workAnnictId={work.annictId}
                     >
                       <Icons id="edit" type="form" className="text-[1.25em]" />
                       <span className="ml-0.5 mr-1">{episode?.viewerRecordsCount}</span>
@@ -90,7 +91,7 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
         </tbody>
       </table>
       <Tooltip id="episodes-tooltip" />
-      <AnimeEpisode.Episode work={work} />
+      <AnimeEpisode.Episode work={work} libraryEntries={libraryEntries} />
     </>
   );
 }

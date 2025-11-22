@@ -31,7 +31,7 @@ export default function MyProfile() {
 function User({ user }: { user: ViewerUserQuery }) {
   return (
     <figure className="flex items-center gap-3">
-      <div className="flex-shrink-0 rounded-full overflow-hidden [contain:content] w-16 h-16">
+      <div className="flex-shrink-0 rounded-full overflow-hidden w-16 h-16">
         <img className="object-cover w-full h-full" src={user.viewer?.avatarUrl || ''} alt="" loading="lazy" />
       </div>
       <div className="flex-1 flex flex-col lg:flex-row lg:items-center gap-3">

@@ -1,14 +1,18 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { useQuery } from '@apollo/client/react';
 import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
 import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 import { useLibraryEntries } from '~/features/apollo/hooks/useLibraryEntries';
 
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
+import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
+import { recordCurrentEpisodeAnnictIdAtom } from '~/atoms/recordCurrentEpisodeAnnictIdAtom';
+import { recordOpenerEpisodeAnnictIdAtom } from '~/atoms/recordOpenerEpisodeAnnictIdAtom';
 
 import Icons from '~/components/icons/Icons';
 
@@ -24,7 +28,6 @@ import { Link, Channel, Staff, Cast } from '~/components/animes/AnimeInfo';
 
 import Const from '~/constants';
 
-// TODO: setStatusStateId を実行したいだけで、この実装は苦しい気がする…。
 type LibraryEntryNode = NonNullable<NonNullable<NonNullable<LibraryEntriesQuery['viewer']>['libraryEntries']>['nodes']>[number];
 
 function SetStatusState({ entry }: { entry: LibraryEntryNode | undefined }) {
@@ -40,6 +43,12 @@ function SetStatusState({ entry }: { entry: LibraryEntryNode | undefined }) {
 }
 
 export default function AnimeDetail({ annictId }: { annictId: number }) {
+  const searchParams = useSearchParams();
+  const setRecordEditId = useSetAtom(recordEditIdAtom);
+  const setRecordCurrentEpisodeAnnictId = useSetAtom(recordCurrentEpisodeAnnictIdAtom);
+  const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useAtom(recordOpenerEpisodeAnnictIdAtom);
+  const prevEpisodeIdRef = useRef<string | null>(null);
+
   const { data: worksData, loading: worksLoading, error: worksError } = useQuery<SearchWorksQuery>(searchWorksGql, {
     variables: { annictIds: [annictId] }
   });
@@ -54,6 +63,53 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
   // workが取得された後は、libraryEntriesのローディングを表示しない
   const loading = worksLoading || (!work && libraryEntriesLoading);
   const error = worksError || libraryEntriesError;
+
+  // エピソードフォームを開く処理
+  const openEpisodeForm = (episodeAnnictId: number) => {
+    setRecordEditId('');
+    document.body.style.overflow = 'hidden';
+    setRecordCurrentEpisodeAnnictId(episodeAnnictId);
+    setRecordOpenerEpisodeAnnictId(episodeAnnictId);
+  };
+
+  // エピソードフォームを閉じる処理
+  const closeEpisodeForm = () => {
+    setRecordOpenerEpisodeAnnictId(0);
+    document.body.style.overflow = 'visible';
+  };
+
+  // URLパラメータからepisodeIdを取得し、フォームを開く
+  useEffect(() => {
+    if (loading || !work) return;
+
+    const episodeId = searchParams.get('episodeId');
+    
+    // 閉じる処理が実行された直後（episodeIdがnullになり、状態が0の場合）は何もしない
+    if (!episodeId && recordOpenerEpisodeAnnictId === 0 && prevEpisodeIdRef.current !== null) {
+      prevEpisodeIdRef.current = null;
+      return;
+    }
+    
+    if (episodeId) {
+      const episodeAnnictId = parseInt(episodeId, 10);
+      if (isNaN(episodeAnnictId)) return;
+
+      // URLパラメータと状態が一致している場合は何もしない（既に開いている）
+      if (recordOpenerEpisodeAnnictId === episodeAnnictId) {
+        prevEpisodeIdRef.current = episodeId;
+        return;
+      }
+
+      openEpisodeForm(episodeAnnictId);
+      prevEpisodeIdRef.current = episodeId;
+    } else {
+      // URLにepisodeIdがない場合は、状態も閉じる状態にする
+      if (recordOpenerEpisodeAnnictId !== 0) {
+        closeEpisodeForm();
+      }
+      prevEpisodeIdRef.current = null;
+    }
+  }, [searchParams, loading, work, recordOpenerEpisodeAnnictId, setRecordEditId, setRecordCurrentEpisodeAnnictId, setRecordOpenerEpisodeAnnictId]);
 
   return (
     <>

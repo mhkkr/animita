@@ -20,6 +20,21 @@ export const libraryEntriesGql = gql`
               facebookOgImageUrl
               copyright
             }
+            episodes {
+              nodes {
+                annictId
+                sortNumber
+                viewerDidTrack
+              }
+            }
+            programs {
+              nodes {
+                startedAt
+                channel {
+                  annictId
+                }
+              }
+            }
           }
           nextProgram {
             channel {

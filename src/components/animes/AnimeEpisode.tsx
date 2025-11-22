@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 import { useQuery } from '@apollo/client/react';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
-import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
+import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record, LibraryEntriesQuery } from '~/features/apollo/generated-types';
 
 import { useAtom, useSetAtom } from 'jotai';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
@@ -58,19 +58,69 @@ function InfoCast({ work }: { work: Work }) {
   )
 }
 
-function Contents({ work, episode, user }: { work: Work, episode: Episode, user: ViewerUserQuery }) {
+// エピソードが視聴可能かの判定と配信開始時刻を返却する
+function episodeStatus(libraryEntries: LibraryEntriesQuery | undefined, work: Work, episodeIndex: number, now: number) {
+  if (!libraryEntries) return { available: true, startedAt: '' };
+
+  const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
+
+  const channelSomePrograms = work.programs?.nodes?.filter(program => program?.channel.annictId === entry?.nextProgram?.channel.annictId);
+  if (!channelSomePrograms) return { available: true, startedAt: '' };
+
+  const program = channelSomePrograms[episodeIndex];
+  if (!program) return { available: true, startedAt: '' };
+
+  const startedAt = new Date(program?.startedAt);
+
+  return {
+    available: now > startedAt.getTime(),
+    startedAt: startedAt
+  };
+}
+
+function Contents({ work, episode, user, libraryEntries }: { work: Work, episode: Episode, user: ViewerUserQuery, libraryEntries?: LibraryEntriesQuery }) {
   const records = episode.records?.nodes ? Array.from(episode.records?.nodes) as Record[] : [];
 
   const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username);
   const otherRecords = records.filter(record => !record?.comment && record?.user.username !== user?.viewer?.username);
 
+  // 前後のエピソードを取得
+  const allEpisodes = (work.episodes?.nodes ? Array.from(work.episodes.nodes) : []) as Episode[];
+  const sortedEpisodes = [...allEpisodes].sort((a, b) => (a?.sortNumber as number || 0) - (b?.sortNumber as number || 0));
+  const currentIndex = sortedEpisodes.findIndex(ep => ep?.annictId === episode.annictId);
+  const prevEpisode = currentIndex > 0 ? sortedEpisodes[currentIndex - 1] : null;
+  const nextEpisode = currentIndex < sortedEpisodes.length - 1 ? sortedEpisodes[currentIndex + 1] : null;
+
+  // 前後のエピソードが視聴可能か判定
+  const now = Date.now();
+  const prevEpisodeIndex = prevEpisode ? currentIndex - 1 : -1;
+  const nextEpisodeIndex = nextEpisode ? currentIndex + 1 : -1;
+  const prevStatus = prevEpisodeIndex >= 0 ? episodeStatus(libraryEntries, work, prevEpisodeIndex, now) : null;
+  const nextStatus = nextEpisodeIndex >= 0 ? episodeStatus(libraryEntries, work, nextEpisodeIndex, now) : null;
+
   return (
     <>
       <div className="p-4">
-        <div className="mb-3 flex gap-2">
+        <div className="mb-3 flex gap-2 items-center">
           <span className="flex-shrink-0">{episode.numberText}</span>
           <span className="flex-1">{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
-          <ToggleButton className="flex-shrink-0 flex items-start">
+          {prevEpisode ? (
+              <ToggleButton
+                className={`flex-shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                episodeAnnictId={prevStatus?.available ? prevEpisode.annictId : undefined}
+                workAnnictId={prevStatus?.available ? work.annictId : undefined}
+                disabled={!prevStatus?.available}
+              >前</ToggleButton>
+            ) : null}
+            {nextEpisode ? (
+              <ToggleButton
+                className={`flex-shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!nextStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                episodeAnnictId={nextStatus?.available ? nextEpisode.annictId : undefined}
+                workAnnictId={nextStatus?.available ? work.annictId : undefined}
+                disabled={!nextStatus?.available}
+              >次</ToggleButton>
+            ) : null}
+          <ToggleButton className="flex-shrink-0" workAnnictId={work.annictId}>
             <Icons id="close" type="navigation" className="text-2xl" />
           </ToggleButton>
         </div>
@@ -81,6 +131,18 @@ function Contents({ work, episode, user }: { work: Work, episode: Episode, user:
       <Records records={mainRecords} otherRecords={otherRecords} episode={episode} user={user} />
     </>
   );
+}
+
+// URLからepisodeIdパラメータを削除する
+function removeEpisodeIdFromUrl(workAnnictId?: number, pathname?: string | null) {
+  if (workAnnictId) {
+    const newUrl = `/anime/${workAnnictId}`;
+    window.history.replaceState({}, '', newUrl);
+  } else if (pathname) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('episodeId');
+    window.history.replaceState({}, '', url.pathname + url.search);
+  }
 }
 
 export function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disabled }: {
@@ -94,26 +156,38 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
   const setRecordCurrentEpisodeAnnictId = useSetAtom(recordCurrentEpisodeAnnictIdAtom);
   const setRecordOpenerEpisodeAnnictId = useSetAtom(recordOpenerEpisodeAnnictIdAtom);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const closeForm = () => {
+    setRecordEditId('');
+    setRecordOpenerEpisodeAnnictId(0);
+    document.body.style.overflow = 'visible';
+    // URLからepisodeIdを削除（window.history.replaceStateで直接更新してsearchParamsの更新を避ける）
+    removeEpisodeIdFromUrl(workAnnictId, pathname);
+  };
+
+  const openForm = () => {
+    if (!episodeAnnictId) return;
+    setRecordEditId('');
+    document.body.style.overflow = 'hidden';
+    setRecordCurrentEpisodeAnnictId(episodeAnnictId);
+    setRecordOpenerEpisodeAnnictId(episodeAnnictId);
+  };
 
   const formOpen = () => {
-    setRecordEditId('');
-
     if (!episodeAnnictId) {
-      document.body.style.overflow = 'visible';
-      setRecordOpenerEpisodeAnnictId(0);
+      closeForm();
     } else {
-      document.body.style.overflow = 'hidden';
-      setRecordCurrentEpisodeAnnictId(episodeAnnictId ?? 0);
-      setRecordOpenerEpisodeAnnictId(episodeAnnictId ?? 0);
+      openForm();
     }
   };
 
   return (
     <button 
       onClick={() => {
-        if (workAnnictId) {
-          router.push(`/anime/${workAnnictId}`);
-          setTimeout(formOpen, 1500);
+        if (disabled) return;
+        if (workAnnictId && episodeAnnictId) {
+          router.push(`/anime/${workAnnictId}?episodeId=${episodeAnnictId}`);
         } else {
           formOpen();
         }
@@ -127,13 +201,15 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
   );
 }
 
-export function Episode({ work }: { work: Work }) {
+// エピソード記録
+export function Episode({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery }) {
   const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useAtom(recordOpenerEpisodeAnnictIdAtom);
   const [recordCurrentEpisodeAnnictId] = useAtom(recordCurrentEpisodeAnnictIdAtom);
 
   const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql);
   const { data: episodes, loading: el, error: ee } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
-    variables: { annictIds: [recordCurrentEpisodeAnnictId] }
+    variables: { annictIds: [recordCurrentEpisodeAnnictId] },
+    notifyOnNetworkStatusChange: false
   });
   const episode = episodes?.searchEpisodes?.nodes ? (episodes?.searchEpisodes?.nodes[0] as Episode) : null;
 
@@ -151,15 +227,15 @@ export function Episode({ work }: { work: Work }) {
     `}>
       <div className={`min-h-svh relative sm:py-24 sm:px-4 ${el ? 'py-24 px-4' : ''}`}>
         {/* 背景クリックで閉じる用 */}
-        <ToggleButton className="absolute inset-0" />
+        <ToggleButton className="absolute inset-0" workAnnictId={work.annictId} />
 
-        <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden [contain:content] sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>
+        <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>
           {(el || ul) && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
           {(ee || ue) && <p className="p-4 text-red-500">{ee?.message || ue?.message}</p>}
 
           {!(el || ee || ul || ue) && <>
             {episode && user ? (
-              <Contents work={work} episode={episode} user={user} />
+              <Contents work={work} episode={episode} user={user} libraryEntries={libraryEntries} />
             ) : (
               <div className="p-6 dark:text-white/70">
                 <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
