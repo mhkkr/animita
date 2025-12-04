@@ -1,4 +1,4 @@
-import '~/app/globals.scss';
+import '~/app/globals.css';
 
 import ApolloProviderWrapper from '~/features/apollo/components/Provider';
 import SessionProviderWrapper from '~/features/oauth/components/Provider';
