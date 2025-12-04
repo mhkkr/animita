@@ -1,18 +1,18 @@
 import { getSession } from 'next-auth/react';
 
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+import { SetContextLink } from '@apollo/client/link/context';
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: `https://api.annict.com/graphql`,
 });
 
-const authLink = setContext(async (_, { headers }) => {
+const authLink = new SetContextLink(async (prevContext, operation) => {
   const session = await getSession();
   const token = session?.accessToken;
   return {
     headers: {
-      ...headers,
+      ...prevContext.headers,
       authorization: token ? `Bearer ${token}` : '',
     }
   }
