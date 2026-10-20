@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useApolloClient } from "@apollo/client/react";
 
 import type { LibraryEntriesQuery, LibraryEntry } from "~/features/apollo/generated-types";
-import { libraryEntriesGql } from "~/features/apollo/gql/query/libraryEntriesGql";
 import { useLibraryEntries } from "~/features/apollo/hooks/useLibraryEntries";
 
 import Icons from "~/components/icons/Icons";
@@ -24,7 +22,6 @@ import {
 import {
   DEFAULT_ANIME_LIST_STATUSES,
   getAnimeListStatuses,
-  isDefaultAnimeListStatuses,
 } from "~/libs/settings";
 
 import Const from "~/constants";
@@ -62,32 +59,6 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
               <p className="mt-1 font-bold">
                 <Link className="inline-block" href={`/anime/${item?.work.annictId}`}>{item?.work.title}</Link>
               </p>
-              {nextProgram && (() => {
-                const episodes = (item?.work.episodes?.nodes ? Array.from(item.work.episodes.nodes) : []) as Array<{
-                  annictId?: number | null;
-                  sortNumber?: number | null;
-                  viewerDidTrack?: boolean | null;
-                }>;
-                const sortedEpisodes = [...episodes].sort(
-                  (a, b) => (a?.sortNumber as number || 0) - (b?.sortNumber as number || 0),
-                );
-
-                const channelId = nextProgram.channel.annictId;
-                const channelPrograms = item?.work.programs?.nodes?.filter(
-                  (program) => program?.channel.annictId === channelId,
-                ) || [];
-
-                const unwatchedCount = sortedEpisodes.filter((episode, episodeIndex) => {
-                  if (episode?.viewerDidTrack) return false;
-                  const program = channelPrograms[episodeIndex];
-                  if (!program) return false;
-                  return now > new Date(program?.startedAt).getTime();
-                }).length;
-
-                return unwatchedCount > 0 ? (
-                  <p className="mt-1 text-sm dark:text-white/70">未視聴：{unwatchedCount}話</p>
-                ) : null;
-              })()}
               {nextProgram ? (
                 <div className={`${isViewable ? "" : "cursor-text"}`}>
                   <AnimeEpisode.ToggleButton
@@ -160,47 +131,24 @@ type AnimeListProps = {
   view: AnimeListView;
   title: string;
   icon: string;
-  initialEntries?: LibraryEntriesQuery;
 };
 
-function seedDefaultEntriesCache(
-  client: ReturnType<typeof useApolloClient>,
-  entries: LibraryEntriesQuery,
-) {
-  client.writeQuery({
-    query: libraryEntriesGql,
-    variables: {
-      states: [...DEFAULT_ANIME_LIST_STATUSES],
-      seasons: [],
-    },
-    data: entries,
-  });
-}
-
-export default function AnimeList({ view, title, icon, initialEntries }: AnimeListProps) {
-  const client = useApolloClient();
-  const seededRef = useRef(false);
+export default function AnimeList({ view, title, icon }: AnimeListProps) {
   const [states, setStates] = useState<string[]>([...DEFAULT_ANIME_LIST_STATUSES]);
   const [settingsReady, setSettingsReady] = useState(false);
-
-  if (initialEntries && !seededRef.current) {
-    seedDefaultEntriesCache(client, initialEntries);
-    seededRef.current = true;
-  }
 
   useEffect(() => {
     setStates(getAnimeListStatuses());
     setSettingsReady(true);
   }, []);
 
-  const isDefault = isDefaultAnimeListStatuses(states);
   const { data, loading, error } = useLibraryEntries({
     states,
     skip: !settingsReady,
   });
 
-  const entriesData = data ?? ((!settingsReady || isDefault) ? initialEntries : undefined);
-  const showLoading = !entriesData && (settingsReady ? loading : !initialEntries);
+  // ヘッダーは即表示。キャッシュがあればローディングなし、なければスピナー
+  const showLoading = !data && (loading || !settingsReady);
 
   return (
     <div className="relative">
@@ -215,7 +163,7 @@ export default function AnimeList({ view, title, icon, initialEntries }: AnimeLi
         <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>
       )}
       {error && <p className="p-4 text-red-500">{error.message}</p>}
-      {!showLoading && !error && <EntryList data={entriesData} view={view} />}
+      {!showLoading && !error && <EntryList data={data} view={view} />}
     </div>
   );
 }

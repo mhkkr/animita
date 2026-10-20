@@ -36,9 +36,9 @@ export default function MyAnimeStatuses() {
   return (
     <section>
       <header className="px-4">
-        <h1 className="text-lg font-bold">視聴可能・視聴中</h1>
+        <h1 className="text-lg font-bold">視聴可能・週間予定</h1>
         <p className="mt-1 text-xs dark:text-white/70">
-          「視聴可能」「視聴中」に表示する視聴ステータスを選べます。
+          「視聴可能」「週間予定」に表示する視聴ステータスを選べます。
         </p>
       </header>
 

@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const libraryEntriesGql = gql`
   query libraryEntries($states: [StatusState!], $seasons: [String!]) {
@@ -14,31 +14,16 @@ export const libraryEntriesGql = gql`
           }
           work {
             annictId
-						malAnimeId
+            malAnimeId
             title
             image {
               facebookOgImageUrl
               copyright
             }
-            episodes {
-              nodes {
-                annictId
-                sortNumber
-                viewerDidTrack
-              }
-            }
-            programs {
-              nodes {
-                startedAt
-                channel {
-                  annictId
-                }
-              }
-            }
           }
           nextProgram {
             channel {
-							annictId
+              annictId
               name
             }
             startedAt

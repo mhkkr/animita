@@ -7,7 +7,7 @@ export const DEFAULT_ANIME_LIST_STATUSES = ["WATCHING", "WANNA_WATCH"] as const;
 
 export const ALL_STATUS_STATE_IDS = Const.STATUS_STATE_LIST.map((state) => state.id);
 
-/** 視聴可能・視聴中に出せるステータス（見た・視聴中止は候補外） */
+/** 視聴可能・週間予定に出せるステータス（見た・視聴中止は候補外） */
 export const ANIME_PAGE_STATUS_OPTIONS = Const.STATUS_STATE_LIST.filter(
   (state) => state.id !== "WATCHED" && state.id !== "STOP_WATCHING",
 );

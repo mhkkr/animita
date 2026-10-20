@@ -1,11 +1,7 @@
-import { cache } from "react";
-
-import { libraryEntriesGql } from "~/features/apollo/gql/query/libraryEntriesGql";
 import { libraryEntryDetailGql } from "~/features/apollo/gql/query/libraryEntryDetailGql";
 import { searchWorksGql } from "~/features/apollo/gql/query/searchWorksGql";
 import { serverFetchGraphQL, getAccessToken } from "~/features/apollo/server";
 import type {
-  LibraryEntriesQuery,
   LibraryEntryDetailQuery,
   SearchWorksQuery,
   Work,
@@ -15,30 +11,11 @@ import {
   DEFAULT_ANIME_LIST_STATUSES,
 } from "~/libs/settings";
 
-export type AnimeListPageData = {
-  entries: LibraryEntriesQuery;
-};
-
 export type AnimeDetailPageData = {
   work: Work | null;
   libraryEntries: LibraryEntryDetailQuery | null;
   error?: string;
 };
-
-/** 同一リクエスト内の重複取得をまとめる */
-export const loadAnimeListPageData = cache(async (): Promise<AnimeListPageData | null> => {
-  const accessToken = await getAccessToken();
-  if (!accessToken) {
-    return null;
-  }
-
-  const entries = await serverFetchGraphQL<LibraryEntriesQuery>(libraryEntriesGql, {
-    states: [...DEFAULT_ANIME_LIST_STATUSES],
-    seasons: [],
-  });
-
-  return { entries };
-});
 
 function findLibraryEntry(libraryEntries: LibraryEntryDetailQuery | null, annictId: number) {
   return libraryEntries?.viewer?.libraryEntries?.nodes?.find(
