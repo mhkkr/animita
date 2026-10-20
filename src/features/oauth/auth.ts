@@ -27,13 +27,14 @@ export const authOptions: NextAuthOptions = {
   }],
   callbacks: {
     async jwt({ token, account }) {
+      // アクセストークンは JWT（httpOnly Cookie）にのみ保持する
       if (account) {
         token.accessToken = account.access_token;
       }
       return token;
     },
-    async session({ session, token }) {
-      session.accessToken = token.accessToken;
+    async session({ session }) {
+      // ブラウザに渡る session にはトークンを載せない
       return session;
     },
   },

@@ -1,21 +1,12 @@
-import { getSession } from 'next-auth/react';
+import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
-import { SetContextLink } from '@apollo/client/link/context';
-
+/**
+ * ブラウザからは自前の /api/graphql のみ叩く。
+ * Annict トークンはサーバー側 JWT に閉じ、クライアントへ露出しない。
+ */
 const httpLink = new HttpLink({
-  uri: `https://api.annict.com/graphql`,
-});
-
-const authLink = new SetContextLink(async (prevContext, operation) => {
-  const session = await getSession();
-  const token = session?.accessToken;
-  return {
-    headers: {
-      ...prevContext.headers,
-      authorization: token ? `Bearer ${token}` : '',
-    }
-  }
+  uri: "/api/graphql",
+  credentials: "same-origin",
 });
 
 const cache = new InMemoryCache({
@@ -25,17 +16,16 @@ const cache = new InMemoryCache({
         viewer: {
           merge(existing, incoming) {
             return { ...existing, ...incoming };
-          }
-        }
-      }
-    }
-  }
+          },
+        },
+      },
+    },
+  },
 });
 
 const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: cache,
-  // connectToDevTools: true
+  link: httpLink,
+  cache,
 });
 
 export default apolloClient;
