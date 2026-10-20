@@ -8,13 +8,14 @@ import { Tooltip } from 'react-tooltip';
 import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
-import { RingSpinner } from '~/components/spinners/Spinner';
 import * as AnimeEpisode from '~/components/animes/AnimeEpisode';
 
 import Const from '~/constants';
 
 // エピソードが視聴可能かの判定と配信開始時刻を返却する
-function episodeStatus(libraryEntries: LibraryEntriesQuery, work: Work, episodeIndex: number, now: number) {
+function episodeStatus(libraryEntries: LibraryEntriesQuery | null | undefined, work: Work, episodeIndex: number, now: number) {
+  if (!libraryEntries) return { available: true, startedAt: '' };
+
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
 
   const channelSomePrograms = work.programs?.nodes?.filter(program => program?.channel.annictId === entry?.nextProgram?.channel.annictId);
@@ -31,9 +32,7 @@ function episodeStatus(libraryEntries: LibraryEntriesQuery, work: Work, episodeI
   };
 }
 
-export default function Episodes({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery }) {
-  if (!libraryEntries) return <div className="mt-6 text-center text-5xl text-annict-100"><RingSpinner /></div>;
-
+export default function Episodes({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery | null }) {
   const episodes = (work.episodes?.nodes ? Array.from(work.episodes?.nodes) : []) as Episode[];
   const now = Date.now();
 
@@ -91,7 +90,7 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
         </tbody>
       </table>
       <Tooltip id="episodes-tooltip" />
-      <AnimeEpisode.Episode work={work} libraryEntries={libraryEntries} />
+      <AnimeEpisode.Episode work={work} libraryEntries={libraryEntries ?? undefined} />
     </>
   );
 }

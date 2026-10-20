@@ -25,25 +25,29 @@ export default function Status({ work, libraryEntries }: { work: Work, libraryEn
   const [statusStateId, setStatusStateId] = useAtom(statusStateIdAtom);
 
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
-  const state = Const.STATUS_STATE_LIST.find(state => state.id === entry?.status?.state);
+  const statusId = entry?.status?.state ?? work.viewerStatusState ?? undefined;
+  const state = Const.STATUS_STATE_LIST.find(state => state.id === statusId);
   const [changeStatusState, setChangeStatusState] = useState<State | undefined>(state);
 
   const [updateStatus, { loading: ul, error: ue }] = useMutation(updateStatusGql);
+
+  // サーバーから status が来たあとでも初期値が空のまま残らないようにする
+  const displayState = changeStatusState ?? state;
   
   if (ul) return <div className="text-center text-3xl text-annict-100"><RingSpinner /></div>;
   if (ue) { console.error(ue); return <p className="text-red-500">{ue?.message}</p>; }
 
   return (
-    <Listbox value={changeStatusState} onChange={setChangeStatusState} disabled={!changeStatusState && !state}>
+    <Listbox value={displayState} onChange={setChangeStatusState} disabled={!displayState}>
       <ListboxButton className="flex items-center justify-center w-full pr-4 pl-3 py-2 bg-black text-white dark:bg-white dark:text-gray-900 rounded-lg">
-        {!changeStatusState && !state ?
+        {!displayState ?
           <>
             <div className="mr-2 text-annict-100"><RingSpinner /></div>
             読込中
           </> :
           <>
-            <Icons id={`${changeStatusState ? changeStatusState.id : state?.id}_CURRENT`} type="status_state" className="text-[1.5em] mr-2" />
-            <span>{changeStatusState ? changeStatusState.label : state?.label}</span>
+            <Icons id={`${displayState.id}_CURRENT`} type="status_state" className="text-[1.5em] mr-2" />
+            <span>{displayState.label}</span>
           </>
         }
       </ListboxButton>

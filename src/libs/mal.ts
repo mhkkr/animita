@@ -73,7 +73,15 @@ export function setMal(malAnimeId: string, data: Jikan, imageActive?: boolean) {
   }
 }
 
-export const fetchJikanAnime = async (malAnimeId: string): Promise<{data: Jikan}> => {
-  const response = await fetch(`https://api.jikan.moe/v4/anime/${malAnimeId}`)
-  return response.json()
+/**
+ * MyAnimeList メタデータ取得。
+ * Jikan 公開 API (api.jikan.moe) は 2026-10-01 に廃止されたため、
+ * 同一スキーマの Tenrai (https://api.tenrai.org/v1) を利用する。
+ */
+export const fetchJikanAnime = async (malAnimeId: string): Promise<{ data: Jikan }> => {
+  const response = await fetch(`https://api.tenrai.org/v1/anime/${malAnimeId}`);
+  if (!response.ok) {
+    throw new Error(`Tenrai API HTTP ${response.status}`);
+  }
+  return response.json();
 };

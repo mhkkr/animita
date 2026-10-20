@@ -1,100 +1,95 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 
-import { useQuery } from '@apollo/client/react';
-import { searchWorksGql } from '~/features/apollo/gql/query/searchWorksGql';
-import type { SearchWorksQuery, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
-import { useLibraryEntries } from '~/features/apollo/hooks/useLibraryEntries';
+import type { LibraryEntriesQuery, LibraryEntryDetailQuery, Work } from "~/features/apollo/generated-types";
 
-import { useAtom, useSetAtom } from 'jotai';
-import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
-import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
-import { recordCurrentEpisodeAnnictIdAtom } from '~/atoms/recordCurrentEpisodeAnnictIdAtom';
-import { recordOpenerEpisodeAnnictIdAtom } from '~/atoms/recordOpenerEpisodeAnnictIdAtom';
+import { useAtom, useSetAtom } from "jotai";
+import { statusStateIdAtom } from "~/atoms/statusStateIdAtom";
+import { recordEditIdAtom } from "~/atoms/recordEditIdAtom";
+import { recordCurrentEpisodeAnnictIdAtom } from "~/atoms/recordCurrentEpisodeAnnictIdAtom";
+import { recordOpenerEpisodeAnnictIdAtom } from "~/atoms/recordOpenerEpisodeAnnictIdAtom";
 
-import Icons from '~/components/icons/Icons';
+import Icons from "~/components/icons/Icons";
 
-import BackButton from '~/components/buttons/BackButton';
-import { RingSpinner } from '~/components/spinners/Spinner';
+import BackButton from "~/components/buttons/BackButton";
 
-import Status from '~/components/animes/AnimeStatus';
-import Thumbnail from '~/components/animes/AnimeThumbnail';
-import AllEpisodes from '~/components/animes/AnimeAllEpisodes';
-import Episodes from '~/components/animes/AnimeEpisodes';
-// import Review from '~/components/animes/AnimeReview';
-import { Link, Channel, Staff, Cast } from '~/components/animes/AnimeInfo';
+import Status from "~/components/animes/AnimeStatus";
+import Thumbnail from "~/components/animes/AnimeThumbnail";
+import AllEpisodes from "~/components/animes/AnimeAllEpisodes";
+import Episodes from "~/components/animes/AnimeEpisodes";
+import { Link, Channel, Staff, Cast } from "~/components/animes/AnimeInfo";
 
-import Const from '~/constants';
+import Const from "~/constants";
 
-type LibraryEntryNode = NonNullable<NonNullable<NonNullable<LibraryEntriesQuery['viewer']>['libraryEntries']>['nodes']>[number];
+type LibraryEntryNode = NonNullable<NonNullable<NonNullable<LibraryEntryDetailQuery["viewer"]>["libraryEntries"]>["nodes"]>[number];
 
-function SetStatusState({ entry }: { entry: LibraryEntryNode | undefined }) {
+function SetStatusState({ entry, work }: { entry: LibraryEntryNode | undefined, work: Work }) {
   const setStatusStateId = useSetAtom(statusStateIdAtom);
 
   useEffect(() => {
-    if (entry?.status?.state) {
-      setStatusStateId(entry?.status?.state);
+    const state = entry?.status?.state ?? work.viewerStatusState;
+    if (state) {
+      setStatusStateId(state);
     }
-  }, [entry, setStatusStateId]);
-  
+  }, [entry, work.viewerStatusState, setStatusStateId]);
+
   return <></>;
 }
 
-export default function AnimeDetail({ annictId }: { annictId: number }) {
+type AnimeDetailProps = {
+  annictId: number;
+  initialWork: Work | null;
+  initialLibraryEntries: LibraryEntryDetailQuery | null;
+  initialError?: string;
+};
+
+export default function AnimeDetail({
+  annictId: _annictId,
+  initialWork,
+  initialLibraryEntries,
+  initialError,
+}: AnimeDetailProps) {
   const searchParams = useSearchParams();
   const setRecordEditId = useSetAtom(recordEditIdAtom);
   const setRecordCurrentEpisodeAnnictId = useSetAtom(recordCurrentEpisodeAnnictIdAtom);
   const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useAtom(recordOpenerEpisodeAnnictIdAtom);
   const prevEpisodeIdRef = useRef<string | null>(null);
 
-  const { data: worksData, loading: worksLoading, error: worksError } = useQuery<SearchWorksQuery>(searchWorksGql, {
-    variables: { annictIds: [annictId] }
-  });
-  const work = worksData?.searchWorks?.nodes ? (worksData?.searchWorks?.nodes[0] as Work) : null;
+  const work = initialWork;
+  const libraryEntries = initialLibraryEntries as LibraryEntriesQuery | null;
+  const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(
+    (node) => node?.work.annictId === work?.annictId,
+  );
+  const error = initialError;
 
-  const { data: libraryEntries, loading: libraryEntriesLoading, error: libraryEntriesError } = useLibraryEntries({
-    seasons: work ? [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`] : [],
-    skip: !work
-  });
-  const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work?.annictId);
-
-  // workが取得された後は、libraryEntriesのローディングを表示しない
-  const loading = worksLoading || (!work && libraryEntriesLoading);
-  const error = worksError || libraryEntriesError;
-
-  // エピソードフォームを開く処理
   const openEpisodeForm = (episodeAnnictId: number) => {
-    setRecordEditId('');
-    document.body.style.overflow = 'hidden';
+    setRecordEditId("");
+    document.body.style.overflow = "hidden";
     setRecordCurrentEpisodeAnnictId(episodeAnnictId);
     setRecordOpenerEpisodeAnnictId(episodeAnnictId);
   };
 
-  // エピソードフォームを閉じる処理
   const closeEpisodeForm = () => {
     setRecordOpenerEpisodeAnnictId(0);
-    document.body.style.overflow = 'visible';
+    document.body.style.overflow = "visible";
   };
 
-  // URLパラメータからepisodeIdを取得し、フォームを開く
   useEffect(() => {
-    if (loading || !work) return;
+    if (!work) return;
 
-    const episodeId = searchParams.get('episodeId');
-    
-    // 閉じる処理が実行された直後（episodeIdがnullになり、状態が0の場合）は何もしない
+    const episodeId = searchParams.get("episodeId");
+
     if (!episodeId && recordOpenerEpisodeAnnictId === 0 && prevEpisodeIdRef.current !== null) {
       prevEpisodeIdRef.current = null;
       return;
     }
-    
+
     if (episodeId) {
       const episodeAnnictId = parseInt(episodeId, 10);
       if (isNaN(episodeAnnictId)) return;
 
-      // URLパラメータと状態が一致している場合は何もしない（既に開いている）
       if (recordOpenerEpisodeAnnictId === episodeAnnictId) {
         prevEpisodeIdRef.current = episodeId;
         return;
@@ -103,26 +98,24 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
       openEpisodeForm(episodeAnnictId);
       prevEpisodeIdRef.current = episodeId;
     } else {
-      // URLにepisodeIdがない場合は、状態も閉じる状態にする
       if (recordOpenerEpisodeAnnictId !== 0) {
         closeEpisodeForm();
       }
       prevEpisodeIdRef.current = null;
     }
-  }, [searchParams, loading, work, recordOpenerEpisodeAnnictId, setRecordEditId, setRecordCurrentEpisodeAnnictId, setRecordOpenerEpisodeAnnictId]);
+  }, [searchParams, work, recordOpenerEpisodeAnnictId, setRecordEditId, setRecordCurrentEpisodeAnnictId, setRecordOpenerEpisodeAnnictId]);
 
   return (
     <>
       <p><BackButton /></p>
 
-      {loading && <div className="pt-12 border-t dark:border-stone-700 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="px-4 pt-6 border-t dark:border-stone-700 text-red-500">{error.message}</p>}
+      {error && <p className="px-4 pt-6 border-t dark:border-stone-700 text-red-500">{error}</p>}
 
-      {!(loading || error) &&
+      {!error &&
         <>
           {work ? (
             <>
-              <SetStatusState entry={entry} />
+              <SetStatusState entry={entry} work={work} />
               <Thumbnail work={work} view="detail" />
               <Link work={work} />
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 mt-4">
@@ -130,7 +123,7 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                   <h1 className="font-bold text-lg">{work.title}</h1>
                 </div>
                 <div className="flex-shrink-0 order-first sm:order-none">
-                  <Status work={work} libraryEntries={libraryEntries} />
+                  <Status work={work} libraryEntries={libraryEntries ?? undefined} />
                 </div>
               </div>
               <div className="px-4 mt-4">
@@ -138,22 +131,14 @@ export default function AnimeDetail({ annictId }: { annictId: number }) {
                   <li>視聴者数：{work.watchersCount}</li>
                   <li>評価数：{work.reviewsCount}</li>
                   <li>{work.seasonYear}年{Const.SEASON_LIST.find(season => season.id === work.seasonName)?.label}</li>
-                  <li><Channel work={work} libraryEntries={libraryEntries} /></li>
+                  <li><Channel work={work} libraryEntries={libraryEntries ?? undefined} /></li>
                 </ul>
                 <Staff work={work} />
               </div>
               <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">エピソード{work.malAnimeId && <AllEpisodes malAnimeId={work.malAnimeId} />}</h2>
-                <Episodes work={work} libraryEntries={libraryEntries} />
+                <Episodes work={work} libraryEntries={libraryEntries ?? undefined} />
               </div>
-              {/* <div className="mt-6">
-                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">レビュー</h2>
-                <Review work={work} />
-              </div> */}
-              {/* <div className="mt-6">
-                <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">視聴動向</h2>
-                <Review work={work} />
-              </div> */}
               <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">キャスト</h2>
                 <Cast work={work} />

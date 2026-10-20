@@ -1,26 +1,40 @@
-import LayoutContainer from '~/components/layouts/Container';
+import { Suspense } from "react";
 
-import AnimeDetail from '~/components/animes/AnimeDetail';
+import LayoutContainer from "~/components/layouts/Container";
+import AnimeDetail from "~/components/animes/AnimeDetail";
+import { RingSpinner } from "~/components/spinners/Spinner";
+import { loadAnimeDetailPageData } from "~/features/apollo/loaders";
 
 type Params = {
-  params: Promise<{ annictId: string }>
+  params: Promise<{ annictId: string }>;
 };
 
 export const metadata = {
-  title: '詳細',
+  title: "詳細",
 };
 
-// TODO: タイトル取得したいけど、上手くいく手法が分からない
-// export async function generateMetadata({ params }: Params): Promise<Metadata> {
-//   const work = data?.searchWorks?.nodes ? (data?.searchWorks?.nodes[0] as Work) : null;
-//   return { title: work?.title }
-// }
+function DetailFallback() {
+  return (
+    <div className="pt-12 border-t dark:border-stone-700 text-center text-5xl text-annict-100">
+      <RingSpinner />
+    </div>
+  );
+}
 
 export default async function Works({ params }: Params) {
   const annictId = parseInt((await params).annictId, 10);
+  const data = await loadAnimeDetailPageData(annictId);
+
   return (
     <LayoutContainer>
-      <AnimeDetail annictId={annictId} />
+      <Suspense fallback={<DetailFallback />}>
+        <AnimeDetail
+          annictId={annictId}
+          initialWork={data?.work ?? null}
+          initialLibraryEntries={data?.libraryEntries ?? null}
+          initialError={data?.error}
+        />
+      </Suspense>
     </LayoutContainer>
   );
 }

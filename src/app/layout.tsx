@@ -1,12 +1,15 @@
-import '~/app/globals.css';
+import "~/app/globals.css";
 
-import ApolloProviderWrapper from '~/features/apollo/components/Provider';
-import SessionProviderWrapper from '~/features/oauth/components/Provider';
-import LoginController from '~/features/oauth/components/Controller';
+import { getServerSession } from "next-auth";
 
-import Analytics from '~/components/Analytics';
+import ApolloProviderWrapper from "~/features/apollo/components/Provider";
+import SessionProviderWrapper from "~/features/oauth/components/Provider";
+import LoginController from "~/features/oauth/components/Controller";
+import { authOptions } from "~/features/oauth/auth";
 
-import Const from '~/constants';
+import Analytics from "~/components/Analytics";
+
+import Const from "~/constants";
 
 export const metadata = {
   title: {
@@ -20,34 +23,36 @@ export const metadata = {
     url: Const.URL,
     siteName: Const.TITLE,
     images: {
-      url: Const.URL + 'og-image.png',
+      url: Const.URL + "og-image.png",
       width: 1200,
       height: 630,
     },
-    locale: 'ja_JP',
-    type: 'website',
+    locale: "ja_JP",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: Const.TITLE,
     description: Const.DESCRIPTION,
     images: {
-      url: Const.URL + 'og-image.png',
+      url: Const.URL + "og-image.png",
       width: 1200,
       height: 630,
     },
-    creator: '@kakera_dev',
-  },  
+    creator: "@kakera_dev",
+  },
   verification: {
-    google: 'vjqnqyyQHxEhW2NoR4bqhDWGX8mZLNz046_yoyBzHG8',
+    google: "vjqnqyyQHxEhW2NoR4bqhDWGX8mZLNz046_yoyBzHG8",
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="ja">
       <head>
@@ -58,7 +63,7 @@ export default function RootLayout({
       <body>
         <Analytics />
         <ApolloProviderWrapper>
-          <SessionProviderWrapper>
+          <SessionProviderWrapper session={session}>
             <LoginController>
               {children}
             </LoginController>
@@ -66,5 +71,5 @@ export default function RootLayout({
         </ApolloProviderWrapper>
       </body>
     </html>
-  )
+  );
 }

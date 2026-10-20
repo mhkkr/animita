@@ -1,8 +1,8 @@
-import LayoutContainer from '~/components/layouts/Container';
+import LayoutContainer from "~/components/layouts/Container";
+import AnimeList from "~/components/animes/AnimeList";
+import { loadHomePageData } from "~/features/apollo/loaders";
 
-import AnimeList from '~/components/animes/AnimeList';
-
-import Const from '~/constants';
+import Const from "~/constants";
 
 export const metadata = {
   alternates: {
@@ -10,10 +10,15 @@ export const metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const data = await loadHomePageData();
+
   return (
     <LayoutContainer>
-      <AnimeList />
+      <AnimeList
+        initialEntriesByState={data?.entriesByState}
+        initialUser={data?.user}
+      />
     </LayoutContainer>
   );
 }

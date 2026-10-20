@@ -17,6 +17,7 @@ export const searchWorksGql = gql`
         officialSiteUrl
         title
         media
+        viewerStatusState
         image {
           facebookOgImageUrl
           copyright

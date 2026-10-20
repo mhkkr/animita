@@ -125,17 +125,20 @@ function NotEntry() {
   );
 }
 
-function SimpleList({ statusStateId }: { statusStateId: string }) {
-  const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql);
+function SimpleList({ statusStateId, initialUser }: { statusStateId: string, initialUser?: ViewerUserQuery }) {
+  const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql, {
+    skip: !!initialUser,
+  });
+  const userData = initialUser ?? user;
 
-  if (ul) {
+  if (!initialUser && ul) {
     return <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>;
   }
   if (ue) {
     return <p className="p-4 text-red-500">{ue?.message}</p>;
   }
 
-  const username = user?.viewer?.username;
+  const username = userData?.viewer?.username;
   if (!username) {
     return (
       <div className="px-4 pt-6 dark:text-white/70">
@@ -264,17 +267,26 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
   );
 }
 
-export default function AnimeList() {
+type AnimeListProps = {
+  initialEntriesByState?: Partial<Record<"WATCHING" | "WANNA_WATCH", LibraryEntriesQuery>>;
+  initialUser?: ViewerUserQuery;
+};
+
+export default function AnimeList({ initialEntriesByState, initialUser }: AnimeListProps) {
   const [statusStateId] = useAtom(statusStateIdAtom);
   const STATE = Const.STATUS_STATE_LIST.find(state => state.id === statusStateId);
   
   // 見てる、見たいは詳細な表示、それ以外は簡素な表示
   const isSimpleView = statusStateId === 'WATCHED' || statusStateId === 'ON_HOLD' || statusStateId === 'STOP_WATCHING';
+  const initialEntries = statusStateId === "WATCHING" || statusStateId === "WANNA_WATCH"
+    ? initialEntriesByState?.[statusStateId]
+    : undefined;
   
   const { data, loading, error } = useLibraryEntries({
     states: [statusStateId],
-    skip: isSimpleView
+    skip: isSimpleView || !!initialEntries,
   });
+  const entriesData = initialEntries ?? data;
 
   return (
     <div className="relative">
@@ -292,12 +304,12 @@ export default function AnimeList() {
       </header>
       
       {isSimpleView ? (
-        <SimpleList statusStateId={statusStateId} />
+        <SimpleList statusStateId={statusStateId} initialUser={initialUser} />
       ) : (
         <>
-          {loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+          {!initialEntries && loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
           {error && <p className="p-4 text-red-500">{error.message}</p>}
-          {!(loading || error) && <EntryList data={data} />}
+          {(initialEntries || !(loading || error)) && <EntryList data={entriesData} />}
         </>
       )}
     </div>
