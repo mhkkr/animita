@@ -104,22 +104,18 @@ function Contents({ work, episode, user, libraryEntries }: { work: Work, episode
         <div className="mb-3 flex gap-2 items-center">
           <span className="flex-shrink-0">{episode.numberText}</span>
           <span className="flex-1">{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
-          {prevEpisode ? (
-              <ToggleButton
-                className={`flex-shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                episodeAnnictId={prevStatus?.available ? prevEpisode.annictId : undefined}
-                workAnnictId={prevStatus?.available ? work.annictId : undefined}
-                disabled={!prevStatus?.available}
-              >前</ToggleButton>
-            ) : null}
-            {nextEpisode ? (
-              <ToggleButton
-                className={`flex-shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!nextStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                episodeAnnictId={nextStatus?.available ? nextEpisode.annictId : undefined}
-                workAnnictId={nextStatus?.available ? work.annictId : undefined}
-                disabled={!nextStatus?.available}
-              >次</ToggleButton>
-            ) : null}
+            <ToggleButton
+              className={`flex-shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+              episodeAnnictId={prevStatus?.available ? prevEpisode?.annictId : undefined}
+              workAnnictId={prevStatus?.available ? work.annictId : undefined}
+              disabled={!prevStatus?.available}
+            >前</ToggleButton>
+            <ToggleButton
+              className={`flex-shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!nextStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+              episodeAnnictId={nextStatus?.available ? nextEpisode?.annictId : undefined}
+              workAnnictId={nextStatus?.available ? work.annictId : undefined}
+              disabled={!nextStatus?.available}
+            >次</ToggleButton>
           <ToggleButton className="flex-shrink-0" workAnnictId={work.annictId}>
             <Icons id="close" type="navigation" className="text-2xl" />
           </ToggleButton>
@@ -131,18 +127,6 @@ function Contents({ work, episode, user, libraryEntries }: { work: Work, episode
       <Records records={mainRecords} otherRecords={otherRecords} episode={episode} user={user} />
     </>
   );
-}
-
-// URLからepisodeIdパラメータを削除する
-function removeEpisodeIdFromUrl(workAnnictId?: number, pathname?: string | null) {
-  if (workAnnictId) {
-    const newUrl = `/anime/${workAnnictId}`;
-    window.history.replaceState({}, '', newUrl);
-  } else if (pathname) {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('episodeId');
-    window.history.replaceState({}, '', url.pathname + url.search);
-  }
 }
 
 export function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disabled }: {
@@ -159,27 +143,25 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
   const pathname = usePathname();
 
   const closeForm = () => {
-    setRecordEditId('');
+    setRecordEditId("");
     setRecordOpenerEpisodeAnnictId(0);
-    document.body.style.overflow = 'visible';
-    // URLからepisodeIdを削除（window.history.replaceStateで直接更新してsearchParamsの更新を避ける）
-    removeEpisodeIdFromUrl(workAnnictId, pathname);
+    document.body.style.overflow = "visible";
+    // replaceState だと useSearchParams が古いまま残り、詳細側の effect が再オープンしてしまう
+    if (workAnnictId) {
+      router.replace(`/anime/${workAnnictId}`);
+    } else if (pathname) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("episodeId");
+      router.replace(url.pathname + url.search);
+    }
   };
 
   const openForm = () => {
     if (!episodeAnnictId) return;
-    setRecordEditId('');
-    document.body.style.overflow = 'hidden';
+    setRecordEditId("");
+    document.body.style.overflow = "hidden";
     setRecordCurrentEpisodeAnnictId(episodeAnnictId);
     setRecordOpenerEpisodeAnnictId(episodeAnnictId);
-  };
-
-  const formOpen = () => {
-    if (!episodeAnnictId) {
-      closeForm();
-    } else {
-      openForm();
-    }
   };
 
   return (
@@ -188,8 +170,10 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
         if (disabled) return;
         if (workAnnictId && episodeAnnictId) {
           router.push(`/anime/${workAnnictId}?episodeId=${episodeAnnictId}`);
+        } else if (episodeAnnictId) {
+          openForm();
         } else {
-          formOpen();
+          closeForm();
         }
       }}
       className={className}

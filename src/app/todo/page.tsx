@@ -6,6 +6,13 @@ export const metadata = {
 
 const updates = [
   {
+    date: '2026/10/20 (火)',
+    comments: [
+      '話数取得APIとキービジュアル取得API変更に対応しました。',
+      '各種ライブラリを最新のものに変更しましたVer4。',
+    ]
+  },
+  {
     date: '2025/11/22 (土)',
     comments: [
       '記録画面にエピソードの前後リンクを付けました。',

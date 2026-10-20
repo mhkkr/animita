@@ -18,7 +18,7 @@ export default function MyPage() {
   return (
     <LayoutContainer>
       <MyHeader pageId={id} />
-      <div className="[&>*]:mt-4 [&>*]:pt-4 [&>*]:border-t first:[&>*]:pt-0 first:[&>*]:border-t-0 [&>*]:dark:border-stone-700">
+      <div className="[&>*]:pt-4 [&>*:not(:first-child)]:mt-4 [&>*:not(:first-child)]:border-t [&>*:not(:first-child)]:dark:border-stone-700">
         <MyCache />
         <MyDisplays />
         <MyMute />

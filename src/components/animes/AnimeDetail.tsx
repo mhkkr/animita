@@ -1,11 +1,19 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
-import type { LibraryEntriesQuery, LibraryEntryDetailQuery, Work } from "~/features/apollo/generated-types";
+import { useQuery } from "@apollo/client/react";
+import { searchWorksGql } from "~/features/apollo/gql/query/searchWorksGql";
+import { useLibraryEntries } from "~/features/apollo/hooks/useLibraryEntries";
+import type {
+  LibraryEntriesQuery,
+  LibraryEntryDetailQuery,
+  SearchWorksQuery,
+  Work,
+} from "~/features/apollo/generated-types";
 
-import { useAtom, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { statusStateIdAtom } from "~/atoms/statusStateIdAtom";
 import { recordEditIdAtom } from "~/atoms/recordEditIdAtom";
 import { recordCurrentEpisodeAnnictIdAtom } from "~/atoms/recordCurrentEpisodeAnnictIdAtom";
@@ -14,6 +22,7 @@ import { recordOpenerEpisodeAnnictIdAtom } from "~/atoms/recordOpenerEpisodeAnni
 import Icons from "~/components/icons/Icons";
 
 import BackButton from "~/components/buttons/BackButton";
+import { RingSpinner } from "~/components/spinners/Spinner";
 
 import Status from "~/components/animes/AnimeStatus";
 import Thumbnail from "~/components/animes/AnimeThumbnail";
@@ -46,7 +55,7 @@ type AnimeDetailProps = {
 };
 
 export default function AnimeDetail({
-  annictId: _annictId,
+  annictId,
   initialWork,
   initialLibraryEntries,
   initialError,
@@ -54,64 +63,63 @@ export default function AnimeDetail({
   const searchParams = useSearchParams();
   const setRecordEditId = useSetAtom(recordEditIdAtom);
   const setRecordCurrentEpisodeAnnictId = useSetAtom(recordCurrentEpisodeAnnictIdAtom);
-  const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useAtom(recordOpenerEpisodeAnnictIdAtom);
-  const prevEpisodeIdRef = useRef<string | null>(null);
+  const setRecordOpenerEpisodeAnnictId = useSetAtom(recordOpenerEpisodeAnnictIdAtom);
 
-  const work = initialWork;
-  const libraryEntries = initialLibraryEntries as LibraryEntriesQuery | null;
+  const skipClientWork = !!initialWork;
+  const { data: worksData, loading: worksLoading, error: worksError } = useQuery<SearchWorksQuery>(searchWorksGql, {
+    variables: { annictIds: [annictId] },
+    skip: skipClientWork,
+  });
+
+  const work = initialWork
+    ?? (worksData?.searchWorks?.nodes?.[0] as Work | undefined)
+    ?? null;
+
+  const skipClientLibrary = !!initialLibraryEntries || !work;
+  const { data: clientLibraryEntries, loading: libraryEntriesLoading, error: libraryEntriesError } = useLibraryEntries({
+    seasons: work ? [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`] : [],
+    skip: skipClientLibrary,
+  });
+
+  const libraryEntries = (initialLibraryEntries ?? clientLibraryEntries ?? null) as LibraryEntriesQuery | null;
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(
     (node) => node?.work.annictId === work?.annictId,
   );
-  const error = initialError;
 
-  const openEpisodeForm = (episodeAnnictId: number) => {
-    setRecordEditId("");
-    document.body.style.overflow = "hidden";
-    setRecordCurrentEpisodeAnnictId(episodeAnnictId);
-    setRecordOpenerEpisodeAnnictId(episodeAnnictId);
-  };
+  const loading = (!skipClientWork && worksLoading) || (!skipClientLibrary && !work && libraryEntriesLoading);
+  // サーバー失敗時はクライアント再取得を優先し、両方ダメなときだけエラー表示
+  const error = worksError?.message
+    || libraryEntriesError?.message
+    || (!loading && !work ? initialError : undefined);
 
-  const closeEpisodeForm = () => {
-    setRecordOpenerEpisodeAnnictId(0);
-    document.body.style.overflow = "visible";
-  };
-
+  // URL の episodeId だけを正とし、開閉状態を同期する（atom 変更では再実行しない）
   useEffect(() => {
-    if (!work) return;
+    if (loading || !work) return;
 
     const episodeId = searchParams.get("episodeId");
-
-    if (!episodeId && recordOpenerEpisodeAnnictId === 0 && prevEpisodeIdRef.current !== null) {
-      prevEpisodeIdRef.current = null;
-      return;
-    }
-
     if (episodeId) {
       const episodeAnnictId = parseInt(episodeId, 10);
       if (isNaN(episodeAnnictId)) return;
 
-      if (recordOpenerEpisodeAnnictId === episodeAnnictId) {
-        prevEpisodeIdRef.current = episodeId;
-        return;
-      }
-
-      openEpisodeForm(episodeAnnictId);
-      prevEpisodeIdRef.current = episodeId;
-    } else {
-      if (recordOpenerEpisodeAnnictId !== 0) {
-        closeEpisodeForm();
-      }
-      prevEpisodeIdRef.current = null;
+      setRecordEditId("");
+      document.body.style.overflow = "hidden";
+      setRecordCurrentEpisodeAnnictId(episodeAnnictId);
+      setRecordOpenerEpisodeAnnictId(episodeAnnictId);
+      return;
     }
-  }, [searchParams, work, recordOpenerEpisodeAnnictId, setRecordEditId, setRecordCurrentEpisodeAnnictId, setRecordOpenerEpisodeAnnictId]);
+
+    setRecordOpenerEpisodeAnnictId(0);
+    document.body.style.overflow = "visible";
+  }, [searchParams, loading, work, setRecordEditId, setRecordCurrentEpisodeAnnictId, setRecordOpenerEpisodeAnnictId]);
 
   return (
     <>
       <p><BackButton /></p>
 
+      {loading && <div className="pt-12 border-t dark:border-stone-700 text-center text-5xl text-annict-100"><RingSpinner /></div>}
       {error && <p className="px-4 pt-6 border-t dark:border-stone-700 text-red-500">{error}</p>}
 
-      {!error &&
+      {!(loading || error) &&
         <>
           {work ? (
             <>

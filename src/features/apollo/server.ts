@@ -1,5 +1,5 @@
 import { print, type DocumentNode } from "graphql";
-import { getToken } from "next-auth/jwt";
+import { decode, getToken } from "next-auth/jwt";
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 
@@ -14,33 +14,60 @@ type GraphQLResponse<T> = {
   errors?: GraphQLErrorShape[];
 };
 
-async function getTokenFromCookies() {
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join("; ");
+const SESSION_COOKIE_NAMES = [
+  "__Secure-next-auth.session-token",
+  "next-auth.session-token",
+] as const;
 
-  if (!cookieHeader) {
-    return null;
+/** next-auth は JWT が大きいと session-token.0 / .1 に分割する */
+function readSessionTokenFromCookies(
+  cookieStore: Awaited<ReturnType<typeof cookies>>,
+): string | null {
+  for (const name of SESSION_COOKIE_NAMES) {
+    const direct = cookieStore.get(name)?.value;
+    if (direct) {
+      return direct;
+    }
+
+    const chunks: string[] = [];
+    for (let index = 0; ; index += 1) {
+      const chunk = cookieStore.get(`${name}.${index}`)?.value;
+      if (!chunk) {
+        break;
+      }
+      chunks.push(chunk);
+    }
+    if (chunks.length > 0) {
+      return chunks.join("");
+    }
   }
 
-  return getToken({
-    // next-auth は Cookie ヘッダから JWT を復号する
-    req: {
-      headers: {
-        cookie: cookieHeader,
-      },
-    } as Parameters<typeof getToken>[0]["req"],
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+  return null;
 }
 
 /** Server Components / Route Handler 共通。JWT からのみトークンを読む */
 export async function getAccessToken(req?: NextRequest): Promise<string | null> {
-  const token = req
-    ? await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
-    : await getTokenFromCookies();
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret) {
+    return null;
+  }
+
+  if (req) {
+    const token = await getToken({ req, secret });
+    return typeof token?.accessToken === "string" ? token.accessToken : null;
+  }
+
+  // RSC では NextRequest が無いため、Cookie を直接読んで decode する
+  const cookieStore = await cookies();
+  const sessionToken = readSessionTokenFromCookies(cookieStore);
+  if (!sessionToken) {
+    return null;
+  }
+
+  const token = await decode({
+    token: sessionToken,
+    secret,
+  });
 
   return typeof token?.accessToken === "string" ? token.accessToken : null;
 }
