@@ -1,23 +1,17 @@
 import { libraryEntriesGql } from "~/features/apollo/gql/query/libraryEntriesGql";
 import { libraryEntryDetailGql } from "~/features/apollo/gql/query/libraryEntryDetailGql";
 import { searchWorksGql } from "~/features/apollo/gql/query/searchWorksGql";
-import { viewerUserGql } from "~/features/apollo/gql/query/viewerUserGql";
 import { serverFetchGraphQL, getAccessToken } from "~/features/apollo/server";
 import type {
   LibraryEntriesQuery,
   LibraryEntryDetailQuery,
   SearchWorksQuery,
-  ViewerUserQuery,
   Work,
 } from "~/features/apollo/generated-types";
 import Const from "~/constants";
 
 export type HomePageData = {
-  entriesByState: {
-    WATCHING: LibraryEntriesQuery;
-    WANNA_WATCH: LibraryEntriesQuery;
-  };
-  user: ViewerUserQuery;
+  entries: LibraryEntriesQuery;
 };
 
 export type AnimeDetailPageData = {
@@ -35,25 +29,12 @@ export async function loadHomePageData(): Promise<HomePageData | null> {
     return null;
   }
 
-  const [watching, wannaWatch, user] = await Promise.all([
-    serverFetchGraphQL<LibraryEntriesQuery>(libraryEntriesGql, {
-      states: ["WATCHING"],
-      seasons: [],
-    }),
-    serverFetchGraphQL<LibraryEntriesQuery>(libraryEntriesGql, {
-      states: ["WANNA_WATCH"],
-      seasons: [],
-    }),
-    serverFetchGraphQL<ViewerUserQuery>(viewerUserGql),
-  ]);
+  const entries = await serverFetchGraphQL<LibraryEntriesQuery>(libraryEntriesGql, {
+    states: ["WATCHING", "WANNA_WATCH"],
+    seasons: [],
+  });
 
-  return {
-    entriesByState: {
-      WATCHING: watching,
-      WANNA_WATCH: wannaWatch,
-    },
-    user,
-  };
+  return { entries };
 }
 
 function findLibraryEntry(libraryEntries: LibraryEntryDetailQuery | null, annictId: number) {
@@ -69,7 +50,6 @@ export async function loadAnimeDetailPageData(annictId: number): Promise<AnimeDe
   }
 
   try {
-    // 作品本体と、よくある視聴状態の library entry を並列取得（クライアントの2段待ちを解消）
     const [worksData, quickLibraryEntries] = await Promise.all([
       serverFetchGraphQL<SearchWorksQuery>(searchWorksGql, {
         annictIds: [annictId],
@@ -88,7 +68,6 @@ export async function loadAnimeDetailPageData(annictId: number): Promise<AnimeDe
     let libraryEntries = quickLibraryEntries;
     let entry = findLibraryEntry(libraryEntries, annictId);
 
-    // 見た作品など、クイック取得に含まれない場合はシーズン指定でフォールバック
     if (!entry && work.seasonYear && work.seasonName) {
       const seasons = [`${work.seasonYear}-${work.seasonName.toLowerCase()}`];
       const states = Const.STATUS_STATE_LIST.map((state) => state.id);
@@ -99,7 +78,6 @@ export async function loadAnimeDetailPageData(annictId: number): Promise<AnimeDe
       entry = findLibraryEntry(libraryEntries, annictId);
     }
 
-    // 該当エントリだけに絞ってクライアントへ渡す（ペイロード削減）
     if (libraryEntries && entry) {
       libraryEntries = {
         ...libraryEntries,

@@ -54,7 +54,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="ja">
+    <html lang="ja" className="scrollbar-gutter-stable">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icon-192x192.png"></link>

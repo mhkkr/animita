@@ -36,8 +36,8 @@ export default function HowTo() {
           <div className="mt-2 -ml-4">
             <p>これにて設定が完了です。<br />アニメリストが取得できるようになりました。</p>
             <dl className="mt-4 pt-4 border-t">
-              <dt className="font-bold">アニメが表示されない場合</dt>
-              <dd className="mt-2">API の nextProgram が null ではないエピソードだけを抽出しているので、そこに登録がないとアニみたでは表示できません。<br />何らかの理由で起きてしまう現象で、その場合 Annict にて一度だけ記録を作ってもらうとフラグが動くので、それ以降は正常に取得できるのを確認しております。</dd>
+              <dt className="font-bold">「放送情報なし」に表示される場合</dt>
+              <dd className="mt-2">Annict API の nextProgram が取得できない作品は、「視聴中」の「放送情報なし」に表示されます。<br />Annict にて一度記録を作ると、以降は放送情報が付いて通常どおり表示されることがあります。</dd>
             </dl>
           </div>
         </li>

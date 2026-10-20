@@ -1,4 +1,5 @@
-import Const from '~/constants';
+import Const from "~/constants";
+import { getLocalStorageItem } from "~/libs/storage";
 
 export function generateDateStyle({ date }: { date: Date }) {
   if (!date) return 0;
@@ -6,6 +7,6 @@ export function generateDateStyle({ date }: { date: Date }) {
 }
 
 export function getMutedUsers(): { annictId: number, username: string }[] {
-  const mutedUsers = localStorage.getItem(Const.STORAGE_MUTED_USERS);
+  const mutedUsers = getLocalStorageItem(Const.STORAGE_MUTED_USERS);
   return mutedUsers ? JSON.parse(mutedUsers) : [];
 }

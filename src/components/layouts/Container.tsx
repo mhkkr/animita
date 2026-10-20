@@ -1,12 +1,12 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-import Header from './Header';
-import Footer from './Footer';
+import Header from "./Header";
+import Footer from "./Footer";
 
 export default function LayoutContainer({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <div className="sm:px-4 pb-14 sm:pb-0">
@@ -21,7 +21,6 @@ export default function LayoutContainer({
               <div className="mt-auto">
                 <aside className="mb-4">
                   <ul className="grid grid-rows-2 lg:grid-rows-1 gap-3">
-                    <li><Link className="block text-xs text-center dark:text-white/70 py-3 px-2 rounded border dark:border-stone-700" href="/mypage">マイページ</Link></li>
                     <li><Link className="block text-xs text-center dark:text-white/70 py-3 px-2 rounded border dark:border-stone-700" href="/howto">初期設定</Link></li>
                     <li><Link className="block text-xs text-center dark:text-white/70 py-3 px-2 rounded border dark:border-stone-700" href="/todo">更新履歴</Link></li>
                   </ul>

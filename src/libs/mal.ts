@@ -1,12 +1,13 @@
-import type { Mal, Jikan } from '~/types/mal';
+import type { Mal, Jikan } from "~/types/mal";
 
-import Const from '~/constants';
+import Const from "~/constants";
+import { getLocalStorageItem, setLocalStorageItem } from "~/libs/storage";
 
 function getStorage(): string | null {
-  return localStorage.getItem(Const.STORAGE_MAL);
+  return getLocalStorageItem(Const.STORAGE_MAL);
 }
 function setStorage(mal: Mal[]) {
-  localStorage.setItem(Const.STORAGE_MAL, JSON.stringify(mal));
+  setLocalStorageItem(Const.STORAGE_MAL, JSON.stringify(mal));
 }
 
 function checkOldDate(fetchDate: Date): boolean {

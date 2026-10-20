@@ -1,21 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { getMal } from '~/libs/mal';
+import { getMal } from "~/libs/mal";
+import { removeLocalStorageItem } from "~/libs/storage";
 
-import Icons from '~/components/icons/Icons';
+import Icons from "~/components/icons/Icons";
 
-import Const from '~/constants';
+import Const from "~/constants";
 
 export default function MyMal() {
-  const [mal, setMal] = useState(getMal());
+  const [malCount, setMalCount] = useState(0);
+
+  useEffect(() => {
+    setMalCount(getMal().length);
+  }, []);
 
   const handleClick = () => {
-    const confirm = window.confirm('本当に削除しますか？');
+    const confirm = window.confirm("本当に削除しますか？");
     if (confirm) {
-      localStorage.removeItem(Const.STORAGE_MAL);
-      setMal(getMal());
+      removeLocalStorageItem(Const.STORAGE_MAL);
+      setMalCount(getMal().length);
     }
   };
 
@@ -23,7 +28,7 @@ export default function MyMal() {
     <dl className="flex gap-4 items-center">
       <dt className="flex-none">
         <p>MyAnimeList</p>
-        <p className="text-xs dark:text-white/70">{mal.length}件のデータを取得済み。</p>
+        <p className="text-xs dark:text-white/70">{malCount}件のデータを取得済み。</p>
       </dt>
       <dd className="ml-auto">
         <button

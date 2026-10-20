@@ -9,7 +9,7 @@ import Const from '~/constants';
 const id = 'profile';
 
 export const metadata = {
-  title: `マイページ（${Const.MY_PAGES.find(page => page.id === id)?.title}）`,
+  title: Const.MY_PAGES.find(page => page.id === id)?.title,
 };
 
 export default function MyPage() {

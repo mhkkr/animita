@@ -5,6 +5,7 @@ import { loadHomePageData } from "~/features/apollo/loaders";
 import Const from "~/constants";
 
 export const metadata = {
+  title: "視聴可能",
   alternates: {
     canonical: Const.URL,
   },
@@ -16,8 +17,10 @@ export default async function Home() {
   return (
     <LayoutContainer>
       <AnimeList
-        initialEntriesByState={data?.entriesByState}
-        initialUser={data?.user}
+        view="delivered"
+        title="視聴可能"
+        icon="play"
+        initialEntries={data?.entries}
       />
     </LayoutContainer>
   );

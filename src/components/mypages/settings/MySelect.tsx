@@ -1,16 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { displays, setSetting, getSetting } from '~/libs/settings';
-import type { Category, Id } from '~/types/settings';
+import { displays, setSetting, getSetting } from "~/libs/settings";
+import type { DisplayId } from "~/types/settings";
 
-export default function MySelect({ label, category, id }: { label: string, category: Category, id: Id }) {
-  const [select, setSelect] = useState(getSetting(category, id));
+export default function MySelect({ label, id }: { label: string, category?: "displays", id: DisplayId }) {
+  const [select, setSelect] = useState(displays[id].default);
+
+  useEffect(() => {
+    setSelect(getSetting("displays", id));
+  }, [id]);
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newValuation = event.currentTarget.value;
-    setSetting(category, id, newValuation);
+    setSetting("displays", id, newValuation);
     setSelect(newValuation);
   };
 
@@ -23,11 +27,9 @@ export default function MySelect({ label, category, id }: { label: string, categ
           onChange={handleChange}
           value={select}
         >
-          {displays.evaluation.value.map(value => {
-            return (
-              <option key={value.id} value={value.id}>{value.label}</option>
-            )
-          })}
+          {displays[id].value.map((value) => (
+            <option key={value.id} value={value.id}>{value.label}</option>
+          ))}
         </select>
       </dd>
     </dl>

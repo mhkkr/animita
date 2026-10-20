@@ -12,6 +12,16 @@ import * as AnimeEpisode from '~/components/animes/AnimeEpisode';
 
 import Const from '~/constants';
 
+/** 閑話・総集編など、今期話数の対象外 */
+const SPECIAL_EPISODE_PATTERN = /閑話|総集編|ダイジェスト|特別編|振り返り|ハイライト/;
+
+function isSpecialEpisode(episode: Episode | null | undefined) {
+  if (!episode) return true;
+  if (episode.number == null) return true;
+  const text = `${episode.numberText ?? ""} ${episode.title ?? ""}`;
+  return SPECIAL_EPISODE_PATTERN.test(text);
+}
+
 // エピソードが視聴可能かの判定と配信開始時刻を返却する
 function episodeStatus(libraryEntries: LibraryEntriesQuery | null | undefined, work: Work, episodeIndex: number, now: number) {
   if (!libraryEntries) return { available: true, startedAt: '' };
@@ -38,12 +48,22 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
 
   episodes.sort((a, b) => (a?.sortNumber as number) - (b?.sortNumber as number));
 
+  const storyEpisodes = episodes.filter((episode) => !isSpecialEpisode(episode));
+  const minNumber = storyEpisodes.length > 0
+    ? Math.min(...storyEpisodes.map((episode) => episode.number as number))
+    : null;
+  const showSeasonOrdinal = minNumber != null && minNumber > 1;
+
   return (
     <>
       <table className="w-full">
         <tbody>
           {episodes.map((episode, episodeIndex) => {
             const status = episodeStatus(libraryEntries, work, episodeIndex, now);
+            const seasonOrdinal = showSeasonOrdinal && !isSpecialEpisode(episode)
+              ? (episode.number as number) - minNumber + 1
+              : null;
+
             return (
               <tr key={episode?.annictId} className={`hover:bg-stone-500/30 ${!status.available && 'dark:text-white/70'}`}>
                 <td className={`
@@ -56,9 +76,9 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
                 
                 <td className="w-px whitespace-nowrap pl-4 sm:pl-2 align-top py-1.5 pt-[.55rem]">
                   <div className="relative">
-                    {(!!episode?.number && episode?.number > episodeIndex + 1) && 
-                      <span className="absolute bottom-full left-0 text-[.65rem] leading-tight dark:text-white/70">今期<span className="px-px">{episodeIndex + 1}</span>話</span>
-                    }
+                    {seasonOrdinal != null && (
+                      <span className="absolute bottom-full left-0 text-[.65rem] leading-tight dark:text-white/70">今期<span className="px-px">{seasonOrdinal}</span>話</span>
+                    )}
                     {episode?.numberText}
                   </div>
                 </td>

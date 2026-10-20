@@ -1,15 +1,33 @@
-import React from 'react';
-import { MdClose, MdArrowBack, MdArrowDropDown, MdArrowDropUp, MdMoreHoriz } from 'react-icons/md';
+import React from "react";
+import {
+  MdClose,
+  MdArrowBack,
+  MdArrowDropDown,
+  MdArrowDropUp,
+  MdMoreHoriz,
+  MdList,
+  MdPlayArrow,
+  MdPerson,
+  MdSettings,
+  MdHistory,
+  MdCalendarMonth,
+} from "react-icons/md";
 
-type Props = React.ComponentPropsWithoutRef<'svg'>;
+type Props = React.ComponentPropsWithoutRef<"svg">;
 
 export default function NavigationIcon(props: Props) {
   switch (props.id) {
-    case 'close': return <MdClose {...props} />;
-    case 'arrow_back': return <MdArrowBack {...props} />;
-    case 'arrow_drop_down': return <MdArrowDropDown {...props} />;
-    case 'arrow_drop_up': return <MdArrowDropUp {...props} />;
-    case 'more_horiz': return <MdMoreHoriz {...props} />;
+    case "close": return <MdClose {...props} />;
+    case "arrow_back": return <MdArrowBack {...props} />;
+    case "arrow_drop_down": return <MdArrowDropDown {...props} />;
+    case "arrow_drop_up": return <MdArrowDropUp {...props} />;
+    case "more_horiz": return <MdMoreHoriz {...props} />;
+    case "list": return <MdList {...props} />;
+    case "play": return <MdPlayArrow {...props} />;
+    case "person": return <MdPerson {...props} />;
+    case "settings": return <MdSettings {...props} />;
+    case "history": return <MdHistory {...props} />;
+    case "calendar": return <MdCalendarMonth {...props} />;
   }
   return <></>;
 }
