@@ -3,17 +3,11 @@
 import { useEffect, useState } from "react";
 
 import {
+  ANIME_PAGE_STATUS_OPTIONS,
   DEFAULT_ANIME_LIST_STATUSES,
   getAnimeListStatuses,
   setAnimeListStatuses,
 } from "~/libs/settings";
-
-import Const from "~/constants";
-
-/** 視聴可能・視聴中に出せるステータス（見た・視聴中止は候補外） */
-const ANIME_PAGE_STATUS_OPTIONS = Const.STATUS_STATE_LIST.filter(
-  (state) => state.id !== "WATCHED" && state.id !== "STOP_WATCHING",
-);
 
 export default function MyAnimeStatuses() {
   const [statuses, setStatuses] = useState<string[]>([...DEFAULT_ANIME_LIST_STATUSES]);

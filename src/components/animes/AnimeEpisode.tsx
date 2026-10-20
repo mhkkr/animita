@@ -6,7 +6,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useQuery } from '@apollo/client/react';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
-import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record, LibraryEntriesQuery } from '~/features/apollo/generated-types';
+import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
+import type { LibraryEntriesData } from '~/types/libraryEntries';
 
 import { useAtom, useSetAtom } from 'jotai';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
@@ -59,7 +60,7 @@ function InfoCast({ work }: { work: Work }) {
 }
 
 // エピソードが視聴可能かの判定と配信開始時刻を返却する
-function episodeStatus(libraryEntries: LibraryEntriesQuery | undefined, work: Work, episodeIndex: number, now: number) {
+function episodeStatus(libraryEntries: LibraryEntriesData, work: Work, episodeIndex: number, now: number) {
   if (!libraryEntries) return { available: true, startedAt: '' };
 
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
@@ -78,7 +79,7 @@ function episodeStatus(libraryEntries: LibraryEntriesQuery | undefined, work: Wo
   };
 }
 
-function Contents({ work, episode, user, libraryEntries }: { work: Work, episode: Episode, user: ViewerUserQuery, libraryEntries?: LibraryEntriesQuery }) {
+function Contents({ work, episode, user, libraryEntries }: { work: Work, episode: Episode, user: ViewerUserQuery, libraryEntries?: LibraryEntriesData }) {
   const records = episode.records?.nodes ? Array.from(episode.records?.nodes) as Record[] : [];
 
   const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username);
@@ -186,7 +187,7 @@ export function ToggleButton({ children, className, episodeAnnictId, workAnnictI
 }
 
 // エピソード記録
-export function Episode({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery }) {
+export function Episode({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesData }) {
   const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useAtom(recordOpenerEpisodeAnnictIdAtom);
   const [recordCurrentEpisodeAnnictId] = useAtom(recordCurrentEpisodeAnnictIdAtom);
 

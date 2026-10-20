@@ -6,7 +6,8 @@ import { Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headless
 
 import { useMutation } from '@apollo/client/react';
 import { updateStatusGql } from '~/features/apollo/gql/mutation/updateStatusGql';
-import type { Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
+import type { Work } from '~/features/apollo/generated-types';
+import type { LibraryEntriesData } from '~/types/libraryEntries';
 
 import { useAtom } from 'jotai';
 import { statusStateIdAtom } from '~/atoms/statusStateIdAtom';
@@ -21,7 +22,7 @@ type State = {
   label: string
 };
 
-export default function Status({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery }) {
+export default function Status({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesData }) {
   const [statusStateId, setStatusStateId] = useAtom(statusStateIdAtom);
 
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);

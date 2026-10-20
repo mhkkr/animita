@@ -1,6 +1,4 @@
-import LayoutContainer from "~/components/layouts/Container";
-import AnimeList from "~/components/animes/AnimeList";
-import { loadHomePageData } from "~/features/apollo/loaders";
+import AnimeListPage from "~/components/animes/AnimeListPage";
 
 import Const from "~/constants";
 
@@ -11,17 +9,6 @@ export const metadata = {
   },
 };
 
-export default async function Home() {
-  const data = await loadHomePageData();
-
-  return (
-    <LayoutContainer>
-      <AnimeList
-        view="delivered"
-        title="視聴可能"
-        icon="play"
-        initialEntries={data?.entries}
-      />
-    </LayoutContainer>
-  );
+export default function Home() {
+  return <AnimeListPage view="delivered" title="視聴可能" icon="play" />;
 }

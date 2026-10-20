@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { libraryEntriesGql } from "~/features/apollo/gql/query/libraryEntriesGql";
 import { libraryEntryDetailGql } from "~/features/apollo/gql/query/libraryEntryDetailGql";
 import { searchWorksGql } from "~/features/apollo/gql/query/searchWorksGql";
@@ -8,9 +10,12 @@ import type {
   SearchWorksQuery,
   Work,
 } from "~/features/apollo/generated-types";
-import Const from "~/constants";
+import {
+  ALL_STATUS_STATE_IDS,
+  DEFAULT_ANIME_LIST_STATUSES,
+} from "~/libs/settings";
 
-export type HomePageData = {
+export type AnimeListPageData = {
   entries: LibraryEntriesQuery;
 };
 
@@ -20,27 +25,41 @@ export type AnimeDetailPageData = {
   error?: string;
 };
 
-/** 一覧からの遷移で多い状態だけ並列取得（重い WATCHED はシーズン指定のフォールバックへ） */
-const DETAIL_LOOKUP_STATES = ["WATCHING", "WANNA_WATCH"] as const;
-
-export async function loadHomePageData(): Promise<HomePageData | null> {
+/** 同一リクエスト内の重複取得をまとめる */
+export const loadAnimeListPageData = cache(async (): Promise<AnimeListPageData | null> => {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return null;
   }
 
   const entries = await serverFetchGraphQL<LibraryEntriesQuery>(libraryEntriesGql, {
-    states: ["WATCHING", "WANNA_WATCH"],
+    states: [...DEFAULT_ANIME_LIST_STATUSES],
     seasons: [],
   });
 
   return { entries };
-}
+});
 
 function findLibraryEntry(libraryEntries: LibraryEntryDetailQuery | null, annictId: number) {
   return libraryEntries?.viewer?.libraryEntries?.nodes?.find(
     (node) => node?.work.annictId === annictId,
   );
+}
+
+function narrowToEntry(
+  libraryEntries: LibraryEntryDetailQuery,
+  entry: NonNullable<ReturnType<typeof findLibraryEntry>> | undefined,
+): LibraryEntryDetailQuery {
+  return {
+    ...libraryEntries,
+    viewer: {
+      ...libraryEntries.viewer,
+      libraryEntries: {
+        ...libraryEntries.viewer?.libraryEntries,
+        nodes: entry ? [entry] : [],
+      },
+    },
+  };
 }
 
 export async function loadAnimeDetailPageData(annictId: number): Promise<AnimeDetailPageData | null> {
@@ -55,7 +74,7 @@ export async function loadAnimeDetailPageData(annictId: number): Promise<AnimeDe
         annictIds: [annictId],
       }),
       serverFetchGraphQL<LibraryEntryDetailQuery>(libraryEntryDetailGql, {
-        states: [...DETAIL_LOOKUP_STATES],
+        states: [...DEFAULT_ANIME_LIST_STATUSES],
         seasons: [],
       }),
     ]);
@@ -70,36 +89,15 @@ export async function loadAnimeDetailPageData(annictId: number): Promise<AnimeDe
 
     if (!entry && work.seasonYear && work.seasonName) {
       const seasons = [`${work.seasonYear}-${work.seasonName.toLowerCase()}`];
-      const states = Const.STATUS_STATE_LIST.map((state) => state.id);
       libraryEntries = await serverFetchGraphQL<LibraryEntryDetailQuery>(libraryEntryDetailGql, {
-        states,
+        states: ALL_STATUS_STATE_IDS,
         seasons,
       });
       entry = findLibraryEntry(libraryEntries, annictId);
     }
 
-    if (libraryEntries && entry) {
-      libraryEntries = {
-        ...libraryEntries,
-        viewer: {
-          ...libraryEntries.viewer,
-          libraryEntries: {
-            ...libraryEntries.viewer?.libraryEntries,
-            nodes: [entry],
-          },
-        },
-      };
-    } else if (libraryEntries) {
-      libraryEntries = {
-        ...libraryEntries,
-        viewer: {
-          ...libraryEntries.viewer,
-          libraryEntries: {
-            ...libraryEntries.viewer?.libraryEntries,
-            nodes: [],
-          },
-        },
-      };
+    if (libraryEntries) {
+      libraryEntries = narrowToEntry(libraryEntries, entry ?? undefined);
     }
 
     return { work, libraryEntries };

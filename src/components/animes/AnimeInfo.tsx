@@ -1,6 +1,7 @@
 'use client';
 
-import type { Cast, Work, LibraryEntriesQuery } from '~/features/apollo/generated-types';
+import type { Cast, Work } from '~/features/apollo/generated-types';
+import type { LibraryEntriesData } from '~/types/libraryEntries';
 
 import Icons from '~/components/icons/Icons';
 
@@ -59,7 +60,7 @@ export function Link({ work }: { work: Work }) {
   );
 }
 
-export function Channel({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery }) {
+export function Channel({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesData }) {
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
   return <>{entry?.nextProgram?.channel.name}</>;
 }

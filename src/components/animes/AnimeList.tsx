@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useApolloClient } from "@apollo/client/react";
 
 import type { LibraryEntriesQuery, LibraryEntry } from "~/features/apollo/generated-types";
+import { libraryEntriesGql } from "~/features/apollo/gql/query/libraryEntriesGql";
 import { useLibraryEntries } from "~/features/apollo/hooks/useLibraryEntries";
 
 import Icons from "~/components/icons/Icons";
@@ -14,6 +16,12 @@ import * as AnimeEpisode from "~/components/animes/AnimeEpisode";
 import Thumbnail from "~/components/animes/AnimeThumbnail";
 
 import {
+  NO_PROGRAM_DAY,
+  splitLibraryEntries,
+  type AnimeListView,
+  type EntriesByDay,
+} from "~/libs/animeEntries";
+import {
   DEFAULT_ANIME_LIST_STATUSES,
   getAnimeListStatuses,
   isDefaultAnimeListStatuses,
@@ -21,23 +29,16 @@ import {
 
 import Const from "~/constants";
 
-const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
+export type { AnimeListView };
 
-export type AnimeListView = "delivered" | "all";
-
-type EntriesDate = {
-  day: string;
-  list: LibraryEntry[];
-};
-
-function Detail({ entry, now }: { entry: EntriesDate, now: number }) {
+function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
   if (entry.list.length === 0) {
     return <p className="p-4 dark:text-white/70">エピソードがありません！</p>;
   }
 
   return (
     <ul>
-      {entry.list.map((item) => {
+      {entry.list.map((item: LibraryEntry) => {
         const nextProgram = item?.nextProgram;
         const startedAt = nextProgram?.startedAt ? new Date(nextProgram.startedAt) : null;
         const isViewable = startedAt !== null && now > startedAt.getTime();
@@ -126,52 +127,9 @@ function NotEntry() {
   );
 }
 
-function orderEntriesByWeekday(entriesDate: EntriesDate[]): EntriesDate[] {
-  const todayIndex = new Date().getDay();
-  return entriesDate.slice(todayIndex).concat(entriesDate.slice(0, todayIndex));
-}
-
-const NO_PROGRAM_DAY = "放送情報なし";
-
-function splitEntries(data: LibraryEntriesQuery | undefined, now: number) {
-  const nodes = (data?.viewer?.libraryEntries?.nodes ?? []).filter(
-    (node): node is LibraryEntry => node != null,
-  );
-
-  const withProgram = nodes
-    .filter((node) => node.nextProgram != null)
-    .slice()
-    .sort(
-      (a, b) =>
-        new Date(a.nextProgram!.startedAt).getTime() - new Date(b.nextProgram!.startedAt).getTime(),
-    );
-  const withoutProgram = nodes.filter((node) => node.nextProgram == null);
-
-  const delivered: LibraryEntry[] = [];
-  const allByDay: EntriesDate[] = WEEKDAYS.map((day) => ({ day, list: [] }));
-  const noProgram: EntriesDate = { day: NO_PROGRAM_DAY, list: withoutProgram };
-
-  withProgram.forEach((program) => {
-    const startedAt = new Date(program.nextProgram!.startedAt);
-    if (now > startedAt.getTime()) {
-      delivered.push(program);
-    }
-    const day = WEEKDAYS[startedAt.getDay()];
-    const bucket = allByDay.find((item) => item.day === day);
-    bucket?.list.push(program);
-  });
-
-  const all = [
-    ...orderEntriesByWeekday(allByDay).filter((entry) => entry.list.length > 0),
-    ...(noProgram.list.length > 0 ? [noProgram] : []),
-  ];
-
-  return { delivered, all };
-}
-
-function EntryList({ data, view }: { data: LibraryEntriesQuery | undefined, view: AnimeListView }) {
+function EntryList({ data, view }: { data: LibraryEntriesQuery | undefined; view: AnimeListView }) {
   const now = Date.now();
-  const { delivered, all } = splitEntries(data, now);
+  const { delivered, all } = splitLibraryEntries(data, now);
 
   if (view === "delivered") {
     if (delivered.length === 0) {
@@ -205,28 +163,49 @@ type AnimeListProps = {
   initialEntries?: LibraryEntriesQuery;
 };
 
+function seedDefaultEntriesCache(
+  client: ReturnType<typeof useApolloClient>,
+  entries: LibraryEntriesQuery,
+) {
+  client.writeQuery({
+    query: libraryEntriesGql,
+    variables: {
+      states: [...DEFAULT_ANIME_LIST_STATUSES],
+      seasons: [],
+    },
+    data: entries,
+  });
+}
+
 export default function AnimeList({ view, title, icon, initialEntries }: AnimeListProps) {
+  const client = useApolloClient();
+  const seededRef = useRef(false);
   const [states, setStates] = useState<string[]>([...DEFAULT_ANIME_LIST_STATUSES]);
   const [settingsReady, setSettingsReady] = useState(false);
+
+  if (initialEntries && !seededRef.current) {
+    seedDefaultEntriesCache(client, initialEntries);
+    seededRef.current = true;
+  }
 
   useEffect(() => {
     setStates(getAnimeListStatuses());
     setSettingsReady(true);
   }, []);
 
-  const canUseInitial = settingsReady && !!initialEntries && isDefaultAnimeListStatuses(states);
+  const isDefault = isDefaultAnimeListStatuses(states);
   const { data, loading, error } = useLibraryEntries({
     states,
-    skip: !settingsReady || canUseInitial,
+    skip: !settingsReady,
   });
 
-  const entriesData = canUseInitial ? initialEntries : data;
-  const showLoading = !settingsReady || (!canUseInitial && loading);
+  const entriesData = data ?? ((!settingsReady || isDefault) ? initialEntries : undefined);
+  const showLoading = !entriesData && (settingsReady ? loading : !initialEntries);
 
   return (
     <div className="relative">
       <header className="sticky top-0 dark:bg-black/60 backdrop-blur-md border-b dark:border-stone-700">
-        <h1 className="flex items-center justify-center px-4 py-3 text-xl font-bold">
+        <h1 className="flex items-center justify-center p-4 text-xl font-bold">
           <Icons id={icon} type="navigation" className="mr-2 text-[1.5em]" />
           <span>{title}</span>
         </h1>

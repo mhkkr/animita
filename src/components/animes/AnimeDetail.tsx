@@ -5,13 +5,13 @@ import { useSearchParams } from "next/navigation";
 
 import { useQuery } from "@apollo/client/react";
 import { searchWorksGql } from "~/features/apollo/gql/query/searchWorksGql";
-import { useLibraryEntries } from "~/features/apollo/hooks/useLibraryEntries";
+import { useLibraryEntryDetail } from "~/features/apollo/hooks/useLibraryEntryDetail";
 import type {
-  LibraryEntriesQuery,
   LibraryEntryDetailQuery,
   SearchWorksQuery,
   Work,
 } from "~/features/apollo/generated-types";
+import type { LibraryEntriesData } from "~/types/libraryEntries";
 
 import { useSetAtom } from "jotai";
 import { statusStateIdAtom } from "~/atoms/statusStateIdAtom";
@@ -76,17 +76,17 @@ export default function AnimeDetail({
     ?? null;
 
   const skipClientLibrary = !!initialLibraryEntries || !work;
-  const { data: clientLibraryEntries, loading: libraryEntriesLoading, error: libraryEntriesError } = useLibraryEntries({
+  const { data: clientLibraryEntries, loading: libraryEntriesLoading, error: libraryEntriesError } = useLibraryEntryDetail({
     seasons: work ? [`${work.seasonYear}-${work.seasonName?.toLowerCase()}`] : [],
     skip: skipClientLibrary,
   });
 
-  const libraryEntries = (initialLibraryEntries ?? clientLibraryEntries ?? null) as LibraryEntriesQuery | null;
+  const libraryEntries: LibraryEntriesData = initialLibraryEntries ?? clientLibraryEntries ?? null;
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(
     (node) => node?.work.annictId === work?.annictId,
   );
 
-  const loading = (!skipClientWork && worksLoading) || (!skipClientLibrary && !work && libraryEntriesLoading);
+  const loading = (!skipClientWork && worksLoading) || (!skipClientLibrary && libraryEntriesLoading);
   // サーバー失敗時はクライアント再取得を優先し、両方ダメなときだけエラー表示
   const error = worksError?.message
     || libraryEntriesError?.message

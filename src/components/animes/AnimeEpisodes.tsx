@@ -1,6 +1,7 @@
 'use client';
 
-import type { Work, Episode, LibraryEntriesQuery } from '~/features/apollo/generated-types';
+import type { Work, Episode } from '~/features/apollo/generated-types';
+import type { LibraryEntriesData } from '~/types/libraryEntries';
 
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
@@ -23,7 +24,7 @@ function isSpecialEpisode(episode: Episode | null | undefined) {
 }
 
 // エピソードが視聴可能かの判定と配信開始時刻を返却する
-function episodeStatus(libraryEntries: LibraryEntriesQuery | null | undefined, work: Work, episodeIndex: number, now: number) {
+function episodeStatus(libraryEntries: LibraryEntriesData, work: Work, episodeIndex: number, now: number) {
   if (!libraryEntries) return { available: true, startedAt: '' };
 
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
@@ -42,7 +43,7 @@ function episodeStatus(libraryEntries: LibraryEntriesQuery | null | undefined, w
   };
 }
 
-export default function Episodes({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesQuery | null }) {
+export default function Episodes({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesData }) {
   const episodes = (work.episodes?.nodes ? Array.from(work.episodes?.nodes) : []) as Episode[];
   const now = Date.now();
 
