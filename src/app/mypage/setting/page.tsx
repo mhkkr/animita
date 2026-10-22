@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import LayoutContainer from '~/components/layouts/Container';
 
 import MyHeader from '~/components/mypages/MyHeader';
@@ -11,7 +13,7 @@ import Const from "~/constants";
 
 const id = "setting";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: Const.MY_PAGES.find(page => page.id === id)?.title,
 };
 
@@ -19,7 +21,7 @@ export default function MyPage() {
   return (
     <LayoutContainer>
       <MyHeader pageId={id} />
-      <div className="[&>*]:pt-4 [&>*:not(:first-child)]:mt-4 [&>*:not(:first-child)]:border-t [&>*:not(:first-child)]:dark:border-stone-700">
+      <div className="*:pt-4 [&>*:not(:first-child)]:mt-4 [&>*:not(:first-child)]:border-t [&>*:not(:first-child)]:dark:border-stone-700">
         <MyAnimeStatuses />
         <MyDisplays />
         <MyMute />

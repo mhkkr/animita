@@ -32,10 +32,10 @@ class Const {
   ];
 
   RATING_STATE_LIST = [
-    { id: 'BAD', label: '良くない', bgColor: 'bg-gray-500' },
-    { id: 'AVERAGE', label: '普通', bgColor: 'bg-orange-500' },
-    { id: 'GOOD', label: '良い', bgColor: 'bg-green-500' },
-    { id: 'GREAT', label: 'とても良い', bgColor: 'bg-blue-500' },
+    { id: 'BAD', label: '良くない', bgColor: 'bg-gray-500', color: 'text-gray-500' },
+    { id: 'AVERAGE', label: '普通', bgColor: 'bg-orange-500', color: 'text-orange-500' },
+    { id: 'GOOD', label: '良い', bgColor: 'bg-green-500', color: 'text-green-500' },
+    { id: 'GREAT', label: 'とても良い', bgColor: 'bg-blue-500', color: 'text-blue-500' },
   ];
 
   SPECIAL_ANIME_LIST = [

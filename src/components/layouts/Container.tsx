@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import Header from "./Header";
+import Aside from "./Aside";
 import Footer from "./Footer";
 
 export default function LayoutContainer({
@@ -19,12 +18,7 @@ export default function LayoutContainer({
           <div className="relative lg:w-48 px-4 lg:pr-0">
             <div className="lg:sticky lg:top-0 lg:h-screen lg:flex lg:flex-col">
               <div className="mt-auto">
-                <aside className="mb-4">
-                  <ul className="grid grid-rows-2 lg:grid-rows-1 gap-3">
-                    <li><Link className="block text-xs text-center dark:text-white/70 py-3 px-2 rounded border dark:border-stone-700" href="/howto">初期設定</Link></li>
-                    <li><Link className="block text-xs text-center dark:text-white/70 py-3 px-2 rounded border dark:border-stone-700" href="/todo">更新履歴</Link></li>
-                  </ul>
-                </aside>
+                <Aside />
                 <Footer className="mb-4" />
               </div>
             </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 
 import { useQuery } from "@apollo/client/react";
 import { searchWorksGql } from "~/features/apollo/gql/query/searchWorksGql";
@@ -15,9 +14,6 @@ import type { LibraryEntriesData } from "~/types/libraryEntries";
 
 import { useSetAtom } from "jotai";
 import { statusStateIdAtom } from "~/atoms/statusStateIdAtom";
-import { recordEditIdAtom } from "~/atoms/recordEditIdAtom";
-import { recordCurrentEpisodeAnnictIdAtom } from "~/atoms/recordCurrentEpisodeAnnictIdAtom";
-import { recordOpenerEpisodeAnnictIdAtom } from "~/atoms/recordOpenerEpisodeAnnictIdAtom";
 
 import Icons from "~/components/icons/Icons";
 
@@ -28,6 +24,7 @@ import Status from "~/components/animes/AnimeStatus";
 import Thumbnail from "~/components/animes/AnimeThumbnail";
 import AllEpisodes from "~/components/animes/AnimeAllEpisodes";
 import Episodes from "~/components/animes/AnimeEpisodes";
+import WorkRecords from "~/components/animes/AnimeWorkRecords";
 import { Link, Channel, Staff, Cast } from "~/components/animes/AnimeInfo";
 
 import Const from "~/constants";
@@ -60,11 +57,6 @@ export default function AnimeDetail({
   initialLibraryEntries,
   initialError,
 }: AnimeDetailProps) {
-  const searchParams = useSearchParams();
-  const setRecordEditId = useSetAtom(recordEditIdAtom);
-  const setRecordCurrentEpisodeAnnictId = useSetAtom(recordCurrentEpisodeAnnictIdAtom);
-  const setRecordOpenerEpisodeAnnictId = useSetAtom(recordOpenerEpisodeAnnictIdAtom);
-
   const skipClientWork = !!initialWork;
   const { data: worksData, loading: worksLoading, error: worksError } = useQuery<SearchWorksQuery>(searchWorksGql, {
     variables: { annictIds: [annictId] },
@@ -92,26 +84,6 @@ export default function AnimeDetail({
     || libraryEntriesError?.message
     || (!loading && !work ? initialError : undefined);
 
-  // URL の episodeId だけを正とし、開閉状態を同期する（atom 変更では再実行しない）
-  useEffect(() => {
-    if (loading || !work) return;
-
-    const episodeId = searchParams.get("episodeId");
-    if (episodeId) {
-      const episodeAnnictId = parseInt(episodeId, 10);
-      if (isNaN(episodeAnnictId)) return;
-
-      setRecordEditId("");
-      document.body.style.overflow = "hidden";
-      setRecordCurrentEpisodeAnnictId(episodeAnnictId);
-      setRecordOpenerEpisodeAnnictId(episodeAnnictId);
-      return;
-    }
-
-    setRecordOpenerEpisodeAnnictId(0);
-    document.body.style.overflow = "visible";
-  }, [searchParams, loading, work, setRecordEditId, setRecordCurrentEpisodeAnnictId, setRecordOpenerEpisodeAnnictId]);
-
   return (
     <>
       <p><BackButton /></p>
@@ -130,7 +102,7 @@ export default function AnimeDetail({
                 <div className="flex-1">
                   <h1 className="font-bold text-lg">{work.title}</h1>
                 </div>
-                <div className="flex-shrink-0 order-first sm:order-none">
+                <div className="shrink-0 order-first sm:order-0">
                   <Status work={work} libraryEntries={libraryEntries ?? undefined} />
                 </div>
               </div>
@@ -147,6 +119,7 @@ export default function AnimeDetail({
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">エピソード{work.malAnimeId && <AllEpisodes malAnimeId={work.malAnimeId} />}</h2>
                 <Episodes work={work} libraryEntries={libraryEntries ?? undefined} />
               </div>
+              <WorkRecords workId={work.id} annictId={work.annictId} reviewsCount={work.reviewsCount} />
               <div className="mt-6">
                 <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">キャスト</h2>
                 <Cast work={work} />

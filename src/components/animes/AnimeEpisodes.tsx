@@ -9,7 +9,7 @@ import { Tooltip } from 'react-tooltip';
 import Icons from '~/components/icons/Icons';
 
 import DisplayDate from '~/components/dates/DisplayDate';
-import * as AnimeEpisode from '~/components/animes/AnimeEpisode';
+import { RecordLink } from '~/components/animes/AnimeEpisode';
 
 import Const from '~/constants';
 
@@ -91,18 +91,19 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
 
                 <td className="w-px whitespace-nowrap pl-3 pr-4 align-top text-xs py-1.5">
                   {status.available &&
-                    <AnimeEpisode.ToggleButton
+                    <RecordLink
                       className={`
                         inline-flex w-full px-2 py-1.5 border dark:border-white/30 rounded-full
                         ${episode?.viewerDidTrack && 'bg-black text-white dark:bg-white dark:text-black'}
                       `}
-                      episodeAnnictId={episode?.annictId}
+                      episodeAnnictId={episode.annictId}
                       workAnnictId={work.annictId}
+                      scroll={false}
                     >
                       <Icons id="edit" type="form" className="text-[1.25em]" />
                       <span className="ml-0.5 mr-1">{episode?.viewerRecordsCount}</span>
                       <span className="flex-1 text-right">記録する</span>
-                    </AnimeEpisode.ToggleButton>
+                    </RecordLink>
                   }
                 </td>
               </tr>
@@ -111,7 +112,6 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
         </tbody>
       </table>
       <Tooltip id="episodes-tooltip" />
-      <AnimeEpisode.Episode work={work} libraryEntries={libraryEntries ?? undefined} />
     </>
   );
 }

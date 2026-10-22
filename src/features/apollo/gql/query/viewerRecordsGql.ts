@@ -3,6 +3,7 @@ import { gql } from '@apollo/client';
 export const viewerRecordsGql = gql`
   query viewerRecords($first: Int!) {
     viewer {
+      id
       records(first: $first, orderBy: { field: CREATED_AT, direction: DESC }) {
         edges {
           node {
@@ -16,6 +17,7 @@ export const viewerRecordsGql = gql`
               work {
                 title
                 annictId
+                viewerStatusState
               }
             }
           }

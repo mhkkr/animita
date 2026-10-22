@@ -13,9 +13,36 @@ const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
+        // 先に viewerUser で正規化された User 参照へ、id を含まない
+        // libraryEntries / records の結果を足す。スプレッドだと __ref が残り、
+        // 後から書いたフィールドがエンティティに載らず読み戻せなくなる。
         viewer: {
-          merge(existing, incoming) {
-            return { ...existing, ...incoming };
+          merge: true,
+        },
+      },
+    },
+    Work: {
+      fields: {
+        reviews: {
+          keyArgs: ["orderBy", "hasBody"],
+          merge(existing, incoming, { args }) {
+            if (!existing || !args?.after) {
+              return incoming;
+            }
+            const existingNodes = existing.nodes ?? [];
+            const incomingNodes = incoming.nodes ?? [];
+            const seen = new Set(
+              existingNodes
+                .map((node: { __ref?: string }) => node?.__ref)
+                .filter((ref: string | undefined): ref is string => Boolean(ref)),
+            );
+            return {
+              ...incoming,
+              nodes: [
+                ...existingNodes,
+                ...incomingNodes.filter((node: { __ref?: string }) => !node?.__ref || !seen.has(node.__ref)),
+              ],
+            };
           },
         },
       },

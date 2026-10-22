@@ -15,13 +15,13 @@ export default function User() {
         className="absolute top-10 sm:top-auto sm:bottom-full right-0 sm:right-auto border dark:border-stone-700 bg-white dark:bg-black rounded-lg overflow-hidden shadow-xl whitespace-nowrap origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
       >
         <button onClick={() => signOut()} className="flex items-center p-3 w-full text-red-500 font-bold" type="button">
-          <Icons id="logout" type="form" className="flex-shrink-0 mr-1.5 text-lg" />
+          <Icons id="logout" type="form" className="shrink-0 mr-1.5 text-lg" />
           ログアウト
         </button>
       </PopoverPanel>
       <PopoverButton className="group/user flex items-center gap-3 sm:p-3 w-full outline-none">
         <span className="
-          order-last sm:order-none
+          order-last sm:order-0
           dark:bg-white rounded-full overflow-hidden w-8 h-8 sm:w-12 sm:h-12
           group-focus-visible/user:outline group-focus-visible/user:outline-1 group-focus-visible/user:outline-offset-2
         ">

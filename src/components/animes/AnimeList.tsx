@@ -10,13 +10,11 @@ import Icons from "~/components/icons/Icons";
 
 import DisplayDate from "~/components/dates/DisplayDate";
 import { RingSpinner } from "~/components/spinners/Spinner";
-import * as AnimeEpisode from "~/components/animes/AnimeEpisode";
+import { RecordLink } from "~/components/animes/AnimeEpisode";
 import Thumbnail from "~/components/animes/AnimeThumbnail";
 
 import {
-  NO_PROGRAM_DAY,
   splitLibraryEntries,
-  type AnimeListView,
   type EntriesByDay,
 } from "~/libs/animeEntries";
 import {
@@ -25,8 +23,6 @@ import {
 } from "~/libs/settings";
 
 import Const from "~/constants";
-
-export type { AnimeListView };
 
 function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
   if (entry.list.length === 0) {
@@ -42,7 +38,7 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
 
         return (
           <li key={item?.work.annictId} className="flex gap-4 p-4 border-b dark:border-stone-700">
-            <div className="flex-shrink-0 w-28">
+            <div className="shrink-0 w-28">
               <Link href={`/anime/${item?.work.annictId}`}>
                 <Thumbnail work={item?.work} view="list" />
               </Link>
@@ -59,27 +55,28 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
               <p className="mt-1 font-bold">
                 <Link className="inline-block" href={`/anime/${item?.work.annictId}`}>{item?.work.title}</Link>
               </p>
-              {nextProgram ? (
+              {nextProgram && item?.work.annictId && nextProgram.episode?.annictId && (
                 <div className={`${isViewable ? "" : "cursor-text"}`}>
-                  <AnimeEpisode.ToggleButton
-                    className={`
-                      flex w-full text-sm
-                      ${isViewable ? "mt-1.5 px-4 py-2 border dark:border-white/30 rounded-3xl" : "mt-1 pointer-events-none"}
-                    `}
-                    workAnnictId={item?.work.annictId}
-                    episodeAnnictId={nextProgram.episode?.annictId}
-                    disabled={!isViewable}
-                  >
-                    <span className="flex-shrink-0 mr-2">{nextProgram.episode.numberText}</span>
-                    <span className="flex-1 text-left">
-                      {nextProgram.episode.title || Const.EPISODE_TITLE_UNDEFINED}
-                    </span>
-                  </AnimeEpisode.ToggleButton>
+                  {isViewable ? (
+                    <RecordLink
+                      className="flex w-full mt-1.5 px-4 py-2 border dark:border-white/30 rounded-3xl text-sm"
+                      workAnnictId={item.work.annictId}
+                      episodeAnnictId={nextProgram.episode.annictId}
+                    >
+                      <span className="shrink-0 mr-2">{nextProgram.episode.numberText}</span>
+                      <span className="flex-1 text-left">
+                        {nextProgram.episode.title || Const.EPISODE_TITLE_UNDEFINED}
+                      </span>
+                    </RecordLink>
+                  ) : (
+                    <div className="flex w-full mt-1 text-sm pointer-events-none">
+                      <span className="shrink-0 mr-2">{nextProgram.episode.numberText}</span>
+                      <span className="flex-1 text-left">
+                        {nextProgram.episode.title || Const.EPISODE_TITLE_UNDEFINED}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <p className="mt-2 text-sm dark:text-white/50">
-                  詳細ページからエピソードを確認できます
-                </p>
               )}
             </div>
           </li>
@@ -98,42 +95,72 @@ function NotEntry() {
   );
 }
 
-function EntryList({ data, view }: { data: LibraryEntriesQuery | undefined; view: AnimeListView }) {
+function SectionTitle({
+  icon,
+  iconType = "navigation",
+  children,
+}: {
+  icon: string;
+  iconType?: string;
+  children: string;
+}) {
+  return (
+    <h2 className="flex items-center border-b dark:border-stone-700 p-4 text-lg font-bold">
+      <Icons id={icon} type={iconType} className="mr-2 text-[1.25em]" />
+      <span>{children}</span>
+    </h2>
+  );
+}
+
+function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
   const now = Date.now();
-  const { delivered, all } = splitLibraryEntries(data, now);
+  const { delivered, all, noProgram } = splitLibraryEntries(data, now);
 
-  if (view === "delivered") {
-    if (delivered.length === 0) {
-      return <NotEntry />;
-    }
-    return <Detail entry={{ day: "視聴可能", list: delivered }} now={now} />;
-  }
-
-  if (all.length === 0) {
+  if (delivered.length === 0 && all.length === 0 && noProgram.length === 0) {
     return <NotEntry />;
   }
 
   return (
     <>
-      {all.map((entry) => (
-        <div key={entry.day} className="mt-12 first:mt-6">
-          <div className="border-b dark:border-stone-700 p-4 text-lg font-bold">
-            {entry.day === NO_PROGRAM_DAY ? entry.day : `${entry.day}曜日`}
-          </div>
-          <Detail entry={entry} now={now} />
-        </div>
-      ))}
+      <section className="mt-6">
+        <SectionTitle icon="play">視聴可能</SectionTitle>
+        {delivered.length === 0 ? (
+          <p className="p-4 dark:text-white/70">エピソードがありません！</p>
+        ) : (
+          <Detail entry={{ day: "視聴可能", list: delivered }} now={now} />
+        )}
+      </section>
+      <section className="mt-12">
+        <SectionTitle icon="calendar">週間予定</SectionTitle>
+        {all.length === 0 ? (
+          <p className="p-4 dark:text-white/70">エピソードがありません！</p>
+        ) : (
+          all.map((entry) => (
+            <div key={entry.day}>
+              <div className="border-b dark:border-stone-700 p-4 mt-4 font-bold">
+                {`${entry.day}曜日`}
+              </div>
+              <Detail entry={entry} now={now} />
+            </div>
+          ))
+        )}
+      </section>
+      {noProgram.length > 0 && (
+        <section className="mt-12">
+          <SectionTitle icon="unknow" iconType="notification">放送情報なし</SectionTitle>
+          <Detail entry={{ day: "放送情報なし", list: noProgram }} now={now} />
+        </section>
+      )}
     </>
   );
 }
 
 type AnimeListProps = {
-  view: AnimeListView;
   title: string;
   icon: string;
 };
 
-export default function AnimeList({ view, title, icon }: AnimeListProps) {
+export default function AnimeList({ title, icon }: AnimeListProps) {
   const [states, setStates] = useState<string[]>([...DEFAULT_ANIME_LIST_STATUSES]);
   const [settingsReady, setSettingsReady] = useState(false);
 
@@ -152,7 +179,7 @@ export default function AnimeList({ view, title, icon }: AnimeListProps) {
 
   return (
     <div className="relative">
-      <header className="sticky top-0 dark:bg-black/60 backdrop-blur-md border-b dark:border-stone-700">
+      <header className="z-10 sticky top-0 dark:bg-black/60 backdrop-blur-md border-b dark:border-stone-700">
         <h1 className="flex items-center justify-center p-4 text-xl font-bold">
           <Icons id={icon} type="navigation" className="mr-2 text-[1.5em]" />
           <span>{title}</span>
@@ -163,7 +190,7 @@ export default function AnimeList({ view, title, icon }: AnimeListProps) {
         <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>
       )}
       {error && <p className="p-4 text-red-500">{error.message}</p>}
-      {!showLoading && !error && <EntryList data={data} view={view} />}
+      {!showLoading && !error && <EntryList data={data} />}
     </div>
   );
 }

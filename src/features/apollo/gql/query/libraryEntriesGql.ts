@@ -3,6 +3,7 @@ import { gql } from "@apollo/client";
 export const libraryEntriesGql = gql`
   query libraryEntries($states: [StatusState!], $seasons: [String!]) {
     viewer {
+      id
       libraryEntries(
         states: $states
         seasons: $seasons

@@ -1399,7 +1399,7 @@ export type ViewerRecordsQueryVariables = Exact<{
 }>;
 
 
-export type ViewerRecordsQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', records?: { __typename?: 'RecordConnection', edges?: Array<{ __typename?: 'RecordEdge', node?: { __typename?: 'Record', id: string, annictId: number, ratingState?: RatingState | null, episode: { __typename?: 'Episode', title?: string | null, number?: number | null, annictId: number, work: { __typename?: 'Work', title: string, annictId: number } } } | null } | null> | null } | null } | null };
+export type ViewerRecordsQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', records?: { __typename?: 'RecordConnection', edges?: Array<{ __typename?: 'RecordEdge', node?: { __typename?: 'Record', id: string, annictId: number, ratingState?: RatingState | null, episode: { __typename?: 'Episode', title?: string | null, number?: number | null, annictId: number, work: { __typename?: 'Work', title: string, annictId: number, viewerStatusState?: StatusState | null } } } | null } | null> | null } | null } | null };
 
 export type ViewerUserQueryVariables = Exact<{ [key: string]: never; }>;
 

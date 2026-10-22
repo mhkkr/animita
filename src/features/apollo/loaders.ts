@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { libraryEntryDetailGql } from "~/features/apollo/gql/query/libraryEntryDetailGql";
 import { searchWorksGql } from "~/features/apollo/gql/query/searchWorksGql";
 import { serverFetchGraphQL, getAccessToken } from "~/features/apollo/server";
@@ -39,7 +41,7 @@ function narrowToEntry(
   };
 }
 
-export async function loadAnimeDetailPageData(annictId: number): Promise<AnimeDetailPageData | null> {
+export const loadAnimeDetailPageData = cache(async (annictId: number): Promise<AnimeDetailPageData | null> => {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return null;
@@ -82,4 +84,4 @@ export async function loadAnimeDetailPageData(annictId: number): Promise<AnimeDe
     const message = error instanceof Error ? error.message : "詳細の取得に失敗しました";
     return { work: null, libraryEntries: null, error: message };
   }
-}
+});

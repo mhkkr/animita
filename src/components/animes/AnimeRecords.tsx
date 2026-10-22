@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import { Popover, PopoverPanel, PopoverButton } from '@headlessui/react';
 import type { ViewerUserQuery, Episode, Record } from '~/features/apollo/generated-types';
@@ -8,7 +8,6 @@ import type { ViewerUserQuery, Episode, Record } from '~/features/apollo/generat
 import { useAtom } from 'jotai';
 import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
-import { recordShowNoCommentAtom } from '~/atoms/recordShowNoCommentAtom';
 
 import Icons from '~/components/icons/Icons';
 
@@ -21,75 +20,39 @@ import Favorite from '~/components/animes/AnimeRecordFavorite';
 import Twitter from '~/components/animes/AnimeRecordTwitter';
 
 import { generateDateStyle, getMutedUsers } from '~/libs/function';
+import { compareByRating } from '~/libs/rating';
 import { getSetting } from '~/libs/settings';
 
 import Const from '~/constants';
 
-export default function WrapperRecords({ records, otherRecords, episode, user }: { records: Record[], otherRecords: Record[], episode: Episode, user: ViewerUserQuery }) {
+export default function WrapperRecords({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
   const peoplesRecords = getSetting("displays", "peoples-records");
+  const mine = records.filter(record => record.user.annictId === user.viewer?.annictId);
 
   if (peoplesRecords === "invisible") {
-    return <></>;
-  } else if (peoplesRecords === "record-after-visible") {
-    const isMyRecord = records.find(record => record.user.annictId === user.viewer?.annictId);
-    if (!isMyRecord) {
+    if (mine.length === 0) {
       return <></>;
     }
+    return <Records records={mine} episode={episode} user={user} />;
+  }
+  if (peoplesRecords === "record-after-visible" && mine.length === 0) {
+    return <></>;
   }
 
-  return (
-    <>
-      <Records records={records} episode={episode} user={user} />
-      <NoCommentRecords records={otherRecords} episode={episode} user={user} />
-    </>
-  );
-}
-
-function NoCommentRecords({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
-  const [recordShowNoComment, setRecordShowNoComment] = useAtom(recordShowNoCommentAtom);
-
-  const handleClick = useCallback(() => setRecordShowNoComment(prevState => !prevState), []);
-
-  return (
-    <div className="border-t dark:border-stone-700">
-      <div className="my-6">
-        <button
-          onClick={handleClick}
-          className="flex items-center mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
-          type="button"
-        >
-          <span>コメントなしを{recordShowNoComment ? '非表示にする' : '表示する'}</span>
-          <Icons id={recordShowNoComment ? 'arrow_drop_up' : 'arrow_drop_down'} type="navigation" className="text-[1.5em]" />
-        </button>
-      </div>
-      <Records records={records} episode={episode} user={user} />
-    </div>
-  )
+  return <Records records={records} episode={episode} user={user} />;
 }
 
 function Records({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
   const mutedUsers = getMutedUsers();
   const filteredRecords = records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId));
 
-  const ratingPriority = {
-    GREAT: 4,
-    GOOD: 3,
-    AVERAGE: 2,
-    BAD: 1,
-  };
-
   return (
     <ul className="flex flex-wrap text-sm">
       {filteredRecords
-        .sort((a, b) => {
-          const ratingComparison = (b?.ratingState ? ratingPriority[b.ratingState] : 0) - (a?.ratingState ? ratingPriority[a.ratingState] : 0)
-
-          if (ratingComparison === 0) {
-            return b.likesCount - a.likesCount;
-          }
-          
-          return ratingComparison;
-        })
+        .sort((a, b) => compareByRating(
+          { state: a.ratingState, likesCount: a.likesCount },
+          { state: b.ratingState, likesCount: b.likesCount },
+        ))
         .map(record => <Record key={record.annictId} record={record} episode={episode} user={user} />)
       }
     </ul>
@@ -99,7 +62,6 @@ function Records({ records, episode, user }: { records: Record[], episode: Episo
 function Record({ record, episode, user }: { record: Record, episode: Episode, user: ViewerUserQuery }) {
   const [mute, setMute] = useState(false);
 
-  const [recordShowNoComment] = useAtom(recordShowNoCommentAtom);
   const [recordDeleteId] = useAtom(recordDeleteIdAtom);
   const [recordEditId] = useAtom(recordEditIdAtom);
   
@@ -110,10 +72,8 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
   return (
     <li
       className={`
-        p-4 border-t dark:border-stone-700
+        p-4 border-t dark:border-stone-700 w-full
         ${isMyRecord && 'order-first'}
-        ${(record.comment || isMyRecord) ? 'w-full' : 'w-1/2 sm:w-1/3'}
-        ${(!record.comment && !recordShowNoComment && !isMyRecord) && 'hidden'}
       `}
     >
       <div className={`
@@ -127,7 +87,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
             </div>
           ) : (
             <figure className="flex items-center gap-2.5">
-              <div className="flex-shrink-0 rounded-full overflow-hidden w-8 h-8">
+              <div className="shrink-0 rounded-full overflow-hidden w-8 h-8">
                 <img className="object-cover w-full h-full" src={record.user?.avatarUrl || ''} alt="" loading="lazy" />
               </div>
               <figcaption className="line-clamp-2 break-all">{record.user.name}</figcaption>

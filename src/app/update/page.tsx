@@ -1,10 +1,24 @@
+import type { Metadata } from "next";
+
 import LayoutContainer from '~/components/layouts/Container';
 
-export const metadata = {
-  title: '更新履歴',
+const title = "更新履歴";
+
+export const metadata: Metadata = {
+  title,
 };
 
 const updates = [
+  {
+    date: '2026/10/23 (金)',
+    comments: [
+      '「視聴可能」と「週間予定」を「視聴中」にまとめて一つのページにしました。',
+      'アニメ詳細から作品の記録ができるようになりました。',
+      '設定の表示を「エピソード」と「記録」に分け、記録にも「他のユーザーの感想」と「みんなの評価」を追加しました。',
+      'エピソード記録の「コメントなし」の表示を取りやめました。',
+      'URLやタイトル、ローディング処理などいくつかの不具合を解消しました。',
+    ]
+  },
   {
     date: '2026/10/21 (水)',
     comments: [
@@ -143,31 +157,21 @@ const updates = [
   }
 ];
 
-export default function Todo() {
+export default function UpdatePage() {
   return (
     <LayoutContainer>
-      <h1 className="mb-8 px-4 py-3 pt-1 sm:py-3 text-center text-lg font-bold border-b dark:border-stone-700">{metadata.title}</h1>
-
-      <section className="mt-8 px-4">
-        <h2 className="text-lg font-bold">やりたかったけどできなかったこと</h2>
-        <ul className="list-disc mt-2 ml-6">
-          <li>他の人のエピソードの記録に対して、いいねを押したかったが API がなかったので断念しました。</li>
-        </ul>
-      </section>
+      <h1 className="mb-8 px-4 py-3 pt-1 sm:py-3 text-center text-lg font-bold border-b dark:border-stone-700">{title}</h1>
       
-      <section className="mt-8 px-4">
-        <h2 className="text-lg font-bold">更新履歴</h2>
-        {updates.map((update, updateIndex) => (
-          <dl key={updateIndex} className="mt-2">
-            <dt className="font-bold">{update.date}</dt>
-            <dd>
-              <ul className="list-disc mt-1 ml-6">
-                {update.comments.map((comment, commentIndex) => <li key={`${updateIndex}-${commentIndex}`}>{comment}</li>)}
-              </ul>
-            </dd>
-          </dl>
-        ))}
-      </section>
+      {updates.map((update, updateIndex) => (
+        <dl key={updateIndex} className="mt-4 px-4">
+          <dt className="font-bold">{update.date}</dt>
+          <dd>
+            <ul className="list-disc mt-1 ml-6">
+              {update.comments.map((comment, commentIndex) => <li key={`${updateIndex}-${commentIndex}`}>{comment}</li>)}
+            </ul>
+          </dd>
+        </dl>
+      ))}
     </LayoutContainer>
   );
 }

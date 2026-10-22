@@ -14,7 +14,7 @@ import Const from '~/constants';
 
 // みんなの評価
 function Evaluation({ records, episode }: { records: Record[], episode: Episode }) {
-  const [muteUpdate, setMuteUpdate] = useAtom(muteUpdateAtom);
+  const [muteUpdate] = useAtom(muteUpdateAtom);
   const mutedUsers = getMutedUsers();
   const [filteredRecords, setFilteredRecords] = useState<Record[]>(records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId)));
 

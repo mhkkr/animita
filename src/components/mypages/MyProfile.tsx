@@ -31,7 +31,7 @@ export default function MyProfile() {
 function User({ user }: { user: ViewerUserQuery }) {
   return (
     <figure className="flex items-center gap-3">
-      <div className="flex-shrink-0 rounded-full overflow-hidden w-16 h-16">
+      <div className="shrink-0 rounded-full overflow-hidden w-16 h-16">
         <img className="object-cover w-full h-full" src={user.viewer?.avatarUrl || ''} alt="" loading="lazy" />
       </div>
       <div className="flex-1 flex flex-col lg:flex-row lg:items-center gap-3">
@@ -39,7 +39,7 @@ function User({ user }: { user: ViewerUserQuery }) {
           <p className="text-lg leading-tight">{user.viewer?.name}</p>
           <p className="text-sm opacity-70">@{user.viewer?.username}</p>
         </figcaption>
-        <p className="flex-shrink-0 lg:ml-auto">
+        <p className="shrink-0 lg:ml-auto">
           <a className="inline-flex items-center gap-1 border rounded-full py-1.5 px-3 text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black" href={`https://annict.com/@${user.viewer?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
             Annict の ユーザーページへ
             <Icons id="open_in_new" type="link" className="text-[1.25em]" />
@@ -59,13 +59,13 @@ function Profile({ user }: { user: ViewerUserQuery }) {
       {user.viewer?.url && (
         <p>
           <a className="inline-flex gap-1 break-all hover:underline" href={user.viewer?.url} target="_blank" rel="noopener noreferrer">
-            <Icons id="open_in_new" type="link" className="flex-shrink-0 relative top-0.5 text-[1.25em]" />
+            <Icons id="open_in_new" type="link" className="shrink-0 relative top-0.5 text-[1.25em]" />
             {user.viewer?.url}
           </a>
         </p>
       )}
       <p className="flex">
-        <span className="flex-shrink-0">サービス開始日時：</span>
+        <span className="shrink-0">サービス開始日時：</span>
         <span className="flex flex-wrap gap-x-2">
           <span><DisplayDate date={user.viewer?.createdAt} /></span>
           <span>{Math.abs(Math.floor((new Date(user.viewer?.createdAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))}日目</span>
@@ -87,10 +87,10 @@ function Card(
       rel="noopener noreferrer"
     >
       <h2 className="flex gap-1 text-sm lg:text-base">
-        <Icons id={id} type={type} className="flex-shrink-0 relative -top-[.05em]" />
+        <Icons id={id} type={type} className="shrink-0 relative -top-[.05em]" />
         <span className="leading-trim whitespace-nowrap">{label}</span>
       </h2>
-      <div className={`${direction === "col" ? "flex-grow" : "ml-auto text-right"} flex items-center justify-center break-all`}>
+      <div className={`${direction === "col" ? "grow" : "ml-auto text-right"} flex items-center justify-center break-all`}>
         <p className="leading-trim text-xl lg:text-3xl font-bold">{value ?? 0}</p>
       </div>
     </a>

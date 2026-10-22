@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import "~/app/globals.css";
 
 import { getServerSession } from "next-auth";
@@ -11,10 +13,10 @@ import Analytics from "~/components/Analytics";
 
 import Const from "~/constants";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: {
     default: Const.TITLE,
-    template: `%s - ${Const.TITLE}`,
+    template: `%s｜${Const.TITLE}`,
   },
   description: Const.DESCRIPTION,
   openGraph: {

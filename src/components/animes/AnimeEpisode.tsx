@@ -1,7 +1,11 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
+import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
+import { recordShowInfoCastAtom } from '~/atoms/recordShowInfoCastAtom';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { useQuery } from '@apollo/client/react';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
@@ -9,27 +13,49 @@ import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
 import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
 import type { LibraryEntriesData } from '~/types/libraryEntries';
 
-import { useAtom, useSetAtom } from 'jotai';
-import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
-import { recordCurrentEpisodeAnnictIdAtom } from '~/atoms/recordCurrentEpisodeAnnictIdAtom';
-import { recordOpenerEpisodeAnnictIdAtom } from '~/atoms/recordOpenerEpisodeAnnictIdAtom';
-import { recordShowInfoCastAtom } from '~/atoms/recordShowInfoCastAtom';
-
 import Icons from '~/components/icons/Icons';
 
 import { RingSpinner } from '~/components/spinners/Spinner';
 
-import { Link, Staff, Cast } from '~/components/animes/AnimeInfo';
+import { Link as InfoLink, Staff, Cast } from '~/components/animes/AnimeInfo';
 import Form from '~/components/animes/AnimeRecordForm';
 import Evaluation from '~/components/animes/AnimeEvaluation';
 import Records from '~/components/animes/AnimeRecords';
 
 import Const from '~/constants';
 
+export function episodeRecordPath(workAnnictId: number, episodeAnnictId: number) {
+  return `/anime/${workAnnictId}/episode/${episodeAnnictId}`;
+}
+
+export function RecordLink({
+  workAnnictId,
+  episodeAnnictId,
+  className,
+  children,
+  scroll = true,
+}: {
+  workAnnictId: number;
+  episodeAnnictId: number;
+  className?: string;
+  children: React.ReactNode;
+  scroll?: boolean;
+}) {
+  return (
+    <Link
+      href={episodeRecordPath(workAnnictId, episodeAnnictId)}
+      className={className}
+      scroll={scroll}
+    >
+      {children}
+    </Link>
+  );
+}
+
 function InfoCast({ work }: { work: Work }) {
   const [visible, setVisible] = useAtom(recordShowInfoCastAtom);
 
-  const handleClick = useCallback(() => setVisible(prevState => !prevState), []);
+  const handleClick = () => setVisible(prevState => !prevState);
 
   return (
     <div className="mb-4 border-t dark:border-stone-700">
@@ -45,7 +71,7 @@ function InfoCast({ work }: { work: Work }) {
       </div>
       {visible && (
         <>
-          <Link work={work} />
+          <InfoLink work={work} />
           <div className="px-4 mt-4">
             <Staff work={work} />
           </div>
@@ -79,11 +105,55 @@ function episodeStatus(libraryEntries: LibraryEntriesData, work: Work, episodeIn
   };
 }
 
-function Contents({ work, episode, user, libraryEntries }: { work: Work, episode: Episode, user: ViewerUserQuery, libraryEntries?: LibraryEntriesData }) {
+function EpisodeStepLink({
+  children,
+  className,
+  episodeAnnictId,
+  workAnnictId,
+  disabled,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  episodeAnnictId?: number;
+  workAnnictId: number;
+  disabled?: boolean;
+}) {
+  if (disabled || episodeAnnictId == null) {
+    return (
+      <button className={className} type="button" disabled>
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <RecordLink
+      className={className}
+      workAnnictId={workAnnictId}
+      episodeAnnictId={episodeAnnictId}
+      scroll={false}
+    >
+      {children}
+    </RecordLink>
+  );
+}
+
+function Contents({
+  work,
+  episode,
+  user,
+  libraryEntries,
+  onClose,
+}: {
+  work: Work;
+  episode: Episode;
+  user: ViewerUserQuery;
+  libraryEntries?: LibraryEntriesData;
+  onClose: () => void;
+}) {
   const records = episode.records?.nodes ? Array.from(episode.records?.nodes) as Record[] : [];
 
   const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username);
-  const otherRecords = records.filter(record => !record?.comment && record?.user.username !== user?.viewer?.username);
 
   // 前後のエピソードを取得
   const allEpisodes = (work.episodes?.nodes ? Array.from(work.episodes.nodes) : []) as Episode[];
@@ -103,126 +173,100 @@ function Contents({ work, episode, user, libraryEntries }: { work: Work, episode
     <>
       <div className="p-4">
         <div className="mb-3 flex gap-2 items-center">
-          <span className="flex-shrink-0">{episode.numberText}</span>
+          <span className="shrink-0">{episode.numberText}</span>
           <span className="flex-1">{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
-            <ToggleButton
-              className={`flex-shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+            <EpisodeStepLink
+              className={`shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
               episodeAnnictId={prevStatus?.available ? prevEpisode?.annictId : undefined}
-              workAnnictId={prevStatus?.available ? work.annictId : undefined}
+              workAnnictId={work.annictId}
               disabled={!prevStatus?.available}
-            >前</ToggleButton>
-            <ToggleButton
-              className={`flex-shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!nextStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >前</EpisodeStepLink>
+            <EpisodeStepLink
+              className={`shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!nextStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
               episodeAnnictId={nextStatus?.available ? nextEpisode?.annictId : undefined}
-              workAnnictId={nextStatus?.available ? work.annictId : undefined}
+              workAnnictId={work.annictId}
               disabled={!nextStatus?.available}
-            >次</ToggleButton>
-          <ToggleButton className="flex-shrink-0" workAnnictId={work.annictId}>
+            >次</EpisodeStepLink>
+          <button onClick={onClose} className="shrink-0" type="button">
             <Icons id="close" type="navigation" className="text-2xl" />
-          </ToggleButton>
+          </button>
         </div>
         {episode && <Form episode={episode} />}
       </div>
       <InfoCast work={work} />
       <Evaluation records={records} episode={episode} user={user} />
-      <Records records={mainRecords} otherRecords={otherRecords} episode={episode} user={user} />
+      <Records records={mainRecords} episode={episode} user={user} />
     </>
   );
 }
 
-export function ToggleButton({ children, className, episodeAnnictId, workAnnictId, disabled }: {
-  children?: React.ReactNode,
-  className?: string,
-  episodeAnnictId?: number | undefined,
-  workAnnictId?: number | undefined,
-  disabled?: boolean
+export function RecordModal({
+  annictId,
+  episodeAnnictId,
+  work,
+  libraryEntries,
+}: {
+  annictId: number;
+  episodeAnnictId: number;
+  work: Work | null;
+  libraryEntries?: LibraryEntriesData;
 }) {
-  const setRecordEditId = useSetAtom(recordEditIdAtom);
-  const setRecordCurrentEpisodeAnnictId = useSetAtom(recordCurrentEpisodeAnnictIdAtom);
-  const setRecordOpenerEpisodeAnnictId = useSetAtom(recordOpenerEpisodeAnnictIdAtom);
   const router = useRouter();
   const pathname = usePathname();
+  const setRecordEditId = useSetAtom(recordEditIdAtom);
+  const active = pathname === episodeRecordPath(annictId, episodeAnnictId);
 
-  const closeForm = () => {
-    setRecordEditId("");
-    setRecordOpenerEpisodeAnnictId(0);
-    document.body.style.overflow = "visible";
-    // replaceState だと useSearchParams が古いまま残り、詳細側の effect が再オープンしてしまう
-    if (workAnnictId) {
-      router.replace(`/anime/${workAnnictId}`);
-    } else if (pathname) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("episodeId");
-      router.replace(url.pathname + url.search);
-    }
-  };
-
-  const openForm = () => {
-    if (!episodeAnnictId) return;
-    setRecordEditId("");
-    document.body.style.overflow = "hidden";
-    setRecordCurrentEpisodeAnnictId(episodeAnnictId);
-    setRecordOpenerEpisodeAnnictId(episodeAnnictId);
-  };
-
-  return (
-    <button 
-      onClick={() => {
-        if (disabled) return;
-        if (workAnnictId && episodeAnnictId) {
-          router.push(`/anime/${workAnnictId}?episodeId=${episodeAnnictId}`);
-        } else if (episodeAnnictId) {
-          openForm();
-        } else {
-          closeForm();
-        }
-      }}
-      className={className}
-      type="button"
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  );
-}
-
-// エピソード記録
-export function Episode({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesData }) {
-  const [recordOpenerEpisodeAnnictId, setRecordOpenerEpisodeAnnictId] = useAtom(recordOpenerEpisodeAnnictIdAtom);
-  const [recordCurrentEpisodeAnnictId] = useAtom(recordCurrentEpisodeAnnictIdAtom);
-
-  const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql);
+  const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql, {
+    skip: !active,
+  });
   const { data: episodes, loading: el, error: ee } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
-    variables: { annictIds: [recordCurrentEpisodeAnnictId] },
-    notifyOnNetworkStatusChange: false
+    variables: { annictIds: [episodeAnnictId] },
+    skip: !active,
+    notifyOnNetworkStatusChange: false,
   });
   const episode = episodes?.searchEpisodes?.nodes ? (episodes?.searchEpisodes?.nodes[0] as Episode) : null;
 
   useEffect(() => {
+    if (!active) return;
+
+    setRecordEditId('');
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     return () => {
-      document.body.style.overflow = 'visible';
-      setRecordOpenerEpisodeAnnictId(0);
+      document.body.style.overflow = previousOverflow;
+      setRecordEditId('');
     };
-  }, []);
+  }, [active, episodeAnnictId, setRecordEditId]);
+
+  if (!active) return null;
+
+  const close = () => {
+    router.replace(`/anime/${annictId}`, { scroll: false });
+  };
 
   return (
-    <div className={`
-      fixed inset-0 z-40 bg-slate-700/70 overflow-y-auto
-      ${recordOpenerEpisodeAnnictId === 0 ? 'hidden' : 'block'}
-    `}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="記録"
+      className="fixed inset-0 z-50 bg-slate-700/70 overflow-y-auto"
+    >
       <div className={`min-h-svh relative sm:py-24 sm:px-4 ${el ? 'py-24 px-4' : ''}`}>
-        {/* 背景クリックで閉じる用 */}
-        <ToggleButton className="absolute inset-0" workAnnictId={work.annictId} />
+        <button className="absolute inset-0" type="button" aria-label="閉じる" onClick={close} />
 
         <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>
           {(el || ul) && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
           {(ee || ue) && <p className="p-4 text-red-500">{ee?.message || ue?.message}</p>}
 
           {!(el || ee || ul || ue) && <>
-            {episode && user ? (
-              <Contents work={work} episode={episode} user={user} libraryEntries={libraryEntries} />
+            {episode && user && work ? (
+              <Contents work={work} episode={episode} user={user} libraryEntries={libraryEntries} onClose={close} />
             ) : (
               <div className="p-6 dark:text-white/70">
+                <button onClick={close} className="block ml-auto" type="button" aria-label="閉じる">
+                  <Icons id="close" type="navigation" className="text-2xl" />
+                </button>
                 <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
                 <p className="text-center">エピソードがありません！</p>
               </div>

@@ -7,28 +7,34 @@ export const DEFAULT_ANIME_LIST_STATUSES = ["WATCHING", "WANNA_WATCH"] as const;
 
 export const ALL_STATUS_STATE_IDS = Const.STATUS_STATE_LIST.map((state) => state.id);
 
-/** 視聴可能・週間予定に出せるステータス（見た・視聴中止は候補外） */
+/** 視聴中に出せるステータス（見た・視聴中止は候補外） */
 export const ANIME_PAGE_STATUS_OPTIONS = Const.STATUS_STATE_LIST.filter(
   (state) => state.id !== "WATCHED" && state.id !== "STOP_WATCHING",
 );
 
 const ANIME_PAGE_ALLOWED_STATUSES = new Set(ANIME_PAGE_STATUS_OPTIONS.map((state) => state.id));
 
+const displayChoices = [
+  { id: "invisible", label: "非表示にする" },
+  { id: "record-after-visible", label: "評価するまで非表示にする" },
+  { id: "visible", label: "表示する" },
+];
+
 export const displays = {
   ["peoples-records"]: {
-    value: [
-      { id: "invisible", label: "非表示にする" },
-      { id: "record-after-visible", label: "評価するまで非表示にする" },
-      { id: "visible", label: "表示する" },
-    ],
+    value: displayChoices,
     default: "visible",
   },
   evaluation: {
-    value: [
-      { id: "invisible", label: "非表示にする" },
-      { id: "record-after-visible", label: "評価するまで非表示にする" },
-      { id: "visible", label: "表示する" },
-    ],
+    value: displayChoices,
+    default: "visible",
+  },
+  ["work-peoples-records"]: {
+    value: displayChoices,
+    default: "visible",
+  },
+  ["work-evaluation"]: {
+    value: displayChoices,
     default: "visible",
   },
 };

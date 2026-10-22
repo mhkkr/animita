@@ -33,9 +33,9 @@ export default function MyMute() {
     <section>
       <header className="px-4">
         <h1 className="text-lg font-bold">ミュート</h1>
-        <p className="mt-2 text-sm">API では Annict のミュート設定が考慮されていないため、独自にローカルストレージを使ってユーザーのミュートを管理します。</p>
-        <p className="mt-2 text-xs pl-[1em] indent-[-1em]">※記録一覧とみんなの評価から対象者を除外します。</p>
-        <p className="mt-2 text-xs pl-[1em] indent-[-1em]">※ミュートした時点のユーザーネームのため、変更があった場合はリンクが無効になることがありますが、除外判定は AnnictId で行っているので対象者がズレることはありません。</p>
+        <p className="mt-2 text-sm">API では Annict のミュートに影響を受けずにデータを取得するため、このアプリ内のローカルストレージでユーザーのミュートを管理します。</p>
+        <p className="mt-2 text-xs pl-[1em] indent-[-1em]">※エピソードまたは記録の一覧とみんなの評価から対象者を除外します。</p>
+        <p className="mt-2 text-xs pl-[1em] indent-[-1em]">※下記リストはミュートした時点のユーザーネームのため、変更された場合はリンクが無効になります。除外判定は AnnictId で行っているので、ミュートの対象者がズレることはありません。</p>
       </header>
 
       {!ready || mutedUsers.length === 0 ? (
