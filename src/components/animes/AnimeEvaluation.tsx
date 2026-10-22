@@ -77,7 +77,7 @@ function Evaluation({ records, episode }: { records: Record[], episode: Episode 
 
 // みんなの評価の表示条件
 export default function WrapperEvaluation({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
-  const evaluation = getSetting("displays", "evaluation");
+  const evaluation = getSetting("displays", "episode-evaluation");
 
   if (evaluation === "invisible") {
     return <></>;

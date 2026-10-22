@@ -20,20 +20,20 @@ const displayChoices = [
   { id: "visible", label: "表示する" },
 ];
 
-export const displays = {
-  ["peoples-records"]: {
+export const displays: Record<DisplayId, { value: typeof displayChoices; default: string }> = {
+  "episode-comments": {
     value: displayChoices,
     default: "visible",
   },
-  evaluation: {
+  "episode-evaluation": {
     value: displayChoices,
     default: "visible",
   },
-  ["work-peoples-records"]: {
+  "work-comments": {
     value: displayChoices,
     default: "visible",
   },
-  ["work-evaluation"]: {
+  "work-evaluation": {
     value: displayChoices,
     default: "visible",
   },

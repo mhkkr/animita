@@ -26,16 +26,16 @@ import { getSetting } from '~/libs/settings';
 import Const from '~/constants';
 
 export default function WrapperRecords({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
-  const peoplesRecords = getSetting("displays", "peoples-records");
+  const comments = getSetting("displays", "episode-comments");
   const mine = records.filter(record => record.user.annictId === user.viewer?.annictId);
 
-  if (peoplesRecords === "invisible") {
+  if (comments === "invisible") {
     if (mine.length === 0) {
       return <></>;
     }
     return <Records records={mine} episode={episode} user={user} />;
   }
-  if (peoplesRecords === "record-after-visible" && mine.length === 0) {
+  if (comments === "record-after-visible" && mine.length === 0) {
     return <></>;
   }
 

@@ -1,8 +1,8 @@
 export interface Setting {
   displays?: {
-    ["peoples-records"]?: string;
-    evaluation?: string;
-    ["work-peoples-records"]?: string;
+    ["episode-comments"]?: string;
+    ["episode-evaluation"]?: string;
+    ["work-comments"]?: string;
     ["work-evaluation"]?: string;
   };
   anime?: {
@@ -11,6 +11,6 @@ export interface Setting {
 }
 
 export type Category = "displays" | "anime";
-export type DisplayId = "evaluation" | "peoples-records" | "work-evaluation" | "work-peoples-records";
+export type DisplayId = "episode-comments" | "episode-evaluation" | "work-comments" | "work-evaluation";
 export type AnimeId = "statuses";
 export type Id = DisplayId | AnimeId;

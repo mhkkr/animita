@@ -183,8 +183,8 @@ export default function WorkRecords({
   });
   const commentedReviews = orderedReviews.filter((review) => hasBody(review) || review.user.annictId === viewerId);
   const hasOwnReview = orderedReviews.some((review) => review.user.annictId === viewerId);
-  const peoplesRecords = getSetting("displays", "work-peoples-records");
-  const showOtherReviews = peoplesRecords === "visible" || (peoplesRecords === "record-after-visible" && hasOwnReview);
+  const comments = getSetting("displays", "work-comments");
+  const showOtherReviews = comments === "visible" || (comments === "record-after-visible" && hasOwnReview);
   const listedReviews = showOtherReviews
     ? commentedReviews
     : commentedReviews.filter((review) => review.user.annictId === viewerId);
