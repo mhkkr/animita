@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { latestUpdate } from "~/data/updates";
+
 const ASIDE_ITEMS = [
   { href: "/howto", label: "初期設定" },
   { href: "/update", label: "更新履歴" },
@@ -17,7 +19,7 @@ export default function Aside() {
 
   return (
     <aside className="mb-4">
-      <ul className="grid grid-rows-2 lg:grid-rows-1 gap-3">
+      <ul className="flex flex-col gap-3">
         {ASIDE_ITEMS.map((item) => {
           const active = isActive(pathname, item.href);
           return (
@@ -32,7 +34,14 @@ export default function Aside() {
                     : "dark:text-white/70 dark:border-stone-700"}
                 `}
               >
-                {item.label}
+                {item.href === "/update" ? (
+                  <>
+                    <span className="block">{item.label}</span>
+                    <span className="mt-1 block">{latestUpdate.date} Ver {latestUpdate.version}</span>
+                  </>
+                ) : (
+                  item.label
+                )}
               </Link>
             </li>
           );

@@ -19,45 +19,51 @@ import Const from '~/constants';
 
 type State = {
   id: string,
-  label: string
+  label: string,
+  color?: string,
+  bgColor?: string,
 };
+
+const NO_STATUS: State = { id: "NO_STATE", label: "未選択" };
+const STATUS_CHOICES = [NO_STATUS, ...Const.STATUS_STATE_LIST];
+
+function resolveStatus(statusId?: string | null): State {
+  if (!statusId || statusId === NO_STATUS.id) {
+    return NO_STATUS;
+  }
+  return Const.STATUS_STATE_LIST.find((state) => state.id === statusId) ?? NO_STATUS;
+}
 
 export default function Status({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesData }) {
   const [statusStateId, setStatusStateId] = useAtom(statusStateIdAtom);
 
   const entry = libraryEntries?.viewer?.libraryEntries?.nodes?.find(node => node?.work.annictId === work.annictId);
-  const statusId = entry?.status?.state ?? work.viewerStatusState ?? undefined;
-  const state = Const.STATUS_STATE_LIST.find(state => state.id === statusId);
-  const [changeStatusState, setChangeStatusState] = useState<State | undefined>(state);
+  const statusId = entry?.status?.state ?? work.viewerStatusState;
+  const [changeStatusState, setChangeStatusState] = useState<State | undefined>();
+  // 変更前はサーバーのステータスを使う。未選択もボタンに出す。
+  const displayState = changeStatusState ?? resolveStatus(statusId);
 
   const [updateStatus, { loading: ul, error: ue }] = useMutation(updateStatusGql);
 
-  // サーバーから status が来たあとでも初期値が空のまま残らないようにする
-  const displayState = changeStatusState ?? state;
-  
+  const buttonClass = displayState.bgColor
+    ? `${displayState.bgColor} ${displayState.id === "ON_HOLD" ? "text-gray-900" : "text-white"}`
+    : "bg-black text-white dark:bg-white dark:text-gray-900";
+
   if (ul) return <div className="text-center text-3xl text-annict-100"><RingSpinner /></div>;
   if (ue) { console.error(ue); return <p className="text-red-500">{ue?.message}</p>; }
 
   return (
-    <Listbox value={displayState} onChange={setChangeStatusState} disabled={!displayState}>
-      <ListboxButton className="flex items-center justify-center w-full pr-4 pl-3 py-2 bg-black text-white dark:bg-white dark:text-gray-900 rounded-lg">
-        {!displayState ?
-          <>
-            <div className="mr-2 text-annict-100"><RingSpinner /></div>
-            読込中
-          </> :
-          <>
-            <Icons id={`${displayState.id}_CURRENT`} type="status_state" className="text-[1.5em] mr-2" />
-            <span>{displayState.label}</span>
-          </>
-        }
+    <Listbox value={displayState} onChange={setChangeStatusState}>
+      <ListboxButton className={`flex items-center justify-center w-full pr-4 pl-3 py-2 rounded-lg ${buttonClass}`}>
+        <Icons id={`${displayState.id}_CURRENT`} type="status_state" className="text-[1.5em] mr-2" />
+        <span>{displayState.label}</span>
       </ListboxButton>
       <ListboxOptions
         anchor="bottom"
         transition
         className="mt-2 w-[calc(100%_-_2rem)] sm:w-auto border dark:border-white/25 bg-white dark:bg-black rounded-lg overflow-hidden shadow-xl origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
       >
-        {Const.STATUS_STATE_LIST.map((state) => (
+        {STATUS_CHOICES.map((state) => (
           <ListboxOption
             key={state.id}
             onClick={async () => {
@@ -71,6 +77,8 @@ export default function Status({ work, libraryEntries }: { work: Work, libraryEn
             disabled={ul}
             className={`
               flex items-center p-2 w-full cursor-pointer
+              hover:bg-stone-200 data-[focus]:bg-stone-200
+              dark:hover:bg-white/20 dark:data-[focus]:bg-white/20
               ${statusStateId === state.id ? 'font-bold' : ''}
             `}
           >

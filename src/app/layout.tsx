@@ -10,6 +10,7 @@ import LoginController from "~/features/oauth/components/Controller";
 import { authOptions } from "~/features/oauth/auth";
 
 import Analytics from "~/components/Analytics";
+import NavigationProgress from "~/components/NavigationProgress";
 
 import Const from "~/constants";
 
@@ -63,6 +64,7 @@ export default async function RootLayout({
         <meta name="theme-color" content="#334155" />
       </head>
       <body>
+        <NavigationProgress />
         <Analytics />
         <ApolloProviderWrapper>
           <SessionProviderWrapper session={session}>

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import Icons from "~/components/icons/Icons";
 
 const NAV_ITEMS = [
-  { href: "/", label: "視聴中", icon: "play", match: (pathname: string) => pathname === "/" || pathname.startsWith("/anime/") },
+  { href: "/", label: "視聴中", icon: "tv", match: (pathname: string) => pathname === "/" || pathname.startsWith("/anime/") },
   { href: "/mypage", label: "ユーザー", icon: "person", match: (pathname: string) => pathname === "/mypage" },
   { href: "/mypage/records", label: "履歴", icon: "history", match: (pathname: string) => pathname.startsWith("/mypage/records") },
   { href: "/mypage/setting", label: "設定", icon: "settings", match: (pathname: string) => pathname.startsWith("/mypage/setting") },

@@ -6,9 +6,9 @@ class Const {
   EPISODE_TITLE_UNDEFINED = '（未登録）';
 
   MY_PAGES = [
-    { id: 'profile', path: '/', title: 'ユーザー' },
-    { id: 'records', path: '/records', title: '履歴' },
-    { id: 'setting', path: '/setting', title: '設定' },
+    { id: 'profile', path: '/', title: 'ユーザー', icon: 'person' },
+    { id: 'records', path: '/records', title: '履歴', icon: 'history' },
+    { id: 'setting', path: '/setting', title: '設定', icon: 'settings' },
   ];
   MY_RECORDS_LIMIT = 50;
 
@@ -24,11 +24,11 @@ class Const {
   ];
 
   STATUS_STATE_LIST = [
-    { id: 'WATCHING', label: '見てる' },
-    { id: 'WANNA_WATCH', label: '見たい' },
-    { id: 'WATCHED', label: '見た' },
-    { id: 'ON_HOLD', label: '一時中断' },
-    { id: 'STOP_WATCHING', label: '視聴中止' }
+    { id: 'WANNA_WATCH', label: '見たい', color: 'text-orange-500', bgColor: 'bg-orange-500' },
+    { id: 'WATCHING', label: '見てる', color: 'text-sky-500', bgColor: 'bg-sky-500' },
+    { id: 'WATCHED', label: '見た', color: 'text-green-500', bgColor: 'bg-green-500' },
+    { id: 'ON_HOLD', label: '一時中断', color: 'text-red-500', bgColor: 'bg-red-500' },
+    { id: 'STOP_WATCHING', label: '視聴中止', color: 'text-gray-500', bgColor: 'bg-gray-500' }
   ];
 
   RATING_STATE_LIST = [

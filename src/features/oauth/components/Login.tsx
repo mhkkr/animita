@@ -36,14 +36,15 @@ const Main = () => {
   return (
     <>
       <p className="text-gray-700 dark:text-white">
-        「{Const.TITLE}」は、Annict が提供する API を使ったユーザークライアントです。
+        ようこそ！<br />
+        {Const.TITLE}は Annict の Web クライアントです。
       </p>
       <p className="mt-4 text-gray-700 dark:text-white">
-        主に配信サイト勢向けにすぐ見れるアニメと次の予定を分かりやすく把握し、感想を書く敷居を下げられれば！と思い開発しました。<br />
+        主に「配信サイト勢向け」に今すぐ見れるアニメと次の予定を分かりやすく把握し、感想を書く敷居を下げられれば！と思い開発しました。<br />
         PWA に対応しており、スマホアプリのように使うことができます！
       </p>
       <div className="mt-8">
-        <p className="text-gray-500 dark:text-white">まずは Annict と連携してみましょう！</p>
+        <p className="text-gray-500 dark:text-white">まずは Annict と連携してください！</p>
         <button
           className={`mt-2 flex items-center justify-center w-full px-10 py-4 font-medium text-center text-white transition duration-500 ease-in-out transform bg-pink-600 rounded-xl hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 ${processing ? 'cursor-not-allowed grayscale' : ''}`}
           type="button"
@@ -55,6 +56,7 @@ const Main = () => {
         <li className="mt-1 pl-[1em] indent-[-1em]">※Google Analytics を使用しています（<a className="text-sky-700 hover:underline" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener noreferrer">規約</a>）。</li>
         <li className="mt-1 pl-[1em] indent-[-1em]">※ソースコードは <a className="text-sky-700 hover:underline" href="https://github.com/mhkkr/animita" target="_blank" rel="noopener noreferrer">GitHub</a> で公開しています。</li>
       </ul>
+      <p className="mt-4 text-xs text-gray-500 text-center">by <a className="text-sky-600 hover:underline" href="https://twitter.com/kakera_dev" target="_blank" rel="noopener noreferrer">@kakera_dev</a></p>
     </>
   );
 };

@@ -36,9 +36,7 @@ function SetStatusState({ entry, work }: { entry: LibraryEntryNode | undefined, 
 
   useEffect(() => {
     const state = entry?.status?.state ?? work.viewerStatusState;
-    if (state) {
-      setStatusStateId(state);
-    }
+    setStatusStateId(state || "NO_STATE");
   }, [entry, work.viewerStatusState, setStatusStateId]);
 
   return <></>;

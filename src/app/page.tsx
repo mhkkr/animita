@@ -14,5 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <AnimeListPage title="視聴中" icon="play" />;
+  return <AnimeListPage title="視聴中" icon="tv" />;
 }

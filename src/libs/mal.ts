@@ -40,7 +40,7 @@ function update(index: number, mal: Mal[], data: Jikan, imageActive?: boolean) {
     mal[index].fetchDate = new Date();
     mal[index].image = {
       url: data.images.webp.large_image_url,
-      active: imageActive
+      active: imageActive === undefined ? mal[index].image.active : imageActive,
     };
     mal[index].episodes = data.episodes;
     setStorage(mal);

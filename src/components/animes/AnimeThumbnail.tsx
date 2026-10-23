@@ -10,7 +10,71 @@ import { targetMal, getMal, setMal, fetchJikanAnime } from '~/libs/mal';
 
 const noImage = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>';
 
-export default function Thumbnail({ work, view }: { work: Work, view: "list" | "detail" }) {
+function ListThumbnail({ work }: { work: Work }) {
+  const [url, setUrl] = useState(noImage);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!work.malAnimeId) {
+      setUrl(noImage);
+      setLoading(false);
+      return;
+    }
+
+    const cached = targetMal(work.malAnimeId, getMal());
+    if (cached?.image.url) {
+      setUrl(cached.image.url);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+    fetchJikanAnime(work.malAnimeId)
+      .then((response) => {
+        if (cancelled) return;
+        const imageUrl = response?.data?.images?.webp?.large_image_url;
+        if (!imageUrl) {
+          setUrl(noImage);
+          setLoading(false);
+          return;
+        }
+        setUrl(imageUrl);
+        setMal(work.malAnimeId as string, response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+        if (!cancelled) {
+          setUrl(noImage);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [work.malAnimeId]);
+
+  return (
+    <figure className="relative overflow-hidden bg-gray-400/70 text-gray-700/70 dark:bg-gray-700/70">
+      {loading && (
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl text-annict-100"><RingSpinner /></div>
+      )}
+      <img
+        className={`h-full w-full ${url === noImage ? "object-contain" : "object-cover"}`}
+        src={url}
+        alt={`${work.title}の画像`}
+        loading="lazy"
+        onLoad={() => setLoading(false)}
+        onError={() => {
+          setUrl(noImage);
+          setLoading(false);
+        }}
+      />
+    </figure>
+  );
+}
+
+function DetailThumbnail({ work }: { work: Work }) {
   const imgRef = useRef<HTMLImageElement>(null);
   const fetchingRef = useRef(false);
   const [loading, setLoading] = useState(true);
@@ -92,26 +156,30 @@ export default function Thumbnail({ work, view }: { work: Work, view: "list" | "
       return;
     }
 
-    // loading="lazy" は未取得でも complete になるブラウザがあるため、一覧では発火させない。
-    if (view === "list") return;
-
     fallback(element);
-  }, [url, view, fallback, handleLoad]);
+  }, [url, fallback, handleLoad]);
 
   return (
     <figure className="z-0 relative aspect-1200/630 bg-gray-400/70 dark:bg-gray-700/70 text-gray-700/70 overflow-hidden">
       {loading && (
-        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ${view === "detail" ? "text-5xl" : "text-3xl"} text-annict-100`}><RingSpinner /></div>
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl text-annict-100"><RingSpinner /></div>
       )}
       <img
         ref={imgRef}
         className="w-full h-full object-contain"
         src={url}
         alt={`${work.title}のキービジュアル`}
-        loading={view === "detail" ? "eager" : "lazy"}
+        loading="eager"
         onLoad={(e) => handleLoad(e.currentTarget)}
         onError={(e) => fallback(e.currentTarget)}
       />
     </figure>
   );
+}
+
+export default function Thumbnail({ work, view }: { work: Work, view: "list" | "detail" }) {
+  if (view === "list") {
+    return <ListThumbnail work={work} />;
+  }
+  return <DetailThumbnail work={work} />;
 }

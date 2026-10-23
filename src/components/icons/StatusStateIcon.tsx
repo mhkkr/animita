@@ -1,11 +1,14 @@
 import React from 'react';
-import { MdPlayArrow, MdOutlinePlayArrow, MdFiberManualRecord, MdOutlineFiberManualRecord, MdCheck, MdCheckCircle, MdStop, MdOutlineStop } from 'react-icons/md';
+import { MdPlayArrow, MdOutlinePlayArrow, MdFiberManualRecord, MdOutlineFiberManualRecord, MdCheck, MdCheckCircle, MdStop, MdOutlineStop, MdList } from 'react-icons/md';
 import { TbPlayerPause, TbPlayerPauseFilled } from 'react-icons/tb';
 
 type Props = React.ComponentPropsWithoutRef<'svg'>;
 
 export default function StatusStateIcon(props: Props) {
   switch (props.id) {
+    case 'NO_STATE':
+    case 'NO_STATE_CURRENT': return <MdList {...props} />;
+
     case 'WATCHING': return <MdOutlinePlayArrow {...props} />;
     case 'WATCHING_CURRENT': return <MdPlayArrow {...props} />;
 

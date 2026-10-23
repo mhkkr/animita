@@ -16,6 +16,7 @@ import {
   MdOutlineHistory,
   MdCalendarMonth,
 } from "react-icons/md";
+import { HiTv, HiOutlineTv } from "react-icons/hi2";
 
 type Props = React.ComponentPropsWithoutRef<"svg">;
 
@@ -36,6 +37,8 @@ export default function NavigationIcon(props: Props) {
     case "history": return <MdHistory {...props} />;
     case "history_outline": return <MdOutlineHistory {...props} />;
     case "calendar": return <MdCalendarMonth {...props} />;
+    case "tv": return <HiTv {...props} />;
+    case "tv_outline": return <HiOutlineTv {...props} />;
   }
   return <></>;
 }

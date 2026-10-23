@@ -38,20 +38,25 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
 
         return (
           <li key={item?.work.annictId} className="flex gap-4 p-4 border-b dark:border-stone-700">
-            <div className="shrink-0 w-28">
+            <div className="shrink-0 w-18">
               <Link href={`/anime/${item?.work.annictId}`}>
                 <Thumbnail work={item?.work} view="list" />
               </Link>
-              {nextProgram?.channel.name && (
-                <p className="mt-2 text-center text-xs dark:text-white/70">{nextProgram.channel.name}</p>
-              )}
             </div>
             <div className="flex-1">
-              {startedAt ? (
-                <p className="text-sm dark:text-white/70"><DisplayDate date={startedAt} /></p>
-              ) : (
-                <p className="text-sm dark:text-white/70">放送情報がありません</p>
-              )}
+              <div className="flex flex-wrap items-center gap-2 text-xs dark:text-white/70">
+                <StatusLabel statusId={item?.status?.state} />
+                {startedAt ? (
+                  <>
+                    <p><DisplayDate date={startedAt} /></p>
+                    {nextProgram?.channel.name && (
+                      <p>{nextProgram.channel.name}</p>
+                    )}
+                  </>
+                ) : (
+                  <p>放送情報がありません</p>
+                )}
+              </div>
               <p className="mt-1 font-bold">
                 <Link className="inline-block" href={`/anime/${item?.work.annictId}`}>{item?.work.title}</Link>
               </p>
@@ -59,7 +64,7 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
                 <div className={`${isViewable ? "" : "cursor-text"}`}>
                   {isViewable ? (
                     <RecordLink
-                      className="flex w-full mt-1.5 px-4 py-2 border dark:border-white/30 rounded-3xl text-sm"
+                      className="flex w-full mt-2 px-4 py-2 border dark:border-white/30 rounded-3xl text-sm"
                       workAnnictId={item.work.annictId}
                       episodeAnnictId={nextProgram.episode.annictId}
                     >
@@ -69,7 +74,7 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
                       </span>
                     </RecordLink>
                   ) : (
-                    <div className="flex w-full mt-1 text-sm pointer-events-none">
+                    <div className="flex w-full mt-1.5 text-sm pointer-events-none">
                       <span className="shrink-0 mr-2">{nextProgram.episode.numberText}</span>
                       <span className="flex-1 text-left">
                         {nextProgram.episode.title || Const.EPISODE_TITLE_UNDEFINED}
@@ -83,6 +88,25 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
         );
       })}
     </ul>
+  );
+}
+
+function StatusLabel({ statusId }: { statusId?: string | null }) {
+  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === statusId);
+  if (!statusState) {
+    return null;
+  }
+
+  return (
+    <p className={`flex items-center gap-0.5 ${statusState.color}`}>
+      <Icons
+        id={`${statusState.id}_CURRENT`}
+        type="status_state"
+        className="text-[1.25em]"
+        aria-hidden="true"
+      />
+      {statusState.label}
+    </p>
   );
 }
 

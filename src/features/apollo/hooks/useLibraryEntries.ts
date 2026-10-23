@@ -20,5 +20,7 @@ export function useLibraryEntries(options: UseLibraryEntriesOptions = {}) {
   return useQuery<LibraryEntriesQuery>(libraryEntriesGql, {
     variables: { states, seasons },
     skip,
+    // nextProgram は記録後にサーバー側で進む。キャッシュだけだと視聴中に戻っても前の話のままになる。
+    fetchPolicy: "cache-and-network",
   });
 }
