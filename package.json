@@ -21,7 +21,6 @@
     "@headlessui/react": "^2.2.10",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/next-pwa": "^5.6.9",
     "@types/node": "^22.19.21",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
@@ -47,12 +46,41 @@
     "react-tooltip": "^6.0.9",
     "rxjs": "^7.8.2",
     "tailwindcss": "^4.3.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "webpack": "5.112.2"
   },
   "packageManager": "pnpm@10.23.0+sha512.21c4e5698002ade97e4efe8b8b4a89a8de3c85a37919f957e7a0f30f38fbc5bbdd05980ffe29179b2fb6e6e691242e098d945d1601772cad0fef5fb6411e2a4b",
   "pnpm": {
     "overrides": {
-      "minimatch": ">=10.2.3"
+      "minimatch": ">=10.2.3",
+      "brace-expansion@^5": "5.0.12",
+      "shell-quote@^1": "1.12.0",
+      "svgo@^3": "3.3.5",
+      "picomatch@^2": "2.3.2",
+      "picomatch@^4": "4.0.7",
+      "js-yaml@^4": "4.3.2",
+      "fast-uri@^3": "3.1.9",
+      "flatted@^3": "3.4.4",
+      "preact@^10": "10.29.8",
+      "zod@^4": "4.6.7",
+      "@fastify/busboy": "3.2.4",
+      "rollup@^2": "2.80.0",
+      "source-map-js": "1.2.2",
+      "ajv@^6": "6.15.0",
+      "ajv@^8": "8.20.0",
+      "yaml@^2": "2.9.1",
+      "follow-redirects": "1.16.1",
+      "@humanfs/node@^0.16": "0.16.8",
+      "baseline-browser-mapping": "2.11.32",
+      "webpack": "5.112.2",
+      "@babel/core@^7": "7.29.7",
+      "@babel/plugin-transform-modules-systemjs@^7": "7.29.8",
+      "immutable@^5": "5.1.9",
+      "nanoid@^3": "3.3.20",
+      "serialize-javascript": "7.1.4",
+      "lodash": "4.18.1",
+      "browserslist": "4.29.4",
+      "@graphql-tools/utils@^10": "12.1.0"
     }
   }
 }
