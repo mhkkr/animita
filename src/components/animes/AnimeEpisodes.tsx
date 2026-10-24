@@ -12,6 +12,7 @@ import DisplayDate from '~/components/dates/DisplayDate';
 import { RecordLink } from '~/components/animes/AnimeEpisode';
 
 import Const from '~/constants';
+import { useEpisodeRatings } from '~/libs/episodeRatings';
 import { remainingLabel } from '~/libs/remainingTime';
 
 /** 閑話・総集編など、今期話数の対象外 */
@@ -46,6 +47,7 @@ function episodeStatus(libraryEntries: LibraryEntriesData, work: Work, episodeIn
 
 export default function Episodes({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesData }) {
   const episodes = (work.episodes?.nodes ? Array.from(work.episodes?.nodes) : []) as Episode[];
+  const [episodeRatings] = useEpisodeRatings();
   const now = Date.now();
 
   episodes.sort((a, b) => (a?.sortNumber as number) - (b?.sortNumber as number));
@@ -62,6 +64,9 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
         <tbody>
           {episodes.map((episode, episodeIndex) => {
             const status = episodeStatus(libraryEntries, work, episodeIndex, now);
+            const ratingBg = Const.RATING_STATE_LIST.find(
+              (state) => state.id === episodeRatings[String(episode?.annictId)],
+            )?.bgColor;
             const seasonOrdinal = showSeasonOrdinal && !isSpecialEpisode(episode)
               ? (episode.number as number) - minNumber + 1
               : null;
@@ -98,10 +103,11 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
                 <td className="w-px whitespace-nowrap pl-3 pr-4 align-top text-xs py-1.5">
                   {status.available &&
                     <RecordLink
-                      className={`
-                        inline-flex w-full px-2 py-1.5 border dark:border-stone-500 rounded-full
-                        ${episode?.viewerDidTrack && 'bg-black text-white dark:bg-white dark:text-black'}
-                      `}
+                      className={`inline-flex w-full px-2 py-1.5 border rounded-full ${
+                        ratingBg
+                          ? `${ratingBg} text-white border-transparent`
+                          : `dark:border-stone-500 ${episode?.viewerDidTrack ? "bg-black text-white dark:bg-white dark:text-black" : ""}`
+                      }`}
                       episodeAnnictId={episode.annictId}
                       workAnnictId={work.annictId}
                       scroll={false}

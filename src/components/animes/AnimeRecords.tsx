@@ -108,7 +108,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                     {isMyRecord ? (
                       <>
                         <Edit record={record} close={close} />
-                        <Delete record={record} close={close} />
+                        <Delete record={record} episode={episode} viewerAnnictId={user.viewer?.annictId} close={close} />
                         <Twitter record={record} episode={episode} user={user} close={close} />
                       </>
                     ) : (

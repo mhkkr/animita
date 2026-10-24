@@ -4,13 +4,26 @@ import { deleteRecordGql } from '~/features/apollo/gql/mutation/deleteRecordGql'
 import { useAtom } from 'jotai';
 import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
-import type { Record } from '~/features/apollo/generated-types';
+import type { Episode, Record } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
 
-export default function Delete({ record, close }: { record: Record, close: () => void }) {
+import { resolveEpisodeRating, useEpisodeRatings, writeEpisodeRating } from '~/libs/episodeRatings';
+
+export default function Delete({
+  record,
+  episode,
+  viewerAnnictId,
+  close,
+}: {
+  record: Record;
+  episode: Episode;
+  viewerAnnictId?: number | null;
+  close: () => void;
+}) {
   const [recordDeleteId, setRecordDeleteId] = useAtom(recordDeleteIdAtom);
   const [recordEditId, setRecordEditId] = useAtom(recordEditIdAtom);
+  const [, setEpisodeRatings] = useEpisodeRatings();
 
   const [deleteRecord, { loading, error }] = useMutation(deleteRecordGql, {
     refetchQueries: ["searchWorks"],
@@ -31,6 +44,13 @@ export default function Delete({ record, close }: { record: Record, close: () =>
       cache.gc();
     },
     onCompleted() {
+      setEpisodeRatings((current) =>
+        writeEpisodeRating(
+          current,
+          episode.annictId,
+          resolveEpisodeRating(episode.records?.nodes, viewerAnnictId, null, record.id),
+        ),
+      );
       if (recordDeleteId) setRecordDeleteId('');
       if (recordEditId) setRecordEditId('');
     }

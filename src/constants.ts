@@ -15,6 +15,7 @@ class Const {
   STORAGE_MAL = 'mal';
   STORAGE_MUTED_USERS = 'mutedUsers';
   STORAGE_SETTINGS = 'settings';
+  STORAGE_EPISODE_RATINGS = 'episodeRatings';
 
   SEASON_LIST = [
     { id: 'SPRING', label: '春' },

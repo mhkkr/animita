@@ -83,7 +83,7 @@ function ListThumbnail({ work }: { work: Work }) {
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl text-annict-100"><RingSpinner /></div>
       )}
       <img
-        className={`h-full w-full ${url === noImage ? "object-contain invert" : "object-cover"}`}
+        className={`h-full w-full object-contain ${url === noImage ? "dark:invert" : ""}`}
         src={url}
         alt={`${work.title}の画像`}
         loading="lazy"
@@ -188,7 +188,7 @@ function DetailThumbnail({ work }: { work: Work }) {
       )}
       <img
         ref={imgRef}
-        className={`h-full w-full ${url === noImage ? "object-contain invert" : "object-cover"}`}
+        className={`h-full w-full object-contain ${url === noImage ? "dark:invert" : ""}`}
         src={url}
         alt={`${work.title}のキービジュアル`}
         onLoad={(e) => handleLoad(e.currentTarget)}

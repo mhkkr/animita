@@ -23,6 +23,7 @@ import Evaluation from '~/components/animes/AnimeEvaluation';
 import Records from '~/components/animes/AnimeRecords';
 
 import Const from '~/constants';
+import { useEpisodeRatings, writeEpisodeRating } from '~/libs/episodeRatings';
 
 export function episodeRecordPath(workAnnictId: number, episodeAnnictId: number) {
   return `/anime/${workAnnictId}/episode/${episodeAnnictId}`;
@@ -159,6 +160,12 @@ function Contents({
   )?.ratingState;
   const alreadyRated = Boolean(viewerRating);
   const ratingColor = Const.RATING_STATE_LIST.find((state) => state.id === viewerRating)?.color;
+  const [, setEpisodeRatings] = useEpisodeRatings();
+
+  useEffect(() => {
+    if (!viewerRating) return;
+    setEpisodeRatings((current) => writeEpisodeRating(current, episode.annictId, viewerRating));
+  }, [episode.annictId, viewerRating, setEpisodeRatings]);
   const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username);
 
   // 前後のエピソードを取得
@@ -197,7 +204,7 @@ function Contents({
             <Icons id="close" type="navigation" className="text-2xl" />
           </button>
         </div>
-        {episode && <Form episode={episode} alreadyRated={alreadyRated} />}
+        {episode && <Form episode={episode} alreadyRated={alreadyRated} viewerAnnictId={viewerAnnictId} />}
       </div>
       <InfoCast work={work} />
       <Evaluation records={records} episode={episode} user={user} />

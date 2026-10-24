@@ -14,10 +14,21 @@ import Icons from '~/components/icons/Icons';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
 import Const from '~/constants';
+import { resolveEpisodeRating, useEpisodeRatings, writeEpisodeRating } from '~/libs/episodeRatings';
 
-export default function Form({ episode, alreadyRated }: { episode: Episode; alreadyRated: boolean }) {
+export default function Form({
+  episode,
+  alreadyRated,
+  viewerAnnictId,
+}: {
+  episode: Episode;
+  alreadyRated: boolean;
+  viewerAnnictId?: number | null;
+}) {
   const [recordEditId, setRecordEditId] = useAtom(recordEditIdAtom);
+  const [, setEpisodeRatings] = useEpisodeRatings();
   const textarea = useRef<HTMLTextAreaElement>(null);
+  const pendingRating = useRef<RatingState | null>(null);
   const [comment, setComment] = useState('');
   const [ratingState, setRatingState] = useState<RatingState | ''>('');
 
@@ -52,9 +63,14 @@ export default function Form({ episode, alreadyRated }: { episode: Episode; alre
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [comment]);
 
+  const rememberRating = () => {
+    setEpisodeRatings((current) => writeEpisodeRating(current, episode.annictId, pendingRating.current));
+  };
+
   const [createRecord, { loading: creating, error: createError }] = useMutation(createRecordGql, {
     refetchQueries: ["searchWorks"],
     onCompleted() {
+      rememberRating();
       setComment('');
       setRatingState('');
     },
@@ -62,6 +78,7 @@ export default function Form({ episode, alreadyRated }: { episode: Episode; alre
 
   const [updateRecord, { loading: updating, error: updateError }] = useMutation(updateRecordGql, {
     onCompleted() {
+      rememberRating();
       setRecordEditId('');
       setComment('');
       setRatingState('');
@@ -78,6 +95,12 @@ export default function Form({ episode, alreadyRated }: { episode: Episode; alre
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const variables = { comment, ratingState: ratingState || undefined };
+    pendingRating.current = resolveEpisodeRating(
+      episode.records?.nodes,
+      viewerAnnictId,
+      ratingState,
+      editingRecord?.id,
+    );
 
     if (editingRecord?.id) {
       updateRecord({ variables: { recordId: editingRecord.id, ...variables } });
