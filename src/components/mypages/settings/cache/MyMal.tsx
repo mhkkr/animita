@@ -33,7 +33,7 @@ export default function MyMal() {
       <dd className="ml-auto">
         <button
           onClick={handleClick}
-          className="flex items-center justify-center w-full pr-4 pl-3 py-2 bg-black text-white dark:bg-white dark:text-gray-900 rounded-lg"
+          className="flex items-center justify-center w-full pr-4 pl-3 py-2 text-white bg-red-500 rounded-lg"
           type="button"
         >
           <Icons id="delete" type="form" className="mr-1" />

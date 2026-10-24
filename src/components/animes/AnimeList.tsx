@@ -45,7 +45,7 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
               </Link>
             </div>
             <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-2 text-xs dark:text-white/70">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs dark:text-white/70">
                 <StatusLabel statusId={item?.status?.state} />
                 {startedAt ? (
                   <>
@@ -65,7 +65,7 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
                 <div className={`${isViewable ? "" : "cursor-text"}`}>
                   {isViewable ? (
                     <RecordLink
-                      className="flex w-full mt-2 px-4 py-2 border dark:border-white/30 rounded-3xl text-sm"
+                      className="flex w-full mt-2 px-4 pt-1.75 pb-2.25 border dark:border-stone-500 rounded-3xl text-sm"
                       workAnnictId={item.work.annictId}
                       episodeAnnictId={nextProgram.episode.annictId}
                     >

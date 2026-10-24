@@ -101,7 +101,7 @@ function RatingChoices({
             <label
               key={state.id}
               className={`
-                relative flex items-center justify-center gap-1 p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-stone-700 cursor-pointer text-xs
+                relative flex items-center justify-center gap-1 p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-stone-500 cursor-pointer text-xs
                 transition-colors ${selected ? `${state.bgColor} text-white dark:text-inherit` : ""}
                 focus-within:outline focus-within:outline-1 focus-within:outline-offset-2
               `}
@@ -465,7 +465,7 @@ function ReviewItem({
                 <>
                   <PopoverPanel
                     transition
-                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col py-0.5 border dark:border-stone-700 bg-white dark:bg-black rounded-md overflow-hidden shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col py-0.5 border dark:border-stone-500 bg-white dark:bg-black rounded-md overflow-hidden shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
                   >
                     <a className="flex items-center px-2 py-1.5 hover:underline" href={`https://annict.com/@${review.user.username}`} target="_blank" rel="noopener noreferrer">
                       <Icons id="open_in_new" type="link" className="mr-1" />

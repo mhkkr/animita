@@ -99,7 +99,7 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
                   {status.available &&
                     <RecordLink
                       className={`
-                        inline-flex w-full px-2 py-1.5 border dark:border-white/30 rounded-full
+                        inline-flex w-full px-2 py-1.5 border dark:border-stone-500 rounded-full
                         ${episode?.viewerDidTrack && 'bg-black text-white dark:bg-white dark:text-black'}
                       `}
                       episodeAnnictId={episode.annictId}

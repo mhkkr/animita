@@ -23,7 +23,7 @@ export default function MySelect({ label, id }: { label: string, category?: "dis
       <dt className="flex-none">{label}</dt>
       <dd className="ml-auto">
         <select
-          className="w-full dark:bg-black border dark:border-stone-700 px-1 py-2 rounded"
+          className="w-full dark:bg-black border dark:border-stone-500 px-1 py-2 rounded"
           onChange={handleChange}
           value={select}
         >

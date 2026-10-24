@@ -62,7 +62,7 @@ function InfoCast({ work }: { work: Work }) {
       <div className="mt-4">
         <button
           onClick={handleClick}
-          className="flex items-center my-5 mx-auto pr-2 pl-4 py-1 border dark:border-white/30 rounded-full"
+          className="flex items-center my-5 mx-auto pr-2 pl-4 py-1 border dark:border-stone-500 rounded-full"
           type="button"
         >
           <span>アニメ情報とキャストを{visible ? '非表示にする' : '表示する'}</span>
@@ -176,13 +176,13 @@ function Contents({
           <span className="shrink-0">{episode.numberText}</span>
           <span className="flex-1">{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
             <EpisodeStepLink
-              className={`shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`shrink-0 px-2 py-1 border dark:border-stone-500 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
               episodeAnnictId={prevStatus?.available ? prevEpisode?.annictId : undefined}
               workAnnictId={work.annictId}
               disabled={!prevStatus?.available}
             >前</EpisodeStepLink>
             <EpisodeStepLink
-              className={`shrink-0 px-2 py-1 border dark:border-white/30 rounded text-sm ${!nextStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`shrink-0 px-2 py-1 border dark:border-stone-500 rounded text-sm ${!nextStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
               episodeAnnictId={nextStatus?.available ? nextEpisode?.annictId : undefined}
               workAnnictId={work.annictId}
               disabled={!nextStatus?.available}

@@ -42,7 +42,7 @@ function User({ user }: { user: ViewerUserQuery }) {
           <p className="text-sm opacity-70">@{user.viewer?.username}</p>
         </figcaption>
         <p className="shrink-0 lg:ml-auto">
-          <a className="inline-flex items-center gap-1 border rounded-full py-1.5 px-3 text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black" href={`https://annict.com/@${user.viewer?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
+          <a className="inline-flex items-center gap-1 border rounded-full py-1.5 px-3 text-sm dark:border-stone-500 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black" href={`https://annict.com/@${user.viewer?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
             Annict の ユーザーページへ
             <Icons id="open_in_new" type="link" className="text-[1.25em]" />
           </a>
@@ -83,7 +83,7 @@ function Card(
 ) {
   return (
     <a
-      className={`flex ${direction === "col" ? "flex-col" : "items-center"} gap-2 p-2.5 lg:p-3 border dark:border-stone-700 rounded-md hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black`}
+      className={`flex ${direction === "col" ? "flex-col" : "items-center"} gap-2 p-2.5 lg:p-3 border dark:border-stone-500 rounded-md hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black`}
       href={url}
       target="_blank"
       rel="noopener noreferrer"

@@ -36,7 +36,7 @@ export default function MyRecords() {
               return (
                 <RecordLink
                   key={`r-${record.annictId}`}
-                  className='flex gap-2 px-4 py-1 border-t dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20 '
+                  className='flex gap-2 px-4 pt-1 pb-1.25 border-t dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20 '
                   workAnnictId={record.episode.work.annictId}
                   episodeAnnictId={record.episode.annictId}
                 >
@@ -48,7 +48,7 @@ export default function MyRecords() {
                     />
                   )}
                   <p className='grow text-left'>{record.episode.title || Const.EPISODE_TITLE_UNDEFINED}</p>
-                  <div className='flex-none mt-[.2em] w-2/5 flex gap-2 opacity-70 text-left text-xs'>
+                  <div className='flex-none mt-[.1em] w-2/5 flex gap-2 opacity-70 text-left text-xs'>
                     <span className='whitespace-nowrap'>#{String(record.episode.number).padStart(2, '0')}</span>
                     <span>{record.episode.work.title}</span>
                   </div>

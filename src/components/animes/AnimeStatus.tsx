@@ -61,7 +61,7 @@ export default function Status({ work, libraryEntries }: { work: Work, libraryEn
       <ListboxOptions
         anchor="bottom"
         transition
-        className="mt-2 w-[calc(100%_-_2rem)] sm:w-auto border dark:border-white/25 bg-white dark:bg-black rounded-lg overflow-hidden shadow-xl origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+        className="mt-2 w-[calc(100%_-_2rem)] sm:w-auto border dark:border-stone-500 bg-white dark:bg-black rounded-lg overflow-hidden shadow-xl origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
       >
         {STATUS_CHOICES.map((state) => (
           <ListboxOption
