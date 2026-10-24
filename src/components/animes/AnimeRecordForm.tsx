@@ -15,7 +15,7 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 
 import Const from '~/constants';
 
-export default function Form({ episode }: { episode: Episode }) {
+export default function Form({ episode, alreadyRated }: { episode: Episode; alreadyRated: boolean }) {
   const [recordEditId, setRecordEditId] = useAtom(recordEditIdAtom);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const [comment, setComment] = useState('');
@@ -35,8 +35,11 @@ export default function Form({ episode }: { episode: Episode }) {
   }, [editingRecordId, editingComment, editingRating]);
 
   useEffect(() => {
+    if (alreadyRated) {
+      return;
+    }
     textarea.current?.focus();
-  }, []);
+  }, [alreadyRated]);
 
   useEffect(() => {
     if (!comment) {

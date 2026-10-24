@@ -153,6 +153,12 @@ function Contents({
 }) {
   const records = episode.records?.nodes ? Array.from(episode.records?.nodes) as Record[] : [];
 
+  const viewerAnnictId = user.viewer?.annictId;
+  const viewerRating = records.find(
+    (record) => record.user.annictId === viewerAnnictId && record.ratingState,
+  )?.ratingState;
+  const alreadyRated = Boolean(viewerRating);
+  const ratingColor = Const.RATING_STATE_LIST.find((state) => state.id === viewerRating)?.color;
   const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username);
 
   // 前後のエピソードを取得
@@ -173,8 +179,8 @@ function Contents({
     <>
       <div className="p-4">
         <div className="mb-3 flex gap-2 items-center">
-          <span className="shrink-0">{episode.numberText}</span>
-          <span className="flex-1">{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
+          <span className={`shrink-0 ${ratingColor ? `${ratingColor} font-bold` : ""}`}>{episode.numberText}</span>
+          <span className={`flex-1 ${ratingColor ? `${ratingColor} font-bold` : ""}`}>{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
             <EpisodeStepLink
               className={`shrink-0 px-2 py-1 border dark:border-stone-500 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
               episodeAnnictId={prevStatus?.available ? prevEpisode?.annictId : undefined}
@@ -191,7 +197,7 @@ function Contents({
             <Icons id="close" type="navigation" className="text-2xl" />
           </button>
         </div>
-        {episode && <Form episode={episode} />}
+        {episode && <Form episode={episode} alreadyRated={alreadyRated} />}
       </div>
       <InfoCast work={work} />
       <Evaluation records={records} episode={episode} user={user} />
