@@ -46,7 +46,7 @@ export default function Status({ work, libraryEntries }: { work: Work, libraryEn
   const [updateStatus, { loading: ul, error: ue }] = useMutation(updateStatusGql);
 
   const buttonClass = displayState.bgColor
-    ? `${displayState.bgColor} ${displayState.id === "ON_HOLD" ? "text-gray-900" : "text-white"}`
+    ? `${displayState.bgColor} text-white`
     : "bg-black text-white dark:bg-white dark:text-gray-900";
 
   if (ul) return <div className="text-center text-3xl text-annict-100"><RingSpinner /></div>;

@@ -23,6 +23,7 @@ import {
 } from "~/libs/settings";
 
 import Const from "~/constants";
+import { remainingLabel } from "~/libs/remainingTime";
 
 function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
   if (entry.list.length === 0) {
@@ -74,8 +75,11 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
                       </span>
                     </RecordLink>
                   ) : (
-                    <div className="flex w-full mt-1.5 text-sm pointer-events-none">
-                      <span className="shrink-0 mr-2">{nextProgram.episode.numberText}</span>
+                    <div className="flex gap-2 w-full mt-1.5 text-sm pointer-events-none">
+                      {startedAt && (
+                        <span className="shrink-0">あと{remainingLabel(startedAt, now)}</span>
+                      )}
+                      <span className="shrink-0">{nextProgram.episode.numberText}</span>
                       <span className="flex-1 text-left">
                         {nextProgram.episode.title || Const.EPISODE_TITLE_UNDEFINED}
                       </span>

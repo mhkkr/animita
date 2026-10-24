@@ -12,6 +12,7 @@ import DisplayDate from '~/components/dates/DisplayDate';
 import { RecordLink } from '~/components/animes/AnimeEpisode';
 
 import Const from '~/constants';
+import { remainingLabel } from '~/libs/remainingTime';
 
 /** 閑話・総集編など、今期話数の対象外 */
 const SPECIAL_EPISODE_PATTERN = /閑話|総集編|ダイジェスト|特別編|振り返り|ハイライト/;
@@ -86,7 +87,12 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
 
                 <td className="pl-3 py-1.5 pt-[.55rem] align-top">
                   <div>{episode?.title || Const.EPISODE_TITLE_UNDEFINED}</div>
-                  {!status.available && <div className="mt-1 text-sm">予定日時：<DisplayDate date={status.startedAt} /></div>}
+                  {!status.available && status.startedAt instanceof Date && (
+                    <div className="flex gap-2 mt-1 text-sm">
+                      <DisplayDate date={status.startedAt} />
+                      <span className="shrink-0">あと{remainingLabel(status.startedAt, now)}</span>
+                    </div>
+                  )}
                 </td>
 
                 <td className="w-px whitespace-nowrap pl-3 pr-4 align-top text-xs py-1.5">
