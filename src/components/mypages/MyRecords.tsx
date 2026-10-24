@@ -24,7 +24,7 @@ export default function MyRecords() {
       {error && <p className="p-4 text-red-500">{error.message}</p>}
 
       {!(loading || error) && (
-        <div className='mt-2 grid text-sm'>
+        <div className='mt-4 grid text-sm'>
           {user?.viewer?.records?.edges?.map(edge => {
             const record = edge?.node;
             if (!record) {
