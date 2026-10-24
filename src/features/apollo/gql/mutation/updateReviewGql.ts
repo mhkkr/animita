@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql, type TypedDocumentNode } from "@apollo/client";
 
 import { workReviewFields, type WorkReview } from "~/features/apollo/gql/query/workReviewsGql";
 import type { ReviewRatingVariables } from "~/features/apollo/gql/mutation/createReviewGql";
@@ -14,7 +14,7 @@ export type UpdateReviewMutation = {
   } | null;
 };
 
-export const updateReviewGql = gql`
+export const updateReviewGql: TypedDocumentNode<UpdateReviewMutation, UpdateReviewMutationVariables> = gql`
   mutation updateReview(
     $reviewId: ID!
     $body: String!

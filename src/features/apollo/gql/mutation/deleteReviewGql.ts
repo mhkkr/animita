@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql, type TypedDocumentNode } from "@apollo/client";
 
 export type DeleteReviewMutationVariables = {
   reviewId: string;
@@ -12,7 +12,7 @@ export type DeleteReviewMutation = {
   } | null;
 };
 
-export const deleteReviewGql = gql`
+export const deleteReviewGql: TypedDocumentNode<DeleteReviewMutation, DeleteReviewMutationVariables> = gql`
   mutation deleteReview($reviewId: ID!) {
     deleteReview(input: { reviewId: $reviewId }) {
       work {

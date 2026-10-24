@@ -1,6 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, type TypedDocumentNode } from '@apollo/client';
 
-export const createRecordGql = gql`
+import type { CreateRecordMutation, CreateRecordMutationVariables } from '~/features/apollo/generated-types';
+
+export const createRecordGql: TypedDocumentNode<CreateRecordMutation, CreateRecordMutationVariables> = gql`
   mutation createRecord($episodeId: ID!, $comment: String, $ratingState: RatingState) {
     createRecord(
       input: {

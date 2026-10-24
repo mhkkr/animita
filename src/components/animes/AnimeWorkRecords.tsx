@@ -4,30 +4,18 @@ import { useEffect, useRef, useState } from "react";
 
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { useMutation, useQuery } from "@apollo/client/react";
-import type { RatingState, ViewerUserQuery } from "~/features/apollo/generated-types";
+import type { RatingState } from "~/features/apollo/generated-types";
 import { viewerUserGql } from "~/features/apollo/gql/query/viewerUserGql";
 import {
   workReviewsGql,
   type WorkReview,
-  type WorkReviewsQuery,
-  type WorkReviewsQueryVariables,
 } from "~/features/apollo/gql/query/workReviewsGql";
 import {
   createReviewGql,
-  type CreateReviewMutation,
-  type CreateReviewMutationVariables,
   type ReviewRatingVariables,
 } from "~/features/apollo/gql/mutation/createReviewGql";
-import {
-  updateReviewGql,
-  type UpdateReviewMutation,
-  type UpdateReviewMutationVariables,
-} from "~/features/apollo/gql/mutation/updateReviewGql";
-import {
-  deleteReviewGql,
-  type DeleteReviewMutation,
-  type DeleteReviewMutationVariables,
-} from "~/features/apollo/gql/mutation/deleteReviewGql";
+import { updateReviewGql } from "~/features/apollo/gql/mutation/updateReviewGql";
+import { deleteReviewGql } from "~/features/apollo/gql/mutation/deleteReviewGql";
 
 import { useAtom, useSetAtom } from "jotai";
 import { muteUpdateAtom } from "~/atoms/muteUpdateAtom";
@@ -36,7 +24,7 @@ import Icons from "~/components/icons/Icons";
 import { RingSpinner } from "~/components/spinners/Spinner";
 import DisplayDate from "~/components/dates/DisplayDate";
 
-import { generateDateStyle, getMutedUsers } from "~/libs/function";
+import { wasEdited, getMutedUsers } from "~/libs/function";
 import { compareByRating } from "~/libs/rating";
 import { getSetting } from "~/libs/settings";
 import { setLocalStorageItem } from "~/libs/storage";
@@ -160,8 +148,8 @@ export default function WorkRecords({
   const [formError, setFormError] = useState("");
   const pageSize = Math.max(reviewsCount, 1);
 
-  const { data: userData } = useQuery<ViewerUserQuery>(viewerUserGql);
-  const { data, loading, error, fetchMore, refetch } = useQuery<WorkReviewsQuery, WorkReviewsQueryVariables>(workReviewsGql, {
+  const { data: userData } = useQuery(viewerUserGql);
+  const { data, loading, error, fetchMore, refetch } = useQuery(workReviewsGql, {
     variables: { annictIds: [annictId], first: pageSize },
     notifyOnNetworkStatusChange: true,
   });
@@ -230,9 +218,9 @@ export default function WorkRecords({
     setFormError("");
   };
 
-  const [createReview, { loading: creating }] = useMutation<CreateReviewMutation, CreateReviewMutationVariables>(createReviewGql);
-  const [updateReview, { loading: updating }] = useMutation<UpdateReviewMutation, UpdateReviewMutationVariables>(updateReviewGql);
-  const [deleteReview, { loading: deleting }] = useMutation<DeleteReviewMutation, DeleteReviewMutationVariables>(deleteReviewGql);
+  const [createReview, { loading: creating }] = useMutation(createReviewGql);
+  const [updateReview, { loading: updating }] = useMutation(updateReviewGql);
+  const [deleteReview, { loading: deleting }] = useMutation(deleteReviewGql);
   const submitting = creating || updating || deleting;
 
   const startEdit = (review: WorkReview) => {
@@ -545,7 +533,7 @@ function ReviewItem({
                 </span>
               ))}
               <span><DisplayDate date={review.createdAt} /></span>
-              {generateDateStyle({ date: new Date(review.createdAt) }) !== generateDateStyle({ date: new Date(review.updatedAt) }) && (
+              {wasEdited(review.createdAt, review.updatedAt) && (
                 <span className="dark:text-white/70 text-xs"><DisplayDate date={review.updatedAt} /></span>
               )}
             </div>

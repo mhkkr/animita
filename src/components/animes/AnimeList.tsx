@@ -147,11 +147,11 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
   return (
     <>
       <section className="mt-6">
-        <SectionTitle icon="play">視聴可能</SectionTitle>
+        <SectionTitle icon="play">現在配信中</SectionTitle>
         {delivered.length === 0 ? (
           <p className="p-4 dark:text-white/70">エピソードがありません！</p>
         ) : (
-          <Detail entry={{ day: "視聴可能", list: delivered }} now={now} />
+          <Detail entry={{ day: "現在配信中", list: delivered }} now={now} />
         )}
       </section>
       <section className="mt-12">
@@ -214,7 +214,9 @@ export default function AnimeList({ title, icon }: AnimeListProps) {
         <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>
       )}
       {error && <p className="p-4 text-red-500">{error.message}</p>}
-      {!showLoading && !error && <EntryList data={data} />}
+      {!showLoading && !error && (
+        <EntryList data={data} />
+      )}
     </div>
   );
 }

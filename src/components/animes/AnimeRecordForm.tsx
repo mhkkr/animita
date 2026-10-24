@@ -3,15 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { useMutation } from '@apollo/client/react';
-import { CreateRecordDocument, UpdateRecordDocument, type Episode, type RatingState } from '~/features/apollo/generated-types';
+import type { Episode, RatingState } from '~/features/apollo/generated-types';
+import { createRecordGql } from '~/features/apollo/gql/mutation/createRecordGql';
+import { updateRecordGql } from '~/features/apollo/gql/mutation/updateRecordGql';
 
 import { useAtom } from 'jotai';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
 
 import Icons from '~/components/icons/Icons';
 import { RingSpinner } from '~/components/spinners/Spinner';
-
-import { isBrowser } from 'react-device-detect';
 
 import Const from '~/constants';
 
@@ -35,9 +35,6 @@ export default function Form({ episode }: { episode: Episode }) {
   }, [editingRecordId, editingComment, editingRating]);
 
   useEffect(() => {
-    if (!isBrowser) {
-      return;
-    }
     textarea.current?.focus();
   }, []);
 
@@ -52,14 +49,15 @@ export default function Form({ episode }: { episode: Episode }) {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [comment]);
 
-  const [createRecord, { loading: creating, error: createError }] = useMutation(CreateRecordDocument, {
+  const [createRecord, { loading: creating, error: createError }] = useMutation(createRecordGql, {
+    refetchQueries: ["searchWorks"],
     onCompleted() {
       setComment('');
       setRatingState('');
     },
   });
 
-  const [updateRecord, { loading: updating, error: updateError }] = useMutation(UpdateRecordDocument, {
+  const [updateRecord, { loading: updating, error: updateError }] = useMutation(updateRecordGql, {
     onCompleted() {
       setRecordEditId('');
       setComment('');
@@ -71,7 +69,6 @@ export default function Form({ episode }: { episode: Episode }) {
   const mutationError = createError || updateError;
 
   if (mutationError) {
-    console.error(mutationError);
     return <p className="text-red-500">{mutationError.message}</p>;
   }
 

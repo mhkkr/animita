@@ -6,7 +6,7 @@ import { Listbox, ListboxOptions, ListboxOption, ListboxButton } from '@headless
 
 import { useMutation } from '@apollo/client/react';
 import { updateStatusGql } from '~/features/apollo/gql/mutation/updateStatusGql';
-import type { Work } from '~/features/apollo/generated-types';
+import type { StatusState, Work } from '~/features/apollo/generated-types';
 import type { LibraryEntriesData } from '~/types/libraryEntries';
 
 import { useAtom } from 'jotai';
@@ -50,7 +50,7 @@ export default function Status({ work, libraryEntries }: { work: Work, libraryEn
     : "bg-black text-white dark:bg-white dark:text-gray-900";
 
   if (ul) return <div className="text-center text-3xl text-annict-100"><RingSpinner /></div>;
-  if (ue) { console.error(ue); return <p className="text-red-500">{ue?.message}</p>; }
+  if (ue) return <p className="text-red-500">{ue.message}</p>;
 
   return (
     <Listbox value={displayState} onChange={setChangeStatusState}>
@@ -67,7 +67,7 @@ export default function Status({ work, libraryEntries }: { work: Work, libraryEn
           <ListboxOption
             key={state.id}
             onClick={async () => {
-              const result = await updateStatus({ variables: { state: state.id, workId: work.id }});
+              const result = await updateStatus({ variables: { state: state.id as StatusState, workId: work.id }});
               if (result) {
                 setStatusStateId(state.id);
                 setChangeStatusState(state);

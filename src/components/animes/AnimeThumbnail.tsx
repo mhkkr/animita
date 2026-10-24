@@ -10,7 +10,29 @@ import { targetMal, getMal, setMal, fetchJikanAnime } from '~/libs/mal';
 
 const noImage = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>';
 
+function useWhenVisible(enabled: boolean) {
+  const ref = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!enabled || visible) return;
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      setVisible(true);
+      observer.disconnect();
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [enabled, visible]);
+
+  return { ref, visible };
+}
+
 function ListThumbnail({ work }: { work: Work }) {
+  const { ref, visible } = useWhenVisible(Boolean(work.malAnimeId));
   const [url, setUrl] = useState(noImage);
   const [loading, setLoading] = useState(true);
 
@@ -27,6 +49,8 @@ function ListThumbnail({ work }: { work: Work }) {
       return;
     }
 
+    if (!visible) return;
+
     let cancelled = false;
     setLoading(true);
     fetchJikanAnime(work.malAnimeId)
@@ -41,8 +65,7 @@ function ListThumbnail({ work }: { work: Work }) {
         setUrl(imageUrl);
         setMal(work.malAnimeId as string, response.data);
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         if (!cancelled) {
           setUrl(noImage);
           setLoading(false);
@@ -52,15 +75,15 @@ function ListThumbnail({ work }: { work: Work }) {
     return () => {
       cancelled = true;
     };
-  }, [work.malAnimeId]);
+  }, [work.malAnimeId, visible]);
 
   return (
-    <figure className="relative overflow-hidden bg-gray-400/70 text-gray-700/70 dark:bg-gray-700/70">
+    <figure ref={ref} className="relative overflow-hidden aspect-425/600 bg-gray-400/70 text-gray-700/70 dark:bg-gray-700/70">
       {loading && (
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl text-annict-100"><RingSpinner /></div>
       )}
       <img
-        className={`h-full w-full ${url === noImage ? "object-contain" : "object-cover"}`}
+        className={`h-full w-full ${url === noImage ? "object-contain invert" : "object-cover"}`}
         src={url}
         alt={`${work.title}の画像`}
         loading="lazy"
@@ -118,8 +141,7 @@ function DetailThumbnail({ work }: { work: Work }) {
           setLoading(false);
         }
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         setLoading(false);
       })
       .finally(() => {
@@ -166,10 +188,9 @@ function DetailThumbnail({ work }: { work: Work }) {
       )}
       <img
         ref={imgRef}
-        className="w-full h-full object-contain"
+        className={`h-full w-full ${url === noImage ? "object-contain invert" : "object-cover"}`}
         src={url}
         alt={`${work.title}のキービジュアル`}
-        loading="eager"
         onLoad={(e) => handleLoad(e.currentTarget)}
         onError={(e) => fallback(e.currentTarget)}
       />

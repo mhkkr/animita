@@ -2,7 +2,6 @@
 
 import { useQuery } from '@apollo/client/react';
 import { viewerRecordsGql } from '~/features/apollo/gql/query/viewerRecordsGql';
-import type { ViewerRecordsQuery } from '~/features/apollo/generated-types';
 
 import { RecordLink } from '~/components/animes/AnimeEpisode';
 import Icons from '~/components/icons/Icons';
@@ -11,7 +10,7 @@ import { RingSpinner } from '~/components/spinners/Spinner';
 import Const from '~/constants';
 
 export default function MyRecords() {
-  const { data: user, loading: loading, error: error } = useQuery<ViewerRecordsQuery>(viewerRecordsGql, {
+  const { data: user, loading: loading, error: error } = useQuery(viewerRecordsGql, {
     variables: {
       first: Const.MY_RECORDS_LIMIT
     }

@@ -1,6 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, type TypedDocumentNode } from '@apollo/client';
 
-export const searchWorksGql = gql`
+import type { SearchWorksQuery, SearchWorksQueryVariables } from '~/features/apollo/generated-types';
+
+export const searchWorksGql: TypedDocumentNode<SearchWorksQuery, SearchWorksQueryVariables> = gql`
   query searchWorks($annictIds: [Int!]) {
     searchWorks(
       annictIds: $annictIds

@@ -12,7 +12,7 @@ function orderEntriesByWeekday(entriesDate: EntriesByDay[]): EntriesByDay[] {
   return entriesDate.slice(todayIndex).concat(entriesDate.slice(0, todayIndex));
 }
 
-/** libraryEntries を視聴可能と曜日別（週間予定）に振り分ける */
+/** libraryEntries を現在配信中と曜日別（週間予定）に振り分ける */
 export function splitLibraryEntries(data: LibraryEntriesQuery | undefined, now: number) {
   const nodes = (data?.viewer?.libraryEntries?.nodes ?? []).filter(
     (node): node is LibraryEntry => node != null,

@@ -10,7 +10,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useQuery } from '@apollo/client/react';
 import { searchEpisodesGql } from '~/features/apollo/gql/query/searchEpisodesGql';
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
-import type { SearchEpisodesQuery, ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
+import type { ViewerUserQuery, Work, Episode, Record } from '~/features/apollo/generated-types';
 import type { LibraryEntriesData } from '~/types/libraryEntries';
 
 import Icons from '~/components/icons/Icons';
@@ -216,10 +216,10 @@ export function RecordModal({
   const setRecordEditId = useSetAtom(recordEditIdAtom);
   const active = pathname === episodeRecordPath(annictId, episodeAnnictId);
 
-  const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql, {
+  const { data: user, loading: ul, error: ue } = useQuery(viewerUserGql, {
     skip: !active,
   });
-  const { data: episodes, loading: el, error: ee } = useQuery<SearchEpisodesQuery>(searchEpisodesGql, {
+  const { data: episodes, loading: el, error: ee } = useQuery(searchEpisodesGql, {
     variables: { annictIds: [episodeAnnictId] },
     skip: !active,
     notifyOnNetworkStatusChange: false,

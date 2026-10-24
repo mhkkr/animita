@@ -4,7 +4,7 @@ import { deleteRecordGql } from '~/features/apollo/gql/mutation/deleteRecordGql'
 import { useAtom } from 'jotai';
 import { recordDeleteIdAtom } from '~/atoms/recordDeleteIdAtom';
 import { recordEditIdAtom } from '~/atoms/recordEditIdAtom';
-import type { Record, DeleteRecordMutation, DeleteRecordMutationVariables } from '~/features/apollo/generated-types';
+import type { Record } from '~/features/apollo/generated-types';
 
 import Icons from '~/components/icons/Icons';
 
@@ -12,7 +12,8 @@ export default function Delete({ record, close }: { record: Record, close: () =>
   const [recordDeleteId, setRecordDeleteId] = useAtom(recordDeleteIdAtom);
   const [recordEditId, setRecordEditId] = useAtom(recordEditIdAtom);
 
-  const [deleteRecord, { loading, error }] = useMutation<DeleteRecordMutation, DeleteRecordMutationVariables>(deleteRecordGql, {
+  const [deleteRecord, { loading, error }] = useMutation(deleteRecordGql, {
+    refetchQueries: ["searchWorks"],
     update(cache, { data }) {
       if (!data?.deleteRecord?.episode) return;
       const episode = data.deleteRecord.episode;
@@ -36,7 +37,6 @@ export default function Delete({ record, close }: { record: Record, close: () =>
   });
 
   if (error) {
-    console.error(error);
     return <p className="text-red-500">{error.message}</p>;
   }
 

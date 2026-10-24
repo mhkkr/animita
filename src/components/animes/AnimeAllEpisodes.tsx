@@ -25,7 +25,9 @@ export default function AllEpisodes({ malAnimeId }: { malAnimeId: string }) {
             setEpisodes(null);
           }
         })
-        .catch(console.error);
+        .catch(() => {
+          setEpisodes(null);
+        });
     }
   }, []);
 

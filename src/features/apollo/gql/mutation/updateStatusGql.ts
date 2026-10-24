@@ -1,6 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, type TypedDocumentNode } from '@apollo/client';
 
-export const updateStatusGql = gql`
+import type { UpdateStatusMutation, UpdateStatusMutationVariables } from '~/features/apollo/generated-types';
+
+export const updateStatusGql: TypedDocumentNode<UpdateStatusMutation, UpdateStatusMutationVariables> = gql`
   mutation updateStatus($state: StatusState!, $workId: ID!) {
     updateStatus(
       input: {

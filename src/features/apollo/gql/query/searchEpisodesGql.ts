@@ -1,6 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, type TypedDocumentNode } from '@apollo/client';
 
-export const searchEpisodesGql = gql`
+import type { SearchEpisodesQuery, SearchEpisodesQueryVariables } from '~/features/apollo/generated-types';
+
+export const searchEpisodesGql: TypedDocumentNode<SearchEpisodesQuery, SearchEpisodesQueryVariables> = gql`
   query searchEpisodes($annictIds: [Int!]) {
     searchEpisodes(
       annictIds: $annictIds

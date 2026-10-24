@@ -1,6 +1,14 @@
-import { gql } from "@apollo/client";
+import { gql, type TypedDocumentNode } from "@apollo/client";
 
-export const libraryEntriesGql = gql`
+import type {
+  LibraryEntriesQuery,
+  LibraryEntriesQueryVariables,
+} from "~/features/apollo/generated-types";
+
+export const libraryEntriesGql: TypedDocumentNode<
+  LibraryEntriesQuery,
+  LibraryEntriesQueryVariables
+> = gql`
   query libraryEntries($states: [StatusState!], $seasons: [String!]) {
     viewer {
       id

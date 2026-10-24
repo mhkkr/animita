@@ -1,6 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, type TypedDocumentNode } from '@apollo/client';
 
-export const updateRecordGql = gql`
+import type { UpdateRecordMutation, UpdateRecordMutationVariables } from '~/features/apollo/generated-types';
+
+export const updateRecordGql: TypedDocumentNode<UpdateRecordMutation, UpdateRecordMutationVariables> = gql`
   mutation updateRecord($recordId: ID!, $comment: String, $ratingState: RatingState) {
     updateRecord(
       input: {

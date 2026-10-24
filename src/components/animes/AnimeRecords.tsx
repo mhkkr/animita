@@ -19,7 +19,7 @@ import Edit from '~/components/animes/AnimeRecordEdit';
 import Favorite from '~/components/animes/AnimeRecordFavorite';
 import Twitter from '~/components/animes/AnimeRecordTwitter';
 
-import { generateDateStyle, getMutedUsers } from '~/libs/function';
+import { wasEdited, getMutedUsers } from '~/libs/function';
 import { compareByRating } from '~/libs/rating';
 import { getSetting } from '~/libs/settings';
 
@@ -134,10 +134,8 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                 </div>
               }
               <div className="flex flex-wrap items-center gap-3">
-                {/* TODO: リンク付ける */}
-                {/* <a className="hover:underline" href={`https://annict.com/@${record.user?.username}/records/${record.annictId}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーのエピソード記録ページへ"><DisplayDate date={record.createdAt} /></a> */}
                 <span><DisplayDate date={record.createdAt} /></span>
-                {generateDateStyle(record.createdAt) !== generateDateStyle(record.updatedAt) && <span className="dark:text-white/70 text-xs"><DisplayDate date={record.updatedAt} /></span>}
+                {wasEdited(record.createdAt, record.updatedAt) && <span className="dark:text-white/70 text-xs"><DisplayDate date={record.updatedAt} /></span>}
               </div>
             </div>
             {record.comment && <p className="mt-3 whitespace-pre-wrap">{record.comment}</p>}

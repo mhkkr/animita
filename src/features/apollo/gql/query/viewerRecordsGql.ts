@@ -1,6 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, type TypedDocumentNode } from '@apollo/client';
 
-export const viewerRecordsGql = gql`
+import type { ViewerRecordsQuery, ViewerRecordsQueryVariables } from '~/features/apollo/generated-types';
+
+export const viewerRecordsGql: TypedDocumentNode<ViewerRecordsQuery, ViewerRecordsQueryVariables> = gql`
   query viewerRecords($first: Int!) {
     viewer {
       id

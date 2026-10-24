@@ -1,6 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, type TypedDocumentNode } from '@apollo/client';
 
-export const deleteRecordGql = gql`
+import type { DeleteRecordMutation, DeleteRecordMutationVariables } from '~/features/apollo/generated-types';
+
+export const deleteRecordGql: TypedDocumentNode<DeleteRecordMutation, DeleteRecordMutationVariables> = gql`
   mutation deleteRecord($recordId: ID!) {
     deleteRecord(
       input: {

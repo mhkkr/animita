@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql, type TypedDocumentNode } from "@apollo/client";
 
 import type { RatingState } from "~/features/apollo/generated-types";
 
@@ -67,7 +67,7 @@ export const workReviewFields = gql`
   }
 `;
 
-export const workReviewsGql = gql`
+export const workReviewsGql: TypedDocumentNode<WorkReviewsQuery, WorkReviewsQueryVariables> = gql`
   query workReviews($annictIds: [Int!], $first: Int!, $after: String) {
     searchWorks(annictIds: $annictIds) {
       nodes {

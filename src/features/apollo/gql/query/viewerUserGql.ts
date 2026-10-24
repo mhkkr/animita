@@ -1,6 +1,8 @@
-import { gql } from '@apollo/client';
+import { gql, type TypedDocumentNode } from '@apollo/client';
 
-export const viewerUserGql = gql`
+import type { ViewerUserQuery, ViewerUserQueryVariables } from '~/features/apollo/generated-types';
+
+export const viewerUserGql: TypedDocumentNode<ViewerUserQuery, ViewerUserQueryVariables> = gql`
   query viewerUser {
     viewer {
       id

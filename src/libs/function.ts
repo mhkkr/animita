@@ -1,9 +1,18 @@
 import Const from "~/constants";
 import { getLocalStorageItem } from "~/libs/storage";
 
-export function generateDateStyle({ date }: { date: Date }) {
-  if (!date) return 0;
-  return date.getFullYear() + date.getMonth() + date.getDate() + date.getHours() + date.getMinutes();
+function toMinute(value: Date | string) {
+  const time = new Date(value).getTime();
+  if (Number.isNaN(time)) return null;
+  return Math.floor(time / 60000);
+}
+
+/** 作成と更新が同じ分でなければ、編集されたものとして扱う */
+export function wasEdited(createdAt: Date | string, updatedAt: Date | string) {
+  const created = toMinute(createdAt);
+  const updated = toMinute(updatedAt);
+  if (created === null || updated === null) return false;
+  return created !== updated;
 }
 
 export function getMutedUsers(): { annictId: number, username: string }[] {

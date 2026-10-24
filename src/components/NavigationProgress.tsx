@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 type Phase = "idle" | "loading" | "done";
 
@@ -27,13 +27,20 @@ function isInternalNavigation(anchor: HTMLAnchorElement, event: MouseEvent) {
 
 export default function NavigationProgress() {
   const pathname = usePathname();
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [width, setWidth] = useState(0);
+  const barRef = useRef<HTMLDivElement>(null);
   const pathnameRef = useRef(pathname);
-  const phaseRef = useRef(phase);
+  const phaseRef = useRef<Phase>("idle");
+  const widthRef = useRef(0);
   const trickleRef = useRef<number | null>(null);
   const stallRef = useRef<number | null>(null);
   const hideRef = useRef<number | null>(null);
+
+  const paint = (width: number, visible: boolean) => {
+    const bar = barRef.current;
+    if (!bar) return;
+    bar.style.width = `${width}%`;
+    bar.style.opacity = visible ? "1" : "0";
+  };
 
   const stopTrickle = () => {
     if (trickleRef.current !== null) {
@@ -50,13 +57,13 @@ export default function NavigationProgress() {
       window.clearTimeout(stallRef.current);
       stallRef.current = null;
     }
-    setWidth(100);
-    setPhase("done");
+    widthRef.current = 100;
+    paint(100, false);
     if (hideRef.current !== null) window.clearTimeout(hideRef.current);
     hideRef.current = window.setTimeout(() => {
       phaseRef.current = "idle";
-      setPhase("idle");
-      setWidth(0);
+      widthRef.current = 0;
+      paint(0, false);
       hideRef.current = null;
     }, 200);
   };
@@ -71,17 +78,16 @@ export default function NavigationProgress() {
     const continuing = phaseRef.current === "loading";
     phaseRef.current = "loading";
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setPhase("loading");
-    setWidth((current) => (continuing && current > 0 && current < 100 ? current : 12));
+    widthRef.current = continuing && widthRef.current > 0 && widthRef.current < 100 ? widthRef.current : 12;
+    paint(widthRef.current, true);
 
     stopTrickle();
     if (!reduceMotion) {
       trickleRef.current = window.setInterval(() => {
-        setWidth((current) => {
-          if (current >= 90) return current;
-          const step = current < 50 ? 10 : 3;
-          return Math.min(current + step, 90);
-        });
+        if (widthRef.current >= 90) return;
+        const step = widthRef.current < 50 ? 10 : 3;
+        widthRef.current = Math.min(widthRef.current + step, 90);
+        paint(widthRef.current, true);
       }, 200);
     }
 
@@ -100,6 +106,7 @@ export default function NavigationProgress() {
   }, [pathname]);
 
   useEffect(() => {
+    // state は更新しない。戻る操作は pathname の変化が先に終わるので、遅らせるとバーが残る。
     const onClick = (event: MouseEvent) => {
       const target = event.target;
       if (!(target instanceof Element)) return;
@@ -110,6 +117,8 @@ export default function NavigationProgress() {
     };
 
     const onPopState = () => {
+      // 戻る処理が先に終わっているときは、バーを出さない。
+      if (pathnameRef.current === window.location.pathname) return;
       startRef.current();
     };
 
@@ -124,20 +133,11 @@ export default function NavigationProgress() {
     };
   }, []);
 
-  if (phase === "idle") return null;
-
   return (
-    <div
-      className="pointer-events-none fixed inset-x-0 top-0 z-[80] h-[3px]"
-      role="progressbar"
-      aria-hidden="true"
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={Math.round(width)}
-    >
+    <div className="pointer-events-none fixed inset-x-0 top-0 z-[80] h-[3px]" aria-hidden="true">
       <div
-        className={`h-full bg-annict-100 shadow-[0_0_8px_#d51c5b] transition-[width,opacity] duration-200 ease-out motion-reduce:transition-none ${phase === "done" ? "opacity-0" : "opacity-100"}`}
-        style={{ width: `${width}%` }}
+        ref={barRef}
+        className="h-full w-0 bg-annict-100 opacity-0 shadow-[0_0_8px_#d51c5b] transition-[width,opacity] duration-200 ease-out motion-reduce:transition-none"
       />
     </div>
   );

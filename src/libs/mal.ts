@@ -74,15 +74,74 @@ export function setMal(malAnimeId: string, data: Jikan, imageActive?: boolean) {
   }
 }
 
+/** 公開枠は毎秒4件・毎分120件。連続でも分枠を超えない間隔にする */
+const REQUEST_INTERVAL_MS = 600;
+const MAX_ATTEMPTS = 3;
+
+const inflight = new Map<string, Promise<{ data: Jikan }>>();
+let requestChain: Promise<void> = Promise.resolve();
+let lastRequestAt = 0;
+
+function wait(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function retryDelayMs(response: Response, attempt: number) {
+  const seconds = Number(response.headers.get("Retry-After"));
+  if (Number.isFinite(seconds) && seconds > 0) {
+    return seconds * 1000;
+  }
+  return 1000 * (attempt + 1);
+}
+
+function scheduleRequest<T>(task: () => Promise<T>): Promise<T> {
+  const run = requestChain.then(async () => {
+    const pause = REQUEST_INTERVAL_MS - (Date.now() - lastRequestAt);
+    if (pause > 0) {
+      await wait(pause);
+    }
+    lastRequestAt = Date.now();
+    return task();
+  });
+  requestChain = run.then(() => undefined, () => undefined);
+  return run;
+}
+
+async function requestAnime(malAnimeId: string): Promise<{ data: Jikan }> {
+  return scheduleRequest(async () => {
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+      const response = await fetch(`https://api.tenrai.org/v1/anime/${malAnimeId}`);
+      if (response.status === 429 && attempt < MAX_ATTEMPTS) {
+        await wait(retryDelayMs(response, attempt));
+        lastRequestAt = Date.now();
+        continue;
+      }
+      if (!response.ok) {
+        throw new Error(`Tenrai API HTTP ${response.status}`);
+      }
+      return response.json() as Promise<{ data: Jikan }>;
+    }
+    throw new Error("Tenrai API HTTP 429");
+  });
+}
+
 /**
  * MyAnimeList メタデータ取得。
  * Jikan 公開 API (api.jikan.moe) は 2026-10-01 に廃止されたため、
  * 同一スキーマの Tenrai (https://api.tenrai.org/v1) を利用する。
+ * 一覧が同時に画像を取りに行くと 429 になるので、作品ごとに1回へまとめ、間隔を空ける。
  */
-export const fetchJikanAnime = async (malAnimeId: string): Promise<{ data: Jikan }> => {
-  const response = await fetch(`https://api.tenrai.org/v1/anime/${malAnimeId}`);
-  if (!response.ok) {
-    throw new Error(`Tenrai API HTTP ${response.status}`);
+export function fetchJikanAnime(malAnimeId: string): Promise<{ data: Jikan }> {
+  const current = inflight.get(malAnimeId);
+  if (current) {
+    return current;
   }
-  return response.json();
-};
+
+  const request = requestAnime(malAnimeId).finally(() => {
+    inflight.delete(malAnimeId);
+  });
+  inflight.set(malAnimeId, request);
+  return request;
+}

@@ -7,7 +7,6 @@ import { searchWorksGql } from "~/features/apollo/gql/query/searchWorksGql";
 import { useLibraryEntryDetail } from "~/features/apollo/hooks/useLibraryEntryDetail";
 import type {
   LibraryEntryDetailQuery,
-  SearchWorksQuery,
   Work,
 } from "~/features/apollo/generated-types";
 import type { LibraryEntriesData } from "~/types/libraryEntries";
@@ -55,14 +54,14 @@ export default function AnimeDetail({
   initialLibraryEntries,
   initialError,
 }: AnimeDetailProps) {
-  const skipClientWork = !!initialWork;
-  const { data: worksData, loading: worksLoading, error: worksError } = useQuery<SearchWorksQuery>(searchWorksGql, {
+  // サーバーの initialWork だけだと、記録後に viewerDidTrack がキャッシュへ入っても一覧が追従しない。
+  const { data: worksData, loading: worksLoading, error: worksError } = useQuery(searchWorksGql, {
     variables: { annictIds: [annictId] },
-    skip: skipClientWork,
+    fetchPolicy: "cache-and-network",
   });
 
-  const work = initialWork
-    ?? (worksData?.searchWorks?.nodes?.[0] as Work | undefined)
+  const work = (worksData?.searchWorks?.nodes?.[0] as Work | undefined)
+    ?? initialWork
     ?? null;
 
   const skipClientLibrary = !!initialLibraryEntries || !work;
@@ -76,11 +75,13 @@ export default function AnimeDetail({
     (node) => node?.work.annictId === work?.annictId,
   );
 
-  const loading = (!skipClientWork && worksLoading) || (!skipClientLibrary && libraryEntriesLoading);
-  // サーバー失敗時はクライアント再取得を優先し、両方ダメなときだけエラー表示
-  const error = worksError?.message
-    || libraryEntriesError?.message
-    || (!loading && !work ? initialError : undefined);
+  // 取得中でも initialWork があれば一覧を出したままにする。バックグラウンド更新で画面を消さない。
+  const loading = (!work && worksLoading) || (!skipClientLibrary && libraryEntriesLoading && !libraryEntries);
+  const error = work
+    ? undefined
+    : worksError?.message
+      || libraryEntriesError?.message
+      || (!loading ? initialError : undefined);
 
   return (
     <>

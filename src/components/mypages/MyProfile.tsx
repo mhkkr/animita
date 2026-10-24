@@ -10,8 +10,10 @@ import Icons from '~/components/icons/Icons';
 
 import { RingSpinner } from '~/components/spinners/Spinner';
 
+import Const from '~/constants';
+
 export default function MyProfile() {
-  const { data: user, loading: ul, error: ue } = useQuery<ViewerUserQuery>(viewerUserGql);
+  const { data: user, loading: ul, error: ue } = useQuery(viewerUserGql);
 
   if (ul) return <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>;
   if (ue) return <p className="p-8 text-red-500">{ue?.message}</p>;
@@ -108,15 +110,39 @@ function Communication({ user }: { user: ViewerUserQuery }) {
 }
 
 function Records({ user }: { user: ViewerUserQuery }) {
+  const username = user.viewer?.username;
+  const counts = {
+    WANNA_WATCH: user.viewer?.wannaWatchCount,
+    WATCHING: user.viewer?.watchingCount,
+    WATCHED: user.viewer?.watchedCount,
+    ON_HOLD: user.viewer?.onHoldCount,
+    STOP_WATCHING: user.viewer?.stopWatchingCount,
+  };
+  const links = [
+    ["WANNA_WATCH", "wanna_watch"],
+    ["WATCHING", "watching"],
+    ["WATCHED", "watched"],
+    ["ON_HOLD", "on_hold"],
+    ["STOP_WATCHING", "stop_watching"],
+  ] as const;
+
   return (
     <div className="grid gap-2 lg:gap-4 grid-cols-2">
-      <Card url={`https://annict.com/@${user.viewer?.username}/records`} id="edit" type="form" label="記録数" value={user.viewer?.recordsCount} direction="col" />
+      <Card url={`https://annict.com/@${username}/records`} id="edit" type="form" label="記録数" value={user.viewer?.recordsCount} direction="col" />
       <div className="grid gap-2 lg:gap-4">
-        <Card url={`https://annict.com/@${user.viewer?.username}/watching`} id="WATCHING_CURRENT" type="status_state" label="見たい" value={user.viewer?.wannaWatchCount} />
-        <Card url={`https://annict.com/@${user.viewer?.username}/wanna_watch`} id="WANNA_WATCH_CURRENT" type="status_state" label="見てる" value={user.viewer?.watchingCount} />
-        <Card url={`https://annict.com/@${user.viewer?.username}/watched`} id="WATCHED_CURRENT" type="status_state" label="見た" value={user.viewer?.watchedCount} />
-        <Card url={`https://annict.com/@${user.viewer?.username}/on_hold`} id="ON_HOLD_CURRENT" type="status_state" label="一時停止中" value={user.viewer?.onHoldCount} />
-        <Card url={`https://annict.com/@${user.viewer?.username}/stop_watching`} id="STOP_WATCHING_CURRENT" type="status_state" label="視聴停止" value={user.viewer?.stopWatchingCount} />
+        {links.map(([id, path]) => {
+          const status = Const.STATUS_STATE_LIST.find((state) => state.id === id);
+          return (
+            <Card
+              key={id}
+              url={`https://annict.com/@${username}/${path}`}
+              id={`${id}_CURRENT`}
+              type="status_state"
+              label={status?.label ?? ""}
+              value={counts[id]}
+            />
+          );
+        })}
       </div>
     </div>
   );
