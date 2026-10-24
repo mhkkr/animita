@@ -29,7 +29,7 @@ export default function AllEpisodes({ malAnimeId }: { malAnimeId: string }) {
           setEpisodes(null);
         });
     }
-  }, []);
+  }, [malAnimeId]);
 
   if (episodes === null) {
     return (

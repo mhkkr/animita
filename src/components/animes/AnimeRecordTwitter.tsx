@@ -1,7 +1,7 @@
 import { XShareButton } from "react-share";
 import split from "graphemesplit";
 
-import { ViewerUserQuery, Record, Episode } from "~/features/apollo/generated-types";
+import { Record, Episode } from "~/features/apollo/generated-types";
 
 import Icons from "~/components/icons/Icons";
 
@@ -18,7 +18,7 @@ function lengthMax140(comment: string, base: string, url: string) {
   return base + comment + "\n\n";
 }
 
-export default function Twitter({ record, episode, user: _user, close }: { record: Record, episode: Episode, user: ViewerUserQuery, close: () => void }) {
+export default function Twitter({ record, episode, close }: { record: Record, episode: Episode, close: () => void }) {
   const url = `https://annict.com/works/${episode.work.annictId}/episodes/${episode.annictId}`;
   const text = record.comment ?
     lengthMax140(record.comment, `#${episode.work.twitterHashtag} ${episode.numberText}\n\n`, url) :

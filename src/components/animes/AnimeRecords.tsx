@@ -109,7 +109,7 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                       <>
                         <Edit record={record} close={close} />
                         <Delete record={record} episode={episode} viewerAnnictId={user.viewer?.annictId} close={close} />
-                        <Twitter record={record} episode={episode} user={user} close={close} />
+                        <Twitter record={record} episode={episode} close={close} />
                       </>
                     ) : (
                       <Mute record={record} mute={mute} setMute={setMute} close={close} />

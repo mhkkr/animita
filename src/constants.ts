@@ -48,4 +48,6 @@ class Const {
   ];
 }
 
-export default new Const();
+const constants = new Const();
+
+export default constants;

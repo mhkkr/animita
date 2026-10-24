@@ -5,27 +5,27 @@ import type { LibraryEntriesData } from '~/types/libraryEntries';
 
 import Icons from '~/components/icons/Icons';
 
-export function Link({ work }: { work: Work }) {
-  function RelatedLink({ icon, className, test, href, label }: {
-    icon: string,
-    className: string,
-    test?: string | number | null,
-    href?: string | null,
-    label?: string | null
-  }) {
-    if (test && href) {
-      return (
-        <li>
-          <a className="flex items-center" href={href} target="_blank" rel="noopener noreferrer">
-            <Icons id={icon} type="link" className={`text-[1.5em] ${className}`} />
-            {label}
-          </a>
-        </li>
-      );
-    }
-    return <></>;
+function RelatedLink({ icon, className, test, href, label }: {
+  icon: string,
+  className: string,
+  test?: string | number | null,
+  href?: string | null,
+  label?: string | null
+}) {
+  if (test && href) {
+    return (
+      <li>
+        <a className="flex items-center" href={href} target="_blank" rel="noopener noreferrer">
+          <Icons id={icon} type="link" className={`text-[1.5em] ${className}`} />
+          {label}
+        </a>
+      </li>
+    );
   }
+  return <></>;
+}
 
+export function Link({ work }: { work: Work }) {
   return (
     <ul className="flex flex-wrap gap-x-4 gap-y-2 mt-4 px-4 text-xs">
       <RelatedLink

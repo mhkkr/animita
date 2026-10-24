@@ -9,7 +9,7 @@ const withPWA = require('next-pwa')({
 });
 
 module.exports = withPWA({
-  turbopack: {}, // Next.js 16 で webpack を使用することを明示
+  turbopack: {}, // webpack 設定を残したまま next dev --turbo を使う
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/,
