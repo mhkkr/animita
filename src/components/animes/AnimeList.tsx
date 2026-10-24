@@ -151,11 +151,11 @@ function EntryList({ data }: { data: LibraryEntriesQuery | undefined }) {
   return (
     <>
       <section className="mt-6">
-        <SectionTitle icon="play">現在配信中</SectionTitle>
+        <SectionTitle icon="play">配信済み</SectionTitle>
         {delivered.length === 0 ? (
           <p className="p-4 dark:text-white/70">エピソードがありません！</p>
         ) : (
-          <Detail entry={{ day: "現在配信中", list: delivered }} now={now} />
+          <Detail entry={{ day: "配信済み", list: delivered }} now={now} />
         )}
       </section>
       <section className="mt-12">
