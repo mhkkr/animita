@@ -16,6 +16,18 @@ export function wasEdited(createdAt: Date | string, updatedAt: Date | string) {
 }
 
 export function getMutedUsers(): { annictId: number, username: string }[] {
-  const mutedUsers = getLocalStorageItem(Const.STORAGE_MUTED_USERS);
-  return mutedUsers ? JSON.parse(mutedUsers) : [];
+  const raw = getLocalStorageItem(Const.STORAGE_MUTED_USERS);
+  if (!raw) return [];
+
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is { annictId: number, username: string } => {
+      if (!item || typeof item !== "object") return false;
+      const user = item as { annictId?: unknown, username?: unknown };
+      return typeof user.annictId === "number" && typeof user.username === "string";
+    });
+  } catch {
+    return [];
+  }
 }

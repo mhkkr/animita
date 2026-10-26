@@ -1,8 +1,4 @@
-import type { Metadata } from "next";
-
-import LayoutContainer from '~/components/layouts/Container';
-
-import MyHeader from '~/components/mypages/MyHeader';
+import type { Metadata } from 'next';
 
 import MyRecords from '~/components/mypages/MyRecords';
 
@@ -15,10 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function MyPage() {
-  return (
-    <LayoutContainer>
-      <MyHeader pageId={id} />
-      <MyRecords />
-    </LayoutContainer>
-  );
+  return <MyRecords />;
 }

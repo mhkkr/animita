@@ -277,8 +277,7 @@ export default function WorkRecords({
   };
 
   return (
-    <div className="mt-6">
-      <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">記録</h2>
+    <div className="pt-4">
       <form ref={formRef} onSubmit={handleSubmit} className="mb-4 px-4">
         <textarea
           onChange={(event) => setBody(event.target.value)}
@@ -329,7 +328,7 @@ export default function WorkRecords({
       />
 
       {!loading && !hasNextPage && !error && commentedReviews.length === 0 && (
-        <p className="px-4 pt-4 dark:text-white/70">記録はまだありません。</p>
+        <p className="px-4 pt-4 border-t dark:border-stone-700 dark:text-white/70">記録はまだありません。</p>
       )}
 
       {listedReviews.length > 0 && (

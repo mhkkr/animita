@@ -15,6 +15,12 @@ import {
   MdHistory,
   MdOutlineHistory,
   MdCalendarMonth,
+  MdExplore,
+  MdOutlineExplore,
+  MdSearch,
+  MdOutlineSearch,
+  MdVideoLibrary,
+  MdOutlineVideoLibrary,
 } from "react-icons/md";
 import { HiTv, HiOutlineTv } from "react-icons/hi2";
 
@@ -39,6 +45,12 @@ export default function NavigationIcon(props: Props) {
     case "calendar": return <MdCalendarMonth {...props} />;
     case "tv": return <HiTv {...props} />;
     case "tv_outline": return <HiOutlineTv {...props} />;
+    case "explore": return <MdExplore {...props} />;
+    case "explore_outline": return <MdOutlineExplore {...props} />;
+    case "search": return <MdSearch {...props} />;
+    case "search_outline": return <MdOutlineSearch {...props} />;
+    case "library": return <MdVideoLibrary {...props} />;
+    case "library_outline": return <MdOutlineVideoLibrary {...props} />;
   }
   return <></>;
 }

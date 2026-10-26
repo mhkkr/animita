@@ -22,7 +22,6 @@ export const searchWorksGql: TypedDocumentNode<SearchWorksQuery, SearchWorksQuer
         viewerStatusState
         image {
           facebookOgImageUrl
-          copyright
         }
 				staffs {
 					nodes {
@@ -61,6 +60,9 @@ export const searchWorksGql: TypedDocumentNode<SearchWorksQuery, SearchWorksQuer
 						channel {
 							annictId
 							name
+							channelGroup {
+								name
+							}
 						}
 					}
 				}

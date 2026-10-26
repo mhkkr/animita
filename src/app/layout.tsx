@@ -11,6 +11,7 @@ import { authOptions } from "~/features/oauth/auth";
 
 import Analytics from "~/components/Analytics";
 import NavigationProgress from "~/components/NavigationProgress";
+import StorageMigration from "~/components/StorageMigration";
 
 import Const from "~/constants";
 
@@ -64,6 +65,7 @@ export default async function RootLayout({
         <meta name="theme-color" content="#334155" />
       </head>
       <body>
+        <StorageMigration />
         <NavigationProgress />
         <Analytics />
         <ApolloProviderWrapper>

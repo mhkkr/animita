@@ -50,6 +50,10 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
   const [episodeRatings] = useEpisodeRatings();
   const now = Date.now();
 
+  if (episodes.length === 0) {
+    return <p className="px-4 py-2 dark:text-white/70">エピソードはありません。</p>;
+  }
+
   episodes.sort((a, b) => (a?.sortNumber as number) - (b?.sortNumber as number));
 
   const storyEpisodes = episodes.filter((episode) => !isSpecialEpisode(episode));

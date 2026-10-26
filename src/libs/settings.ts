@@ -41,7 +41,15 @@ export const displays: Record<DisplayId, { value: typeof displayChoices; default
 
 function readSettings(): Setting {
   const storage = getLocalStorageItem(Const.STORAGE_SETTINGS);
-  return storage ? JSON.parse(storage) as Setting : {};
+  if (!storage) return {};
+
+  try {
+    const parsed = JSON.parse(storage) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    return parsed as Setting;
+  } catch {
+    return {};
+  }
 }
 
 function writeSettings(settings: Setting) {
@@ -98,11 +106,4 @@ export function setAnimeListStatuses(statuses: string[]) {
     .filter((id) => statuses.includes(id) && ANIME_PAGE_ALLOWED_STATUSES.has(id));
 
   setSetting("anime", "statuses", next.length > 0 ? next : [...DEFAULT_ANIME_LIST_STATUSES]);
-}
-
-export function isDefaultAnimeListStatuses(statuses: string[]) {
-  if (statuses.length !== DEFAULT_ANIME_LIST_STATUSES.length) {
-    return false;
-  }
-  return DEFAULT_ANIME_LIST_STATUSES.every((status) => statuses.includes(status));
 }

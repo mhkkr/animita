@@ -10,6 +10,7 @@ function setStorage(mal: Mal[]) {
   setLocalStorageItem(Const.STORAGE_MAL, JSON.stringify(mal));
 }
 
+/** 取得日から1週間（7日）経過しているか */
 function checkOldDate(fetchDate: Date): boolean {
   const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
   const now = new Date();
@@ -61,7 +62,14 @@ export function targetMal(malAnimeId: string, mal: Mal[]): Mal | null {
 
 export function getMal(): Mal[] {
   const mal = getStorage();
-  return mal ? JSON.parse(mal) : [];
+  if (!mal) return [];
+
+  try {
+    const parsed = JSON.parse(mal) as unknown;
+    return Array.isArray(parsed) ? parsed as Mal[] : [];
+  } catch {
+    return [];
+  }
 }
 
 export function setMal(malAnimeId: string, data: Jikan, imageActive?: boolean) {

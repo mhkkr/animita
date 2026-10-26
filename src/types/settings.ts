@@ -12,5 +12,5 @@ export interface Setting {
 
 export type Category = "displays" | "anime";
 export type DisplayId = "episode-comments" | "episode-evaluation" | "work-comments" | "work-evaluation";
-export type AnimeId = "statuses";
+type AnimeId = "statuses";
 export type Id = DisplayId | AnimeId;

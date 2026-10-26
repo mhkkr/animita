@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useQuery } from '@apollo/client/react';
 import { viewerUserGql } from '~/features/apollo/gql/query/viewerUserGql';
 import type { ViewerUserQuery } from '~/features/apollo/generated-types';
@@ -11,6 +13,7 @@ import Icons from '~/components/icons/Icons';
 import { RingSpinner } from '~/components/spinners/Spinner';
 
 import Const from '~/constants';
+import { libraryTabHref } from '~/libs/libraryTab';
 
 export default function MyProfile() {
   const { data: user, loading: ul, error: ue } = useQuery(viewerUserGql);
@@ -78,39 +81,47 @@ function Profile({ user }: { user: ViewerUserQuery }) {
 }
 
 function Card(
-  { direction, url, id, type, label, value }:
-  { direction?: string, url: string, id: string, type: string, label: string, value: number | null | undefined }
+  { direction, url, id, type, label, value, external }:
+  { direction?: string, url: string, id: string, type: string, label: string, value: number | null | undefined, external?: boolean }
 ) {
-  return (
-    <a
-      className={`flex ${direction === "col" ? "flex-col" : "items-center"} gap-2 p-2.5 lg:p-3 border dark:border-stone-500 rounded-md hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black`}
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <h2 className="flex gap-1 text-sm lg:text-base">
-        <Icons id={id} type={type} className="shrink-0 relative -top-[.05em]" />
-        <span className="leading-trim whitespace-nowrap">{label}</span>
+  const className = `relative flex ${direction === "col" ? "flex-col" : "items-center"} gap-2 p-2.5 lg:p-3 border dark:border-stone-500 rounded-md hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black`;
+  const body = (
+    <>
+      {external && <Icons id="open_in_new" type="link" className="absolute top-2.5 lg:top-3 right-2" />}
+      <h2 className={`flex gap-1.5 text-sm lg:text-base ${external ? "pr-5" : ""}`}>
+        <Icons id={id} type={type} className="shrink-0" />
+        <span className="leading-trim">{label}</span>
       </h2>
       <div className={`${direction === "col" ? "grow" : "ml-auto text-right"} flex items-center justify-center break-all`}>
-        <p className="leading-trim text-xl lg:text-3xl font-bold">{value ?? 0}</p>
+        <p className="leading-trim whitespace-nowrap text-xl lg:text-3xl font-bold">{value ?? 0}</p>
       </div>
-    </a>
+    </>
+  );
+  if (external) {
+    return (
+      <a className={className} href={url} target="_blank" rel="noopener noreferrer">
+        {body}
+      </a>
+    );
+  }
+  return (
+    <Link className={className} href={url}>
+      {body}
+    </Link>
   );
 }
 
 function Communication({ user }: { user: ViewerUserQuery }) {
   return (
     <div className="grid gap-2 lg:gap-4 grid-cols-3">
-      <Card url="https://annict.com/notifications" id="bell" type="notification" label="通知" value={user.viewer?.notificationsCount} direction="col" />
-      <Card url={`https://annict.com/@${user.viewer?.username}/following`} id="reguser" type="notification" label="フォロイー" value={user.viewer?.followingsCount} direction="col" />
-      <Card url={`https://annict.com/@${user.viewer?.username}/followers`} id="user" type="notification" label="フォロワー" value={user.viewer?.followersCount} direction="col" />
+      <Card external url="https://annict.com/notifications" id="bell" type="notification" label="通知" value={user.viewer?.notificationsCount} direction="col" />
+      <Card external url={`https://annict.com/@${user.viewer?.username}/following`} id="reguser" type="notification" label="フォロイー" value={user.viewer?.followingsCount} direction="col" />
+      <Card external url={`https://annict.com/@${user.viewer?.username}/followers`} id="user" type="notification" label="フォロワー" value={user.viewer?.followersCount} direction="col" />
     </div>
   );
 }
 
 function Records({ user }: { user: ViewerUserQuery }) {
-  const username = user.viewer?.username;
   const counts = {
     WANNA_WATCH: user.viewer?.wannaWatchCount,
     WATCHING: user.viewer?.watchingCount,
@@ -118,31 +129,20 @@ function Records({ user }: { user: ViewerUserQuery }) {
     ON_HOLD: user.viewer?.onHoldCount,
     STOP_WATCHING: user.viewer?.stopWatchingCount,
   };
-  const links = [
-    ["WANNA_WATCH", "wanna_watch"],
-    ["WATCHING", "watching"],
-    ["WATCHED", "watched"],
-    ["ON_HOLD", "on_hold"],
-    ["STOP_WATCHING", "stop_watching"],
-  ] as const;
-
   return (
     <div className="grid gap-2 lg:gap-4 grid-cols-2">
-      <Card url={`https://annict.com/@${username}/records`} id="edit" type="form" label="記録数" value={user.viewer?.recordsCount} direction="col" />
+      <Card url="/mypage/records" id="edit" type="form" label="記録数" value={user.viewer?.recordsCount} direction="col" />
       <div className="grid gap-2 lg:gap-4">
-        {links.map(([id, path]) => {
-          const status = Const.STATUS_STATE_LIST.find((state) => state.id === id);
-          return (
-            <Card
-              key={id}
-              url={`https://annict.com/@${username}/${path}`}
-              id={`${id}_CURRENT`}
-              type="status_state"
-              label={status?.label ?? ""}
-              value={counts[id]}
-            />
-          );
-        })}
+        {Const.STATUS_STATE_LIST.map((status) => (
+          <Card
+            key={status.id}
+            url={libraryTabHref(status.id)}
+            id={`${status.id}_CURRENT`}
+            type="status_state"
+            label={status.label}
+            value={counts[status.id as keyof typeof counts]}
+          />
+        ))}
       </div>
     </div>
   );

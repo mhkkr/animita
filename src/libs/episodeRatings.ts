@@ -17,7 +17,7 @@ type RatingRecord = {
 
 const ratingIds = new Set(Const.RATING_STATE_LIST.map((state) => state.id));
 
-export const episodeRatingsAtom = atom<EpisodeRatingStore>({});
+const episodeRatingsAtom = atom<EpisodeRatingStore>({});
 
 let loaded = false;
 
@@ -25,7 +25,7 @@ function isRatingState(value: string): value is RatingState {
   return ratingIds.has(value as RatingState);
 }
 
-export function readEpisodeRatings(): EpisodeRatingStore {
+function readEpisodeRatings(): EpisodeRatingStore {
   const raw = getLocalStorageItem(Const.STORAGE_EPISODE_RATINGS);
   if (!raw) return {};
 

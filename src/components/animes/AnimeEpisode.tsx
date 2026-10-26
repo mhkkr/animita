@@ -25,7 +25,7 @@ import Records from '~/components/animes/AnimeRecords';
 import Const from '~/constants';
 import { useEpisodeRatings, writeEpisodeRating } from '~/libs/episodeRatings';
 
-export function episodeRecordPath(workAnnictId: number, episodeAnnictId: number) {
+function episodeRecordPath(workAnnictId: number, episodeAnnictId: number) {
   return `/anime/${workAnnictId}/episode/${episodeAnnictId}`;
 }
 
@@ -63,7 +63,7 @@ function InfoCast({ work }: { work: Work }) {
       <div className="mt-4">
         <button
           onClick={handleClick}
-          className="flex items-center my-5 mx-auto pr-2 pl-4 py-1 border dark:border-stone-500 rounded-full"
+          className="flex items-center my-5 mx-auto pr-2 pl-4 pt-1 pb-1.5 border dark:border-stone-500 rounded-full"
           type="button"
         >
           <span>アニメ情報とキャストを{visible ? '非表示にする' : '表示する'}</span>

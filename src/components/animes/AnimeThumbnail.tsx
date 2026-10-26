@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
-import type { Work } from '~/features/apollo/generated-types';
+import type { Work } from "~/features/apollo/generated-types";
 
-import { RingSpinner } from '~/components/spinners/Spinner';
+import { RingSpinner } from "~/components/spinners/Spinner";
 
-import { targetMal, getMal, setMal, fetchJikanAnime } from '~/libs/mal';
+import { targetMal, getMal, setMal, fetchJikanAnime } from "~/libs/mal";
 
-const noImage = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>';
+const noImage = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 630%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:13em;%22>No Image</text></svg>";
 
 function useWhenVisible(enabled: boolean) {
   const ref = useRef<HTMLElement>(null);
@@ -31,29 +31,31 @@ function useWhenVisible(enabled: boolean) {
   return { ref, visible };
 }
 
-function ListThumbnail({ work }: { work: Work }) {
-  const { ref, visible } = useWhenVisible(Boolean(work.malAnimeId));
-  const [url, setUrl] = useState<string | null>(work.malAnimeId ? null : noImage);
-  const [loading, setLoading] = useState(Boolean(work.malAnimeId));
+function useMalImage(malAnimeId: string | null | undefined, enabled: boolean) {
+  const [url, setUrl] = useState<string | null>(malAnimeId ? null : noImage);
+  const [loading, setLoading] = useState(Boolean(malAnimeId));
+  const [cacheChecked, setCacheChecked] = useState(!malAnimeId);
 
   useEffect(() => {
-    if (!work.malAnimeId) {
+    if (!malAnimeId) {
       setUrl(noImage);
       setLoading(false);
+      setCacheChecked(true);
       return;
     }
 
-    const cached = targetMal(work.malAnimeId, getMal());
+    const cached = targetMal(malAnimeId, getMal());
+    setCacheChecked(true);
     if (cached?.image.url) {
       setUrl(cached.image.url);
       return;
     }
 
-    if (!visible) return;
+    if (!enabled) return;
 
     let cancelled = false;
     setLoading(true);
-    fetchJikanAnime(work.malAnimeId)
+    fetchJikanAnime(malAnimeId)
       .then((response) => {
         if (cancelled) return;
         const imageUrl = response?.data?.images?.webp?.large_image_url;
@@ -63,7 +65,7 @@ function ListThumbnail({ work }: { work: Work }) {
           return;
         }
         setUrl(imageUrl);
-        setMal(work.malAnimeId as string, response.data);
+        setMal(malAnimeId, response.data);
       })
       .catch(() => {
         if (!cancelled) {
@@ -75,163 +77,179 @@ function ListThumbnail({ work }: { work: Work }) {
     return () => {
       cancelled = true;
     };
-  }, [work.malAnimeId, visible]);
+  }, [malAnimeId, enabled]);
+
+  return {
+    url,
+    loading,
+    cacheChecked,
+    finish: () => setLoading(false),
+    fail: () => {
+      setUrl(noImage);
+      setLoading(false);
+    },
+  };
+}
+
+function usableImage(url?: string | null) {
+  const trimmed = url?.trim();
+  return trimmed ? trimmed : null;
+}
+
+export function MalThumb({
+  malAnimeId,
+  title,
+  ogpUrl,
+  lazy = false,
+  backdrop = false,
+  switchable = false,
+  figureClassName,
+  spinnerClassName,
+}: {
+  malAnimeId?: string | null;
+  title: string;
+  ogpUrl?: string | null;
+  lazy?: boolean;
+  backdrop?: boolean;
+  switchable?: boolean;
+  figureClassName: string;
+  spinnerClassName: string;
+}) {
+  const hasSource = Boolean(malAnimeId || usableImage(ogpUrl));
+  const { ref, visible } = useWhenVisible(lazy && hasSource);
+  const { url, loading, cacheChecked, finish, fail } = useMalImage(malAnimeId, lazy ? visible : true);
+  const [ogpFailed, setOgpFailed] = useState(false);
+  const [source, setSource] = useState<"mal" | "ogp">("mal");
+  const malPoster = url && url !== noImage ? url : null;
+  const ogp = ogpFailed || (malAnimeId && !cacheChecked) ? null : usableImage(ogpUrl);
+  const ready = !lazy || visible || !hasSource;
+  const malFirst = malPoster ?? ogp ?? (url === noImage ? noImage : null);
+  const ogpFirst = ogp ?? malPoster ?? (url === noImage ? noImage : null);
+  const displayUrl = ready ? (switchable && source === "ogp" ? ogpFirst : malFirst) : null;
+  const shown = displayUrl && displayUrl === ogp && displayUrl !== malPoster ? "ogp" : displayUrl === malPoster ? "mal" : null;
+
+  useEffect(() => {
+    setOgpFailed(false);
+    setSource("mal");
+  }, [ogpUrl, malAnimeId]);
+  const showBackdrop = backdrop && !!displayUrl && displayUrl !== noImage;
 
   return (
-    <figure ref={ref} className="relative overflow-hidden aspect-425/600 bg-gray-400/70 text-gray-700/70 dark:bg-gray-700/70">
-      {loading && (
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl text-annict-100"><RingSpinner /></div>
+    <figure ref={lazy ? ref : undefined} className={`relative z-0 ${figureClassName}`}>
+      {switchable && malPoster && ogp ? (
+        <>
+          {backdrop && (
+            <>
+              <img
+                className={`pointer-events-none absolute inset-0 h-full w-full object-cover blur-xl brightness-50 transition-opacity duration-300 ease-out motion-reduce:transition-none ${shown === "mal" ? "opacity-100" : "opacity-0"}`}
+                src={malPoster}
+                alt=""
+                aria-hidden="true"
+              />
+              <img
+                className={`pointer-events-none absolute inset-0 h-full w-full object-cover blur-xl brightness-50 transition-opacity duration-300 ease-out motion-reduce:transition-none ${shown === "ogp" ? "opacity-100" : "opacity-0"}`}
+                src={ogp}
+                alt=""
+                aria-hidden="true"
+              />
+            </>
+          )}
+          <img
+            className={`absolute inset-0 z-10 h-full w-full object-contain transition-opacity duration-300 ease-out motion-reduce:transition-none ${shown === "mal" ? "opacity-100" : "opacity-0"}`}
+            src={malPoster}
+            alt={shown === "mal" ? `${title}の画像` : ""}
+            aria-hidden={shown === "mal" ? undefined : true}
+            onLoad={finish}
+            onError={fail}
+          />
+          <img
+            className={`absolute inset-0 z-10 h-full w-full object-contain transition-opacity duration-300 ease-out motion-reduce:transition-none ${shown === "ogp" ? "opacity-100" : "opacity-0"}`}
+            src={ogp}
+            alt={shown === "ogp" ? `${title}の画像` : ""}
+            aria-hidden={shown === "ogp" ? undefined : true}
+            onLoad={finish}
+            onError={() => {
+              setOgpFailed(true);
+              setSource("mal");
+            }}
+          />
+        </>
+      ) : (
+        <>
+          {showBackdrop && (
+            <img
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover blur-xl brightness-50"
+              src={displayUrl ?? undefined}
+              alt=""
+              aria-hidden="true"
+            />
+          )}
+          {displayUrl && (
+            <img
+              className={`relative z-10 h-full w-full object-contain ${displayUrl === noImage ? "dark:invert" : ""}`}
+              src={displayUrl}
+              alt={`${title}の画像`}
+              loading={lazy ? "lazy" : undefined}
+              onLoad={finish}
+              onError={() => {
+                if (displayUrl === ogp) {
+                  setOgpFailed(true);
+                  setSource("mal");
+                  return;
+                }
+                fail();
+              }}
+            />
+          )}
+        </>
       )}
-      {url && (
-        <img
-          className={`h-full w-full object-contain ${url === noImage ? "dark:invert" : ""}`}
-          src={url}
-          alt={`${work.title}の画像`}
-          loading="lazy"
-          onLoad={() => setLoading(false)}
-          onError={() => {
-            setUrl(noImage);
-            setLoading(false);
-          }}
-        />
+      {!displayUrl && loading && (
+        <div className={`absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-annict-100 ${spinnerClassName}`}><RingSpinner /></div>
+      )}
+      {switchable && malPoster && ogp && (
+        <button
+          type="button"
+          className="absolute right-3 bottom-3 z-20 h-14 w-14 overflow-hidden rounded-md border-2 border-white/80 shadow-md"
+          aria-label={shown === "ogp" ? "MyAnimeListの画像に切り替える" : "OGP画像に切り替える"}
+          onClick={() => setSource(shown === "ogp" ? "mal" : "ogp")}
+        >
+          <img
+            className="h-full w-full object-cover"
+            src={shown === "ogp" ? malPoster : ogp}
+            alt=""
+          />
+        </button>
       )}
     </figure>
   );
 }
 
-function DetailThumbnail({ work }: { work: Work }) {
-  const imgRef = useRef<HTMLImageElement>(null);
-  const fetchingRef = useRef(false);
-  const ogpUrl = work.image?.facebookOgImageUrl || null;
-  const [loading, setLoading] = useState(Boolean(ogpUrl || work.malAnimeId));
-  const [url, setUrl] = useState<string | null>(ogpUrl ?? (work.malAnimeId ? null : noImage));
+const posterFrame = "overflow-hidden bg-gray-400/70 text-gray-700/70 dark:bg-gray-700/70";
 
-  const showNoImage = useCallback(() => {
-    setUrl(noImage);
-    setLoading(false);
-  }, []);
-
-  const fallback = useCallback(() => {
-    if (!work.malAnimeId) {
-      showNoImage();
-      return;
-    }
-
-    const cached = targetMal(work.malAnimeId, getMal());
-    if (cached?.image.url && cached.image.url !== url) {
-      setUrl(cached.image.url);
-      return;
-    }
-    if (cached?.image.url && cached.image.url === url) {
-      showNoImage();
-      return;
-    }
-
-    if (fetchingRef.current) return;
-
-    fetchingRef.current = true;
-    setLoading(true);
-
-    fetchJikanAnime(work.malAnimeId)
-      .then((response) => {
-        const imageUrl = response?.data?.images?.webp?.large_image_url;
-        if (!imageUrl) {
-          showNoImage();
-          return;
-        }
-        setUrl(imageUrl);
-        setMal(work.malAnimeId as string, response.data, true);
-      })
-      .catch(() => {
-        showNoImage();
-      })
-      .finally(() => {
-        fetchingRef.current = false;
-      });
-  }, [url, showNoImage, work.malAnimeId]);
-
-  // facebookOgImageUrl に値は入っていてもリンク切れなどで読み込めないパターンがあり、
-  // その場合、非常に長いロード時間を要するため、一度 MyAnimeList の画像を表示した履歴があればそちらを参照させる仕組み。
-  useEffect(() => {
-    const cached = work.malAnimeId ? targetMal(work.malAnimeId, getMal()) : null;
-    if (cached?.image.active && cached.image.url) {
-      setUrl(cached.image.url);
-      return;
-    }
-    if (ogpUrl || !work.malAnimeId) return;
-
-    if (cached?.image.url) {
-      setUrl(cached.image.url);
-      return;
-    }
-
-    let cancelled = false;
-    fetchingRef.current = true;
-    setLoading(true);
-    fetchJikanAnime(work.malAnimeId)
-      .then((response) => {
-        if (cancelled) return;
-        const imageUrl = response?.data?.images?.webp?.large_image_url;
-        if (!imageUrl) {
-          setUrl(noImage);
-          setLoading(false);
-          return;
-        }
-        setUrl(imageUrl);
-        setMal(work.malAnimeId as string, response.data, true);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setUrl(noImage);
-          setLoading(false);
-        }
-      })
-      .finally(() => {
-        fetchingRef.current = false;
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [ogpUrl, work.malAnimeId]);
-
-  // 詳細ページは SSR の img がビューポート内にある。
-  // リロード時はキャッシュ読み込みがハイドレーションより先に終わり、onLoad / onError が付かない。
-  useEffect(() => {
-    const element = imgRef.current;
-    if (!url || url === noImage || !element?.complete) return;
-    if (element.currentSrc !== url) return;
-
-    if (element.naturalWidth > 0) {
-      setLoading(false);
-      return;
-    }
-
-    fallback();
-  }, [url, fallback]);
-
+function ListThumbnail({ work }: { work: Work }) {
   return (
-    <figure className="z-0 relative aspect-1200/630 bg-gray-400/70 dark:bg-gray-700/70 text-gray-700/70 overflow-hidden">
-      {loading && (
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl text-annict-100"><RingSpinner /></div>
-      )}
-      {url && (
-        <img
-          ref={imgRef}
-          className={`h-full w-full object-contain ${url === noImage ? "dark:invert" : ""}`}
-          src={url}
-          alt={`${work.title}のキービジュアル`}
-          onLoad={() => setLoading(false)}
-          onError={() => {
-            if (url === noImage) {
-              setLoading(false);
-              return;
-            }
-            fallback();
-          }}
-        />
-      )}
-    </figure>
+    <MalThumb
+      malAnimeId={work.malAnimeId}
+      title={work.title}
+      ogpUrl={work.image?.facebookOgImageUrl}
+      lazy
+      figureClassName={`${posterFrame} aspect-425/600`}
+      spinnerClassName="text-3xl"
+    />
+  );
+}
+
+function DetailThumbnail({ work }: { work: Work }) {
+  return (
+    <MalThumb
+      malAnimeId={work.malAnimeId}
+      title={work.title}
+      ogpUrl={work.image?.facebookOgImageUrl}
+      backdrop
+      switchable
+      figureClassName={`${posterFrame} flex aspect-1200/630 items-center justify-center`}
+      spinnerClassName="text-5xl"
+    />
   );
 }
 

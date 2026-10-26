@@ -37,7 +37,7 @@ export default function MyAnimeStatuses() {
     <section>
       <header className="px-4">
         <h1 className="text-lg font-bold">視聴中</h1>
-        <p className="mt-1 text-xs dark:text-white/70">
+        <p className="mt-1 text-sm">
           「視聴中」に表示する視聴ステータスを選べます。
         </p>
       </header>

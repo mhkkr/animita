@@ -1,46 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { fetchAnnictGraphQL, getAccessToken } from "~/features/apollo/server";
+import { isAllowedRequest } from "~/libs/allowedOrigin";
 
 type GraphQLRequestBody = {
   query?: string;
   variables?: Record<string, unknown>;
   operationName?: string;
 };
-
-function getAllowedOrigins(): string[] {
-  const origins = [
-    process.env.NEXTAUTH_URL,
-    process.env.NEXT_PUBLIC_NEXTAUTH_URL,
-  ];
-
-  if (process.env.VERCEL_URL) {
-    origins.push(`https://${process.env.VERCEL_URL}`);
-  }
-
-  return origins
-    .filter((value): value is string => Boolean(value))
-    .map((value) => value.replace(/\/$/, ""));
-}
-
-function isAllowedRequest(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) {
-    // 同一オリジンでも Origin が付くことがほとんどだが、無い場合は Referer で補助確認
-    const referer = request.headers.get("referer");
-    if (!referer) {
-      return false;
-    }
-    try {
-      const refererOrigin = new URL(referer).origin;
-      return getAllowedOrigins().includes(refererOrigin);
-    } catch {
-      return false;
-    }
-  }
-
-  return getAllowedOrigins().includes(origin.replace(/\/$/, ""));
-}
 
 export async function POST(request: NextRequest) {
   if (!isAllowedRequest(request)) {

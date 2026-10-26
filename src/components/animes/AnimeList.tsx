@@ -48,14 +48,12 @@ function Detail({ entry, now }: { entry: EntriesByDay; now: number }) {
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs dark:text-white/70">
                 <StatusLabel statusId={item?.status?.state} />
                 {startedAt ? (
-                  <>
-                    <p><DisplayDate date={startedAt} /></p>
-                    {nextProgram?.channel.name && (
-                      <p>{nextProgram.channel.name}</p>
-                    )}
-                  </>
+                  <p><DisplayDate date={startedAt} /></p>
                 ) : (
                   <p>放送情報がありません</p>
+                )}
+                {nextProgram?.channel.name && (
+                  <p>{nextProgram.channel.name}</p>
                 )}
               </div>
               <p className="mt-1 font-bold">

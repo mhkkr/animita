@@ -1,63 +1,293 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { NetworkStatus } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { viewerRecordsGql } from '~/features/apollo/gql/query/viewerRecordsGql';
+import { viewerActivitiesGql } from '~/features/apollo/gql/query/viewerActivitiesGql';
+import type {
+  ActivityItem,
+  ActivityMultipleRecord,
+  ActivityRecord,
+  ActivityReview,
+  ActivityStatus,
+  ViewerActivitiesData,
+} from '~/features/apollo/gql/query/viewerActivitiesGql';
 
 import { RecordLink } from '~/components/animes/AnimeEpisode';
 import Icons from '~/components/icons/Icons';
 import { RingSpinner } from '~/components/spinners/Spinner';
+import DisplayDate from '~/components/dates/DisplayDate';
 
 import Const from '~/constants';
+import { wasEdited } from '~/libs/function';
+import { useEpisodeRatings, writeEpisodeRating } from '~/libs/episodeRatings';
+import type { RatingState } from '~/features/apollo/generated-types';
 
-export default function MyRecords() {
-  const { data: user, loading: loading, error: error } = useQuery(viewerRecordsGql, {
-    variables: {
-      first: Const.MY_RECORDS_LIMIT
-    }
-  });
+const ROW_CLASS = 'flex gap-2 px-4 pt-1 pb-1.25 border-b dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20';
 
+const REVIEW_RATINGS = [
+  { key: 'ratingOverallState', label: '全体' },
+  { key: 'ratingAnimationState', label: '映像' },
+  { key: 'ratingCharacterState', label: 'キャラクター' },
+  { key: 'ratingStoryState', label: 'ストーリー' },
+  { key: 'ratingMusicState', label: '音楽' },
+] as const;
+
+function itemsOf(data: ViewerActivitiesData | undefined) {
+  const items: ActivityItem[] = [];
+  for (const edge of data?.viewer?.activities?.edges ?? []) {
+    const item = edge?.item;
+    if (!item) continue;
+    if (item.__typename === 'Record' && !item.episode) continue;
+    items.push(item);
+  }
+  return items;
+}
+
+function episodeNumber(number?: number | null) {
+  return `#${String(number ?? '').padStart(2, '0')}`;
+}
+
+function recordRatingsOf(data: ViewerActivitiesData | undefined) {
+  const ratings: { episodeAnnictId: number; rating: RatingState }[] = [];
+  const seen = new Set<number>();
+  for (const edge of data?.viewer?.activities?.edges ?? []) {
+    const item = edge?.item;
+    if (item?.__typename !== 'Record' || !item.ratingState || !item.episode) continue;
+    if (seen.has(item.episode.annictId)) continue;
+    seen.add(item.episode.annictId);
+    ratings.push({ episodeAnnictId: item.episode.annictId, rating: item.ratingState });
+  }
+  return ratings;
+}
+
+function RecordRow({ item }: { item: ActivityRecord }) {
+  const episode = item.episode;
+  const ratingState = Const.RATING_STATE_LIST.find((state) => state.id === item.ratingState);
+  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === episode.work.viewerStatusState);
   return (
-    <div className="mt-4">
-      <p className="px-4 text-lg font-bold">直近の{Const.MY_RECORDS_LIMIT}件の記録</p>
+    <RecordLink
+      className={ROW_CLASS}
+      workAnnictId={episode.work.annictId}
+      episodeAnnictId={episode.annictId}
+    >
+      {statusState && (
+        <Icons
+          id={`${statusState.id}_CURRENT`}
+          type="status_state"
+          className={`flex-none text-[1.25em] mt-[.075em] ${statusState.color}`}
+        />
+      )}
+      <p className="grow text-left">{episode.title || Const.EPISODE_TITLE_UNDEFINED}</p>
+      <div className={`flex-none mt-[.1em] w-2/5 flex gap-2 text-left text-xs ${ratingState?.color ?? 'opacity-70'}`}>
+        <span className="whitespace-nowrap">{episodeNumber(episode.number)}</span>
+        <span>{episode.work.title}</span>
+      </div>
+    </RecordLink>
+  );
+}
 
-      {loading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-      {error && <p className="p-4 text-red-500">{error.message}</p>}
+function episodesOf(item: ActivityMultipleRecord) {
+  const episodes = [];
+  for (const node of item.records?.nodes ?? []) {
+    if (node?.episode) episodes.push(node.episode);
+  }
+  episodes.sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
+  return episodes;
+}
 
-      {!(loading || error) && (
-        <div className='mt-4 grid text-sm'>
-          {user?.viewer?.records?.edges?.map(edge => {
-            const record = edge?.node;
-            if (!record) {
-              return null;
-            }
-            const ratingState = Const.RATING_STATE_LIST.find(RATINGSTATE => RATINGSTATE.id === record.ratingState);
-            const statusState = Const.STATUS_STATE_LIST.find(state => state.id === record.episode?.work.viewerStatusState);
-            if (record && record.episode) {
-              return (
-                <RecordLink
-                  key={`r-${record.annictId}`}
-                  className='flex gap-2 px-4 pt-1 pb-1.25 border-t dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20 '
-                  workAnnictId={record.episode.work.annictId}
-                  episodeAnnictId={record.episode.annictId}
-                >
-                  {statusState && (
-                    <Icons
-                      id={`${statusState.id}_CURRENT`}
-                      type="status_state"
-                      className={`flex-none text-[1.25em] mt-[.075em] ${ratingState?.color ?? ""}`}
-                    />
-                  )}
-                  <p className='grow text-left'>{record.episode.title || Const.EPISODE_TITLE_UNDEFINED}</p>
-                  <div className='flex-none mt-[.1em] w-2/5 flex gap-2 opacity-70 text-left text-xs'>
-                    <span className='whitespace-nowrap'>#{String(record.episode.number).padStart(2, '0')}</span>
-                    <span>{record.episode.work.title}</span>
-                  </div>
-                </RecordLink>
-              )
-            }
-          })}
+function MultipleRecordRow({ item }: { item: ActivityMultipleRecord }) {
+  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === item.work.viewerStatusState);
+  const episodes = episodesOf(item);
+  return (
+    <Link href={`/anime/${item.work.annictId}`} className="block px-4 py-3 border-b dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20">
+      <div className="flex gap-2 text-sm">
+        {statusState && (
+          <Icons
+            id={`${statusState.id}_CURRENT`}
+            type="status_state"
+            className={`flex-none text-[1.25em] mt-[.075em] ${statusState.color}`}
+          />
+        )}
+        <p className="grow text-left">{item.work.title}</p>
+        <div className="flex-none mt-[.1em] w-2/5 opacity-70 text-left text-xs">一括記録</div>
+      </div>
+      {episodes.length > 0 && (
+        <ul className="mt-2 grid gap-1 pl-7 text-xs opacity-70">
+          {episodes.map((episode) => (
+            <li key={episode.annictId}>
+              <span className="whitespace-nowrap">{episodeNumber(episode.number)}</span>
+              <span className="ml-2">{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
+            </li>
+          ))}
+          {item.records?.pageInfo.hasNextPage && <li>ほか</li>}
+        </ul>
+      )}
+    </Link>
+  );
+}
+
+function defaultReviewTitle(workTitle: string) {
+  return `「${workTitle}」の記録`;
+}
+
+function ReviewRow({ item }: { item: ActivityReview }) {
+  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === item.work.viewerStatusState);
+  const title = item.title?.trim();
+  const showTitle = Boolean(title && title !== defaultReviewTitle(item.work.title));
+  const ratings = REVIEW_RATINGS.flatMap(({ key, label }) => {
+    const state = Const.RATING_STATE_LIST.find((rating) => rating.id === item[key]);
+    return state ? [{ key, label, state }] : [];
+  });
+  return (
+    <Link href={`/anime/${item.work.annictId}/records`} className="block px-4 py-3 border-b dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20">
+      <div className="flex gap-2 text-sm">
+        {statusState && (
+          <Icons
+            id={`${statusState.id}_CURRENT`}
+            type="status_state"
+            className={`flex-none text-[1.25em] mt-[.075em] ${statusState.color}`}
+          />
+        )}
+        <p className="grow text-left">{item.work.title}</p>
+        <div className="flex-none mt-[.1em] w-2/5 opacity-70 text-left text-xs">記録</div>
+      </div>
+      {showTitle && <p className="mt-2 text-sm">{title}</p>}
+      {(ratings.length > 0 || item.createdAt) && (
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+          {ratings.map(({ key, label, state }) => (
+            <span key={key} className={`inline-flex items-center px-2 py-0.5 rounded-full ${state.bgColor} text-white dark:text-inherit`}>
+              <Icons id={state.id} type="rating_state" className="text-sm mr-1" />
+              {label}
+            </span>
+          ))}
+          <span><DisplayDate date={item.createdAt} /></span>
+          {wasEdited(item.createdAt, item.updatedAt) && (
+            <span className="dark:text-white/70 text-xs"><DisplayDate date={item.updatedAt} /></span>
+          )}
         </div>
       )}
-    </div>
+      {item.body.trim() && <p className="mt-3 text-sm whitespace-pre-wrap">{item.body}</p>}
+    </Link>
+  );
+}
+
+function StatusRow({ item }: { item: ActivityStatus }) {
+  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === item.state);
+  return (
+    <Link href={`/anime/${item.work.annictId}`} className={ROW_CLASS}>
+      {statusState && (
+        <Icons
+          id={`${statusState.id}_CURRENT`}
+          type="status_state"
+          className={`flex-none text-[1.25em] mt-[.075em] ${statusState.color}`}
+        />
+      )}
+      <p className="grow text-left">{item.work.title}</p>
+      {statusState && (
+        <div className="flex-none mt-[.1em] w-2/5 opacity-70 text-left text-xs">「{statusState.label}」へ変更</div>
+      )}
+    </Link>
+  );
+}
+
+function ActivityRow({ item }: { item: ActivityItem }) {
+  switch (item.__typename) {
+    case 'Record':
+      return <RecordRow item={item} />;
+    case 'MultipleRecord':
+      return <MultipleRecordRow item={item} />;
+    case 'Review':
+      return <ReviewRow item={item} />;
+    case 'Status':
+      return <StatusRow item={item} />;
+  }
+}
+
+export default function MyRecords() {
+  const { data, loading, error, fetchMore, networkStatus } = useQuery(viewerActivitiesGql, {
+    variables: { first: Const.PAGE_SIZE },
+    notifyOnNetworkStatusChange: true,
+  });
+  const [moreError, setMoreError] = useState<string | null>(null);
+  const [, setEpisodeRatings] = useEpisodeRatings();
+  const items = itemsOf(data);
+  const recordRatings = useMemo(() => recordRatingsOf(data), [data]);
+
+  useEffect(() => {
+    if (recordRatings.length === 0) return;
+    setEpisodeRatings((current) => {
+      let next = current;
+      for (const { episodeAnnictId, rating } of recordRatings) {
+        next = writeEpisodeRating(next, episodeAnnictId, rating);
+      }
+      return next;
+    });
+  }, [recordRatings, setEpisodeRatings]);
+  const hasNextPage = data?.viewer?.activities?.pageInfo.hasNextPage ?? false;
+  const loadingMore = networkStatus === NetworkStatus.fetchMore;
+  const showLoading = loading && !loadingMore && items.length === 0;
+
+  const loadMore = async () => {
+    const endCursor = data?.viewer?.activities?.pageInfo.endCursor;
+    if (!hasNextPage || !endCursor || loadingMore) return;
+    setMoreError(null);
+    try {
+      await fetchMore({
+        variables: { after: endCursor },
+        updateQuery: (previous, { fetchMoreResult }) => {
+          const incoming = fetchMoreResult.viewer?.activities;
+          const previousActivities = previous.viewer?.activities;
+          if (!incoming || !previous.viewer || !previousActivities) return fetchMoreResult;
+          return {
+            ...previous,
+            viewer: {
+              ...previous.viewer,
+              activities: {
+                ...incoming,
+                edges: [...(previousActivities.edges ?? []), ...(incoming.edges ?? [])],
+              },
+            },
+          };
+        },
+      });
+    } catch (cause) {
+      setMoreError(cause instanceof Error ? cause.message : '取得に失敗しました');
+    }
+  };
+
+  return (
+    <>
+      {showLoading && <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+      {error && !items.length && <p className="p-4 text-red-500">{error.message}</p>}
+      {items.length > 0 && (
+        <div className="text-sm">
+          {items.map((item) => (
+            <ActivityRow key={`${item.__typename}-${item.annictId}`} item={item} />
+          ))}
+        </div>
+      )}
+      {!showLoading && !error && items.length === 0 && (
+        <p className="px-4 py-6 text-center dark:text-white/70">履歴はありません。</p>
+      )}
+      {moreError && <p className="p-4 text-red-500">{moreError}</p>}
+      {items.length > 0 && !error && (
+        <div className="py-6 text-center">
+          <p className="text-sm tabular-nums dark:text-white/70">{items.length.toLocaleString('ja-JP')}件表示中</p>
+          {hasNextPage && (
+            <button
+              type="button"
+              onClick={() => void loadMore()}
+              disabled={loadingMore}
+              className="flex items-center my-5 mx-auto pr-2 pl-4 pt-1 pb-1.5 border dark:border-stone-500 rounded-full"
+            >
+              <span>{loadingMore ? '検索中' : 'さらに表示'}</span>
+              <Icons id="arrow_drop_down" type="navigation" className="text-[1.5em]" />
+            </button>
+          )}
+        </div>
+      )}
+    </>
   );
 }

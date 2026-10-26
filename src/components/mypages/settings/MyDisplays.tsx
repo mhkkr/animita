@@ -5,6 +5,7 @@ export default function MyDisplays() {
     <section>
       <header className="px-4">
         <h1 className="text-lg font-bold">表示</h1>
+        <p className="mt-1 text-sm">他のユーザーの感想・評価を表示するかどうかを決めれます。</p>
       </header>
       
       <div className="mt-4 grid gap-4 px-4">

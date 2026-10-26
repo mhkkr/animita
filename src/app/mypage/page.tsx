@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
 
-import LayoutContainer from '~/components/layouts/Container';
-
-import MyHeader from '~/components/mypages/MyHeader';
-
 import MyProfile from '~/components/mypages/MyProfile';
 
 import Const from '~/constants';
@@ -15,10 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function MyPage() {
-  return (
-    <LayoutContainer>
-      <MyHeader pageId={id} />
-      <MyProfile />
-    </LayoutContainer>
-  );
+  return <MyProfile />;
 }

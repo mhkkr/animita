@@ -1396,10 +1396,11 @@ export type LibraryEntryDetailQuery = { __typename?: 'Query', viewer?: { __typen
 
 export type ViewerRecordsQueryVariables = Exact<{
   first: Scalars['Int']['input'];
+  after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type ViewerRecordsQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', records?: { __typename?: 'RecordConnection', edges?: Array<{ __typename?: 'RecordEdge', node?: { __typename?: 'Record', id: string, annictId: number, ratingState?: RatingState | null, episode: { __typename?: 'Episode', title?: string | null, number?: number | null, annictId: number, work: { __typename?: 'Work', title: string, annictId: number, viewerStatusState?: StatusState | null } } } | null } | null> | null } | null } | null };
+export type ViewerRecordsQuery = { __typename?: 'Query', viewer?: { __typename?: 'User', records?: { __typename?: 'RecordConnection', pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges?: Array<{ __typename?: 'RecordEdge', node?: { __typename?: 'Record', id: string, annictId: number, ratingState?: RatingState | null, episode: { __typename?: 'Episode', title?: string | null, number?: number | null, annictId: number, work: { __typename?: 'Work', title: string, annictId: number, viewerStatusState?: StatusState | null } } } | null } | null> | null } | null } | null };
 
 export type ViewerUserQueryVariables = Exact<{ [key: string]: never; }>;
 

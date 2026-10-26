@@ -4,6 +4,7 @@ import type { Cast, Work } from '~/features/apollo/generated-types';
 import type { LibraryEntriesData } from '~/types/libraryEntries';
 
 import Icons from '~/components/icons/Icons';
+import { streamSearchUrl, streamServiceNames } from '~/libs/streams';
 
 function RelatedLink({ icon, className, test, href, label }: {
   icon: string,
@@ -91,6 +92,32 @@ export function Staff({ work }: { work: Work }) {
     <ul className="flex flex-wrap gap-y-2 gap-x-4 mt-2 text-xs dark:text-white/70">
       {sumRoleStaffs.map(sum => sum.name && <li key={sum.displayRoleText + '-' + sum.name}>{sum.displayRoleText}：{sum.name}</li>)}
     </ul>
+  );
+}
+
+export function StreamServices({ work }: { work: Work }) {
+  const names = streamServiceNames(work.programs);
+  if (names.length === 0) return null;
+
+  return (
+    <div className="mt-6">
+      <h2 className="px-4 pb-2 mb-2 font-bold border-b dark:border-stone-700">配信先</h2>
+      <ul className="list-disc ml-6 px-4">
+        {names.map((name) => {
+          const href = streamSearchUrl(name, work.title);
+          return (
+            <li key={name} className="py-1.5">
+              {href ? (
+                <a className="inline-flex items-center gap-1 hover:underline" href={href} target="_blank" rel="noopener noreferrer">
+                  {name}
+                  <Icons id="open_in_new" type="link" />
+                </a>
+              ) : name}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

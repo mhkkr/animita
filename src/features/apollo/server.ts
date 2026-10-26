@@ -3,7 +3,7 @@ import { decode, getToken } from "next-auth/jwt";
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 
-export const ANNICT_GRAPHQL_URL = "https://api.annict.com/graphql";
+const ANNICT_GRAPHQL_URL = "https://api.annict.com/graphql";
 
 type GraphQLErrorShape = {
   message: string;
@@ -91,6 +91,8 @@ export async function fetchAnnictGraphQL<T>(
   });
 
   if (!response.ok) {
+    const detail = (await response.text()).slice(0, 500);
+    console.error(`Annict GraphQL HTTP ${response.status}: ${detail}`);
     return {
       ok: false,
       status: response.status,

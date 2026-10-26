@@ -27,7 +27,6 @@ export const libraryEntriesGql: TypedDocumentNode<
             title
             image {
               facebookOgImageUrl
-              copyright
             }
           }
           nextProgram {
