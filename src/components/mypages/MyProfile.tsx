@@ -73,7 +73,7 @@ function Profile({ user }: { user: ViewerUserQuery }) {
         <span className="shrink-0">サービス開始日時：</span>
         <span className="flex flex-wrap gap-x-2">
           <span><DisplayDate date={user.viewer?.createdAt} /></span>
-          <span>{Math.abs(Math.floor((new Date(user.viewer?.createdAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))}日目</span>
+          <span>【{Math.abs(Math.floor((new Date(user.viewer?.createdAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))}日目】</span>
         </span>
       </p>
     </div>

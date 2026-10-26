@@ -113,7 +113,7 @@ export default function AnimeLibrary() {
         <ul>
           {works.map((work) => (
             <li key={work.annictId} className="border-b dark:border-stone-700">
-              <AnimeWorkItem work={work} />
+              <AnimeWorkItem work={work} showStatus={false} />
             </li>
           ))}
         </ul>

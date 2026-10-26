@@ -46,10 +46,16 @@ function statusOf(state?: StatusState | null) {
   return Const.STATUS_STATE_LIST.find((item) => item.id === state) ?? null;
 }
 
-export default function AnimeWorkItem({ work }: { work: AnimeWorkItemData }) {
+export default function AnimeWorkItem({
+  work,
+  showStatus = true,
+}: {
+  work: AnimeWorkItemData;
+  showStatus?: boolean;
+}) {
   const season = seasonLabel(work);
   const streams = streamServiceNames(work.programs);
-  const status = work.viewerStatusState === undefined ? null : statusOf(work.viewerStatusState);
+  const status = !showStatus || work.viewerStatusState === undefined ? null : statusOf(work.viewerStatusState);
 
   return (
     <Link href={`/anime/${work.annictId}`} className="flex gap-4 p-4 hover:bg-stone-500/30">
