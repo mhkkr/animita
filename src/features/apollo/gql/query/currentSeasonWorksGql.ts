@@ -16,14 +16,6 @@ export type SeasonWork = {
   viewerStatusState?: StatusState | null;
   seasonYear?: number | null;
   seasonName?: SeasonName | null;
-  programs?: {
-    nodes?: Array<{
-      channel: {
-        name: string;
-        channelGroup: { name: string };
-      };
-    } | null> | null;
-  } | null;
 };
 
 export type CurrentSeasonWorksQuery = {
@@ -61,16 +53,6 @@ export const currentSeasonWorksGql: TypedDocumentNode<
         viewerStatusState
         seasonYear
         seasonName
-        programs(first: 100) {
-          nodes {
-            channel {
-              name
-              channelGroup {
-                name
-              }
-            }
-          }
-        }
       }
     }
   }

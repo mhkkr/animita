@@ -6,14 +6,11 @@ import Icons from "~/components/icons/Icons";
 import { MalThumb } from "~/components/animes/AnimeThumbnail";
 
 import Const from "~/constants";
-import { STREAM_SEPARATOR, streamServiceNames } from "~/libs/streams";
 
 const MEDIA_LABEL = Const.MEDIA_FILTERS.reduce((labels, filter) => {
   labels[filter.id] = filter.label;
   return labels;
 }, {} as Record<Media, string>);
-
-type WorkPrograms = Parameters<typeof streamServiceNames>[0];
 
 export type AnimeWorkItemData = {
   annictId: number;
@@ -29,7 +26,6 @@ export type AnimeWorkItemData = {
     facebookOgImageUrl?: string | null;
   } | null;
   ogpUrl?: string | null;
-  programs?: WorkPrograms;
 };
 
 function seasonLabel(work: AnimeWorkItemData) {
@@ -54,11 +50,10 @@ export default function AnimeWorkItem({
   showStatus?: boolean;
 }) {
   const season = seasonLabel(work);
-  const streams = streamServiceNames(work.programs);
   const status = !showStatus || work.viewerStatusState === undefined ? null : statusOf(work.viewerStatusState);
 
   return (
-    <Link href={`/anime/${work.annictId}`} className="flex gap-4 p-4 hover:bg-stone-500/30">
+    <Link href={`/anime/${work.annictId}`} className="flex items-start gap-4 p-4 hover:bg-stone-500/30">
       <MalThumb
         malAnimeId={work.malAnimeId}
         ogpUrl={work.image?.facebookOgImageUrl ?? work.ogpUrl}
@@ -75,11 +70,8 @@ export default function AnimeWorkItem({
           {typeof work.reviewsCount === "number" && <span>評価 {work.reviewsCount.toLocaleString("ja-JP")}</span>}
         </p>
         <p className="mt-1 font-bold">{work.title}</p>
-        {streams.length > 0 && (
-          <p className="mt-1 text-xs dark:text-white/70">{streams.join(STREAM_SEPARATOR)}</p>
-        )}
         {status && (
-          <p className={`mt-1 flex items-center gap-0.5 text-xs ${status.color}`}>
+          <p className={`mt-1.5 flex items-center gap-0.5 text-xs ${status.color}`}>
             <Icons id={`${status.id}_CURRENT`} type="status_state" className="text-[1.25em]" aria-hidden="true" />
             {status.label}
           </p>

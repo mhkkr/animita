@@ -23,16 +23,6 @@ const DETAILS_QUERY = `
         image {
           facebookOgImageUrl
         }
-        programs(first: 100) {
-          nodes {
-            channel {
-              name
-              channelGroup {
-                name
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -50,14 +40,6 @@ type WorkDetails = {
   reviewsCount?: number | null;
   image?: {
     facebookOgImageUrl?: string | null;
-  } | null;
-  programs?: {
-    nodes?: Array<{
-      channel: {
-        name: string;
-        channelGroup: { name: string };
-      };
-    } | null> | null;
   } | null;
 };
 
@@ -134,7 +116,6 @@ export async function GET(request: NextRequest) {
         ogpUrl: detail?.image?.facebookOgImageUrl ?? null,
         watchersCount: detail?.watchersCount ?? null,
         reviewsCount: detail?.reviewsCount ?? null,
-        programs: detail?.programs ?? null,
       }];
     });
     if (works.length === 0) return [];

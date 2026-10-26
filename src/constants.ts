@@ -33,22 +33,6 @@ class Const {
     { id: 'OTHER', label: 'その他' },
   ] as const;
 
-  STREAM_FILTERS = [
-    { id: 'ABEMA', label: 'ABEMA', includes: 'ABEMA' },
-    { id: 'Amazon プライム・ビデオ', label: 'Amazon プライム・ビデオ' },
-    { id: 'Disney+', label: 'Disney+' },
-    { id: 'DMM TV', label: 'DMM TV' },
-    { id: 'dアニメストア', label: 'dアニメストア' },
-    { id: 'FOD', label: 'FOD' },
-    { id: 'Hulu', label: 'Hulu' },
-    { id: 'Netflix', label: 'Netflix' },
-    { id: 'U-NEXT', label: 'U-NEXT' },
-    { id: 'YouTube', label: 'YouTube' },
-    { id: 'ニコニコ', label: 'ニコニコ', includes: 'ニコニコ' },
-    { id: 'バンダイチャンネル', label: 'バンダイチャンネル' },
-    { id: 'OTHER', label: 'その他' },
-  ] as const;
-
   STATUS_STATE_LIST = [
     { id: 'WANNA_WATCH', label: '見たい', color: 'text-orange-500', bgColor: 'bg-orange-500' },
     { id: 'WATCHING', label: '見てる', color: 'text-sky-500', bgColor: 'bg-sky-500' },

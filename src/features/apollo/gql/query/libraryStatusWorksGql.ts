@@ -15,14 +15,6 @@ export type LibraryWork = {
   watchersCount: number;
   reviewsCount: number;
   viewerStatusState?: StatusState | null;
-  programs?: {
-    nodes?: Array<{
-      channel: {
-        name: string;
-        channelGroup: { name: string };
-      };
-    } | null> | null;
-  } | null;
 };
 
 export type LibraryStatusWorksQuery = {
@@ -76,16 +68,6 @@ export const libraryStatusWorksGql: TypedDocumentNode<
             viewerStatusState
             image {
               facebookOgImageUrl
-            }
-            programs(first: 100) {
-              nodes {
-                channel {
-                  name
-                  channelGroup {
-                    name
-                  }
-                }
-              }
             }
           }
         }

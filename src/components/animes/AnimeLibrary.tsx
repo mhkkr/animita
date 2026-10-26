@@ -93,7 +93,7 @@ export default function AnimeLibrary() {
               href={libraryTabHref(item.id)}
               role="tab"
               aria-selected={selected}
-              className={`relative flex-1 px-1 py-3 text-center text-xs sm:text-sm whitespace-nowrap after:content-[''] after:block after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1/2 after:h-1 after:bg-annict-100 after:rounded-full ${selected ? "font-bold" : "dark:text-white/70 after:hidden"}`}
+              className={`relative flex-1 px-1 py-3 text-center text-xs sm:text-sm whitespace-nowrap after:content-[''] after:block after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-8 after:h-1 after:bg-annict-100 after:rounded-full ${selected ? "font-bold" : "dark:text-white/70 after:hidden"}`}
               onClick={(event) => {
                 if (selected) event.preventDefault();
               }}
@@ -129,7 +129,7 @@ export default function AnimeLibrary() {
               disabled={loadingMore}
               className="flex items-center my-5 mx-auto pr-2 pl-4 pt-1 pb-1.5 border dark:border-stone-500 rounded-full"
             >
-              <span>{loadingMore ? "読込中" : "さらに表示"}</span>
+              <span>{loadingMore ? "読み込み中" : "さらに表示"}</span>
               <Icons id="arrow_drop_down" type="navigation" className="text-[1.5em]" />
             </button>
           )}

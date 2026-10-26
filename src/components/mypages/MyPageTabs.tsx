@@ -22,7 +22,7 @@ export default function MyPageTabs() {
             href={item.href}
             role="tab"
             aria-selected={selected}
-            className={`relative flex-1 px-4 py-3 text-center after:content-[''] after:block after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1/2 after:h-1 after:bg-annict-100 after:rounded-full ${selected ? "font-bold" : "dark:text-white/70 after:hidden"}`}
+            className={`relative flex-1 px-4 py-3 text-center after:content-[''] after:block after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-8 after:h-1 after:bg-annict-100 after:rounded-full ${selected ? "font-bold" : "dark:text-white/70 after:hidden"}`}
             onClick={(event) => {
               if (selected) event.preventDefault();
             }}

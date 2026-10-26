@@ -18,14 +18,6 @@ type RelatedWork = {
   ogpUrl: string | null;
   watchersCount: number | null;
   reviewsCount: number | null;
-  programs: {
-    nodes?: Array<{
-      channel: {
-        name: string;
-        channelGroup: { name: string };
-      };
-    } | null> | null;
-  } | null;
 };
 
 type RelatedSeries = {

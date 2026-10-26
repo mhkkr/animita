@@ -16,14 +16,6 @@ export type TitleSearchWork = {
   watchersCount: number;
   reviewsCount: number;
   viewerStatusState?: StatusState | null;
-  programs?: {
-    nodes?: Array<{
-      channel: {
-        name: string;
-        channelGroup: { name: string };
-      };
-    } | null> | null;
-  } | null;
 };
 
 export type SearchWorksByTitleQuery = {
@@ -71,16 +63,6 @@ export const searchWorksByTitleGql: TypedDocumentNode<
         watchersCount
         reviewsCount
         viewerStatusState
-        programs(first: 100) {
-          nodes {
-            channel {
-              name
-              channelGroup {
-                name
-              }
-            }
-          }
-        }
       }
     }
   }

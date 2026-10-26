@@ -9,7 +9,7 @@ import { libraryTabHref } from "~/libs/libraryTab";
 
 const NAV_ITEMS = [
   { href: "/", label: "視聴中", icon: "tv", match: (pathname: string) => pathname === "/" || pathname.startsWith("/anime/") },
-  { href: "/find", label: "見つける", icon: "explore", match: (pathname: string) => pathname === "/find" || pathname.startsWith("/find/") },
+  { href: "/works", label: "見つける", icon: "explore", match: (pathname: string) => pathname === "/works" || pathname.startsWith("/works/") },
   { href: "/search", label: "検索", icon: "search", match: (pathname: string) => pathname === "/search" || pathname.startsWith("/search/") },
   { href: libraryTabHref(Const.STATUS_STATE_LIST[0].id), label: "ライブラリ", icon: "library", match: (pathname: string) => pathname === "/library" || pathname.startsWith("/library/") },
   { href: "/mypage", label: "マイページ", icon: "person", match: (pathname: string) => pathname === "/mypage" || pathname.startsWith("/mypage/") },

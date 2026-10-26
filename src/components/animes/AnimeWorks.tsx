@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ApolloClient } from "@apollo/client";
@@ -16,10 +16,8 @@ import { RingSpinner } from "~/components/spinners/Spinner";
 import AnimeWorkItem from "~/components/animes/AnimeWorkItem";
 
 import Const from "~/constants";
-import { findSeasonTabFromPathname, findSeasonTabHref } from "~/libs/findTab";
+import { worksSeasonTabFromPathname, worksSeasonTabHref } from "~/libs/worksTab";
 import { adjacentSeasons } from "~/libs/season";
-import { DEFAULT_ANIME_LIST_STATUSES, getAnimeListStatuses } from "~/libs/settings";
-import { streamServiceNames } from "~/libs/streams";
 
 const SEASON_WORKS_LIMIT = 500;
 
@@ -29,45 +27,22 @@ const SEASON_TABS = [
   { id: "next", label: "来期" },
 ] as const;
 
-type SeasonTabId = (typeof SEASON_TABS)[number]["id"];
-
 type MediaId = (typeof Const.MEDIA_FILTERS)[number]["id"];
-type StreamFilterId = (typeof Const.STREAM_FILTERS)[number]["id"];
 
-function isKnownStream(channelName: string) {
-  return Const.STREAM_FILTERS.some((filter) => {
-    if (filter.id === "OTHER") return false;
-    if ("includes" in filter) return channelName.includes(filter.includes);
-    return channelName === filter.id;
-  });
-}
+const STATUS_FILTERS = [
+  { id: "NO_STATE", label: "未選択" },
+  ...Const.STATUS_STATE_LIST.map((state) => ({ id: state.id, label: state.label })),
+];
 
-function isStreamFilterId(value: string): value is StreamFilterId {
-  return Const.STREAM_FILTERS.some((filter) => filter.id === value);
-}
-
-function matchesStream(names: readonly string[], filterId: StreamFilterId) {
-  const filter = Const.STREAM_FILTERS.find((item) => item.id === filterId);
-  if (!filter) return false;
-  if (filter.id === "OTHER") return names.some((name) => !isKnownStream(name));
-  if ("includes" in filter) return names.some((name) => name.includes(filter.includes));
-  return names.includes(filter.id);
-}
+const DEFAULT_STATUS_FILTERS = ["NO_STATE", "WATCHED", "ON_HOLD", "STOP_WATCHING"];
 
 function byPopularity(a: SeasonWork, b: SeasonWork) {
   return b.watchersCount - a.watchersCount || b.reviewsCount - a.reviewsCount;
 }
 
-function hiddenStatusLabel(statuses: readonly string[]) {
-  return Const.STATUS_STATE_LIST
-    .filter((state) => statuses.includes(state.id))
-    .map((state) => state.label)
-    .join("・");
-}
-
-function isListedWork(work: SeasonWork, hiddenStatuses: readonly string[]) {
-  if (!work.viewerStatusState || work.viewerStatusState === "NO_STATE") return true;
-  return !hiddenStatuses.includes(work.viewerStatusState);
+function statusFilterId(work: SeasonWork) {
+  if (!work.viewerStatusState || work.viewerStatusState === "NO_STATE") return "NO_STATE";
+  return work.viewerStatusState;
 }
 
 function readSeasonWorks(client: ApolloClient, seasonKey: string) {
@@ -87,15 +62,14 @@ function readSeasonWorks(client: ApolloClient, seasonKey: string) {
   }
 }
 
-export default function AnimeFind() {
+export default function AnimeWorks() {
   const client = useApolloClient();
-  const tab = findSeasonTabFromPathname(usePathname());
+  const tab = worksSeasonTabFromPathname(usePathname());
   const seasons = adjacentSeasons();
   const season = tab ? seasons[tab] : seasons.current;
   const [mediaFilters, setMediaFilters] = useState<Set<MediaId>>(() => new Set<MediaId>(["TV"]));
-  const [streamFilter, setStreamFilter] = useState<StreamFilterId | null>(null);
+  const [statusFilters, setStatusFilters] = useState<Set<string>>(() => new Set(DEFAULT_STATUS_FILTERS));
   const [works, setWorks] = useState<SeasonWork[]>(() => readSeasonWorks(client, season.key) ?? []);
-  const [hiddenStatuses, setHiddenStatuses] = useState<string[]>([...DEFAULT_ANIME_LIST_STATUSES]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadedSeasonKey, setLoadedSeasonKey] = useState(season.key);
@@ -106,10 +80,6 @@ export default function AnimeFind() {
     setError(null);
     setLoading(true);
   }
-
-  useEffect(() => {
-    setHiddenStatuses(getAnimeListStatuses());
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -155,19 +125,12 @@ export default function AnimeFind() {
     };
   }, [client, season.key, tab]);
 
-  const streamsByWork = useMemo(() => {
-    const names = new Map<number, string[]>();
-    for (const work of works) names.set(work.annictId, streamServiceNames(work.programs));
-    return names;
-  }, [works]);
-
-  const seasonWorks = works.filter((work) => isListedWork(work, hiddenStatuses));
-  const visibleWorks = seasonWorks.filter((work) => {
-    if (!mediaFilters.has(work.media)) return false;
-    if (!streamFilter) return true;
-    return matchesStream(streamsByWork.get(work.annictId) ?? [], streamFilter);
-  });
+  const visibleWorks = works.filter((work) => mediaFilters.has(work.media) && statusFilters.has(statusFilterId(work)));
   const showLoading = loading && works.length === 0;
+
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+  };
 
   const toggleMedia = (id: MediaId) => {
     setMediaFilters((current) => {
@@ -176,13 +139,18 @@ export default function AnimeFind() {
       else next.add(id);
       return next;
     });
+    scrollToTop();
   };
 
-  const selectStream = (name: string) => {
-    setStreamFilter(isStreamFilterId(name) ? name : null);
+  const toggleStatus = (id: string) => {
+    setStatusFilters((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    scrollToTop();
   };
-
-  const excludedLabel = hiddenStatusLabel(hiddenStatuses);
 
   if (!tab) return null;
 
@@ -194,8 +162,7 @@ export default function AnimeFind() {
           <span>見つける</span>
         </h1>
         <p className="px-4 pb-4 -mt-2 text-center text-sm dark:text-white/70">
-          {season.label}の作品の<em className="not-italic font-bold">「{excludedLabel}」</em>以外を人気順に表示します。<br />
-          （<Link href="/mypage/setting" className="underline">マイページの設定</Link>の視聴中から変更可能）
+          {season.label}の作品を人気順に表示します。
         </p>
       </header>
       <div className="sticky top-0 z-10 border-b dark:border-stone-700 bg-white/60 dark:bg-black/60 backdrop-blur-md">
@@ -205,10 +172,10 @@ export default function AnimeFind() {
             return (
               <Link
                 key={item.id}
-                href={findSeasonTabHref(item.id)}
+                href={worksSeasonTabHref(item.id)}
                 role="tab"
                 aria-selected={selected}
-                className={`relative flex-1 px-2 py-2 text-center text-sm after:content-[''] after:block after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1/2 after:h-0.5 after:bg-annict-100 after:rounded-full ${selected ? "font-bold" : "dark:text-white/70 after:hidden"}`}
+                className={`relative flex-1 px-2 py-2 text-center text-sm after:content-[''] after:block after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-8 after:h-1 after:bg-annict-100 after:rounded-full ${selected ? "font-bold" : "dark:text-white/70 after:hidden"}`}
                 onClick={(event) => {
                   if (selected) event.preventDefault();
                 }}
@@ -219,7 +186,7 @@ export default function AnimeFind() {
             );
           })}
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
+        <div className="grid gap-2 p-4">
           <div role="group" aria-label="媒体" className="flex flex-wrap items-center gap-x-3 gap-y-1">
             {Const.MEDIA_FILTERS.map((filter) => (
               <label key={filter.id} className="inline-flex items-center gap-1 text-sm cursor-pointer">
@@ -233,24 +200,18 @@ export default function AnimeFind() {
               </label>
             ))}
           </div>
-          <div className="flex min-w-48 flex-1 items-center gap-2">
-            <label htmlFor="stream-filter" className="shrink-0 text-sm dark:text-white/70">配信先</label>
-            <select
-              id="stream-filter"
-              className="min-w-0 flex-1 dark:bg-black border dark:border-stone-500 px-2 py-1 rounded text-sm"
-              value={streamFilter ?? ""}
-              onChange={(event) => selectStream(event.currentTarget.value)}
-            >
-              <option value="">すべて</option>
-              {Const.STREAM_FILTERS.map((filter) => (
-                <option key={filter.id} value={filter.id}>{filter.label}</option>
-              ))}
-            </select>
-            {!error && (
-              <p className="shrink-0 pl-1 text-sm tabular-nums dark:text-white/70">
-                {showLoading ? "読込中" : `${visibleWorks.length.toLocaleString("ja-JP")}件`}
-              </p>
-            )}
+          <div role="group" aria-label="視聴ステータス" className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            {STATUS_FILTERS.map((filter) => (
+              <label key={filter.id} className="inline-flex items-center gap-1 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="size-3.5 accent-annict-100"
+                  checked={statusFilters.has(filter.id)}
+                  onChange={() => toggleStatus(filter.id)}
+                />
+                {filter.label}
+              </label>
+            ))}
           </div>
         </div>
       </div>
@@ -259,19 +220,26 @@ export default function AnimeFind() {
         <div className="mt-12 text-center text-5xl text-annict-100"><RingSpinner /></div>
       )}
       {error && <p className="p-4 text-red-500">{error}</p>}
-      {!showLoading && !error && seasonWorks.length === 0 && (
+      {!showLoading && !error && works.length === 0 && (
         <div className="px-4 pt-6 dark:text-white/70">
           <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
-          <p className="text-center">{season.label}で、{excludedLabel}以外の作品はありません。</p>
+          <p className="text-center">{season.label}の作品はありません。</p>
         </div>
       )}
-      {!showLoading && !error && seasonWorks.length > 0 && visibleWorks.length === 0 && (
+      {!showLoading && !error && works.length > 0 && visibleWorks.length === 0 && (
         <p className="px-4 py-6 text-center dark:text-white/70">
-          {mediaFilters.size === 0
-            ? "媒体を選択してください。"
-            : streamFilter
-              ? "この配信先の作品はありません。"
-              : "この媒体の作品はありません。"}
+          {mediaFilters.size === 0 && statusFilters.size === 0
+            ? "媒体と視聴ステータスを選択してください。"
+            : mediaFilters.size === 0
+              ? "媒体を選択してください。"
+              : statusFilters.size === 0
+                ? "視聴ステータスを選択してください。"
+                : "この条件の作品はありません。"}
+        </p>
+      )}
+      {!showLoading && !error && visibleWorks.length > 0 && (
+        <p className="px-4 pt-1.5 pb-2 bg-annict-100/70 text-white text-center text-sm tabular-nums">
+          {visibleWorks.length.toLocaleString("ja-JP")}件が見つかりました。
         </p>
       )}
       {visibleWorks.length > 0 && (
