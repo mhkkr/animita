@@ -129,7 +129,7 @@ export default function AnimeLibrary() {
               disabled={loadingMore}
               className="flex items-center my-5 mx-auto pr-2 pl-4 pt-1 pb-1.5 border dark:border-stone-500 rounded-full"
             >
-              <span>{loadingMore ? "検索中" : "さらに表示"}</span>
+              <span>{loadingMore ? "読込中" : "さらに表示"}</span>
               <Icons id="arrow_drop_down" type="navigation" className="text-[1.5em]" />
             </button>
           )}

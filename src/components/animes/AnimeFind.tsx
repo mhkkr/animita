@@ -248,7 +248,7 @@ export default function AnimeFind() {
             </select>
             {!error && (
               <p className="shrink-0 pl-1 text-sm tabular-nums dark:text-white/70">
-                {showLoading ? "検索中" : `${visibleWorks.length.toLocaleString("ja-JP")}件`}
+                {showLoading ? "読込中" : `${visibleWorks.length.toLocaleString("ja-JP")}件`}
               </p>
             )}
           </div>
