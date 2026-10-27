@@ -49,6 +49,25 @@ function episodeNumber(number?: number | null) {
   return `#${String(number ?? '').padStart(2, '0')}`;
 }
 
+function currentStatusOf(state?: string | null) {
+  if (!state || state === 'NO_STATE') {
+    return { id: 'NO_STATE', color: 'dark:text-white/70 text-black/50' };
+  }
+  return Const.STATUS_STATE_LIST.find((item) => item.id === state) ?? null;
+}
+
+function StatusIcon({ state }: { state?: string | null }) {
+  const status = currentStatusOf(state);
+  if (!status) return null;
+  return (
+    <Icons
+      id={`${status.id}_CURRENT`}
+      type="status_state"
+      className={`flex-none text-[1.25em] mt-[.075em] ${status.color}`}
+    />
+  );
+}
+
 function recordRatingsOf(data: ViewerActivitiesData | undefined) {
   const ratings: { episodeAnnictId: number; rating: RatingState }[] = [];
   const seen = new Set<number>();
@@ -65,20 +84,13 @@ function recordRatingsOf(data: ViewerActivitiesData | undefined) {
 function RecordRow({ item }: { item: ActivityRecord }) {
   const episode = item.episode;
   const ratingState = Const.RATING_STATE_LIST.find((state) => state.id === item.ratingState);
-  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === episode.work.viewerStatusState);
   return (
     <RecordLink
       className={ROW_CLASS}
       workAnnictId={episode.work.annictId}
       episodeAnnictId={episode.annictId}
     >
-      {statusState && (
-        <Icons
-          id={`${statusState.id}_CURRENT`}
-          type="status_state"
-          className={`flex-none text-[1.25em] mt-[.075em] ${statusState.color}`}
-        />
-      )}
+      <StatusIcon state={episode.work.viewerStatusState} />
       <p className="grow text-left">{episode.title || Const.EPISODE_TITLE_UNDEFINED}</p>
       <div className={`flex-none mt-[.1em] w-2/5 flex gap-2 text-left text-xs ${ratingState?.color ?? 'opacity-70'}`}>
         <span className="whitespace-nowrap">{episodeNumber(episode.number)}</span>
@@ -98,18 +110,11 @@ function episodesOf(item: ActivityMultipleRecord) {
 }
 
 function MultipleRecordRow({ item }: { item: ActivityMultipleRecord }) {
-  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === item.work.viewerStatusState);
   const episodes = episodesOf(item);
   return (
     <Link href={`/anime/${item.work.annictId}`} className="block px-4 py-3 border-b dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20">
       <div className="flex gap-2 text-sm">
-        {statusState && (
-          <Icons
-            id={`${statusState.id}_CURRENT`}
-            type="status_state"
-            className={`flex-none text-[1.25em] mt-[.075em] ${statusState.color}`}
-          />
-        )}
+        <StatusIcon state={item.work.viewerStatusState} />
         <p className="grow text-left">{item.work.title}</p>
         <div className="flex-none mt-[.1em] w-2/5 opacity-70 text-left text-xs">一括記録</div>
       </div>
@@ -133,7 +138,6 @@ function defaultReviewTitle(workTitle: string) {
 }
 
 function ReviewRow({ item }: { item: ActivityReview }) {
-  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === item.work.viewerStatusState);
   const title = item.title?.trim();
   const showTitle = Boolean(title && title !== defaultReviewTitle(item.work.title));
   const ratings = REVIEW_RATINGS.flatMap(({ key, label }) => {
@@ -143,13 +147,7 @@ function ReviewRow({ item }: { item: ActivityReview }) {
   return (
     <Link href={`/anime/${item.work.annictId}/records`} className="block px-4 py-3 border-b dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20">
       <div className="flex gap-2 text-sm">
-        {statusState && (
-          <Icons
-            id={`${statusState.id}_CURRENT`}
-            type="status_state"
-            className={`flex-none text-[1.25em] mt-[.075em] ${statusState.color}`}
-          />
-        )}
+        <StatusIcon state={item.work.viewerStatusState} />
         <p className="grow text-left">{item.work.title}</p>
         <div className="flex-none mt-[.1em] w-2/5 opacity-70 text-left text-xs">記録</div>
       </div>
@@ -174,19 +172,13 @@ function ReviewRow({ item }: { item: ActivityReview }) {
 }
 
 function StatusRow({ item }: { item: ActivityStatus }) {
-  const statusState = Const.STATUS_STATE_LIST.find((state) => state.id === item.state);
+  const changedTo = Const.STATUS_STATE_LIST.find((state) => state.id === item.state);
   return (
     <Link href={`/anime/${item.work.annictId}`} className={ROW_CLASS}>
-      {statusState && (
-        <Icons
-          id={`${statusState.id}_CURRENT`}
-          type="status_state"
-          className={`flex-none text-[1.25em] mt-[.075em] ${statusState.color}`}
-        />
-      )}
+      <StatusIcon state={item.work.viewerStatusState} />
       <p className="grow text-left">{item.work.title}</p>
-      {statusState && (
-        <div className="flex-none mt-[.1em] w-2/5 opacity-70 text-left text-xs">「{statusState.label}」へ変更</div>
+      {changedTo && (
+        <div className="flex-none mt-[.1em] w-2/5 opacity-70 text-left text-xs">「{changedTo.label}」へ変更</div>
       )}
     </Link>
   );

@@ -9,6 +9,7 @@ const withPWA = require('next-pwa')({
 });
 
 module.exports = withPWA({
+  agentRules: false, // next dev が AGENTS.md を作らない
   turbopack: {}, // webpack 設定を残したまま next dev --turbo を使う
   webpack: (config) => {
     config.module.rules.push({

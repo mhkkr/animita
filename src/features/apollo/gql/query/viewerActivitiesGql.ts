@@ -59,6 +59,7 @@ export type ActivityStatus = {
   work: {
     title: string;
     annictId: number;
+    viewerStatusState?: StatusState | null;
   };
 };
 
@@ -154,6 +155,7 @@ export const viewerActivitiesGql: TypedDocumentNode<ViewerActivitiesData, Viewer
               work {
                 title
                 annictId
+                viewerStatusState
               }
             }
           }

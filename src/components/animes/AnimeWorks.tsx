@@ -34,7 +34,7 @@ const STATUS_FILTERS = [
   ...Const.STATUS_STATE_LIST.map((state) => ({ id: state.id, label: state.label })),
 ];
 
-const DEFAULT_STATUS_FILTERS = ["NO_STATE", "WATCHED", "ON_HOLD", "STOP_WATCHING"];
+const DEFAULT_STATUS_FILTERS = STATUS_FILTERS.map((filter) => filter.id);
 
 function byPopularity(a: SeasonWork, b: SeasonWork) {
   return b.watchersCount - a.watchersCount || b.reviewsCount - a.reviewsCount;

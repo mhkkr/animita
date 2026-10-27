@@ -40,11 +40,11 @@ const Main = () => {
         {Const.TITLE}は Annict の Web クライアントです。
       </p>
       <p className="mt-4 text-gray-700 dark:text-white">
-        主に「配信サイト勢向け」に今すぐ見れるアニメと次の予定を分かりやすく把握し、感想を書く敷居を下げられれば！と思い開発しました。<br />
-        PWA に対応しており、スマホアプリのように使うことができます！
+        主に「配信サイト勢向け」に今すぐ見れるアニメと週間予定を分かりやすく提供し、感想を書く一助になれば！と思い開発しました。<br />
+        PWA に対応しており、スマホアプリのように使うことができます。
       </p>
       <div className="mt-8">
-        <p className="text-gray-500 dark:text-white">まずは Annict と連携してください！</p>
+        <p className="text-gray-500 dark:text-white/70">まずは Annict と連携してください！</p>
         <button
           className={`mt-2 flex items-center justify-center w-full px-10 py-4 font-medium text-center text-white transition duration-500 ease-in-out transform bg-pink-600 rounded-xl hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 ${processing ? 'cursor-not-allowed grayscale' : ''}`}
           type="button"
@@ -64,9 +64,9 @@ const Main = () => {
 export default function Login({ status }: { status: string }) {
   return (
     <>
-      <main className="min-h-screen mx-auto max-w-md flex flex-col justify-center p-4">
+      <main className="min-h-svh mx-auto max-w-md flex flex-col justify-center p-4">
         <div className="w-full my-12 bg-white dark:bg-black rounded-lg shadow-lg">
-          <h1 className="mx-auto -mt-12 w-24 h-24 p-4 bg-slate-400 dark:bg-slate-700 rounded-full overflow-hidden">
+          <h1 className="mx-auto -mt-12 w-24 h-24 p-4 bg-zinc-300 dark:bg-slate-700 rounded-full overflow-hidden">
             <Image
               className="object-contain w-full h-full"
               src="/logo.svg"
@@ -82,7 +82,7 @@ export default function Login({ status }: { status: string }) {
           </div>
         </div>
       </main>
-      <div className="fixed inset-0 -z-10 bg-slate-400 dark:bg-slate-700"></div>
+      <div className="fixed inset-0 -z-10 bg-zinc-300 dark:bg-slate-700"></div>
     </>
   );
 }

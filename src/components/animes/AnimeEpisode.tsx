@@ -160,7 +160,7 @@ function Contents({
   )?.ratingState;
   const alreadyRated = Boolean(viewerRating);
   const ratingColor = Const.RATING_STATE_LIST.find((state) => state.id === viewerRating)?.color;
-  const [, setEpisodeRatings] = useEpisodeRatings();
+  const [episodeRatings, setEpisodeRatings] = useEpisodeRatings();
 
   useEffect(() => {
     if (!viewerRating) return;
@@ -182,6 +182,22 @@ function Contents({
   const prevStatus = prevEpisodeIndex >= 0 ? episodeStatus(libraryEntries, work, prevEpisodeIndex, now) : null;
   const nextStatus = nextEpisodeIndex >= 0 ? episodeStatus(libraryEntries, work, nextEpisodeIndex, now) : null;
 
+  const stepClass = (target: Episode | null, available?: boolean) => {
+    const ratingBg = target
+      ? Const.RATING_STATE_LIST.find((state) => state.id === episodeRatings[String(target.annictId)])?.bgColor
+      : undefined;
+    const fill = ratingBg
+      ? `${ratingBg} text-white border-transparent`
+      : target?.viewerDidTrack
+        ? 'bg-black text-white dark:bg-white dark:text-black dark:border-stone-500'
+        : 'dark:border-stone-500';
+    return [
+      'shrink-0 px-2 py-1 border rounded text-sm',
+      fill,
+      available ? '' : 'opacity-50 cursor-not-allowed',
+    ].filter(Boolean).join(' ');
+  };
+
   return (
     <>
       <div className="p-4">
@@ -189,13 +205,13 @@ function Contents({
           <span className={`shrink-0 ${ratingColor ? `${ratingColor} font-bold` : ""}`}>{episode.numberText}</span>
           <span className={`flex-1 ${ratingColor ? `${ratingColor} font-bold` : ""}`}>{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
             <EpisodeStepLink
-              className={`shrink-0 px-2 py-1 border dark:border-stone-500 rounded text-sm ${!prevStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={stepClass(prevEpisode, prevStatus?.available)}
               episodeAnnictId={prevStatus?.available ? prevEpisode?.annictId : undefined}
               workAnnictId={work.annictId}
               disabled={!prevStatus?.available}
             >前</EpisodeStepLink>
             <EpisodeStepLink
-              className={`shrink-0 px-2 py-1 border dark:border-stone-500 rounded text-sm ${!nextStatus?.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={stepClass(nextEpisode, nextStatus?.available)}
               episodeAnnictId={nextStatus?.available ? nextEpisode?.annictId : undefined}
               workAnnictId={work.annictId}
               disabled={!nextStatus?.available}

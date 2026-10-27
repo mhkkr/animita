@@ -127,9 +127,9 @@ export default function Form({
             <label
               key={state.id}
               className={`
-                relative flex flex-col sm:flex-row gap-1 items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md dark:border-stone-500 cursor-pointer text-xs
+                relative flex flex-col sm:flex-row gap-1 items-center justify-center p-2 border border-l-0 first:border-l first:rounded-l-md last:rounded-r-md border-black dark:border-stone-500 cursor-pointer text-xs
                 transition-colors ${selected ? `${state.bgColor} text-white dark:text-inherit` : ''}
-                focus-within:outline focus-within:outline-1 focus-within:outline-offset-2
+                focus-within:outline focus-within:outline-offset-2
               `}
             >
               <input

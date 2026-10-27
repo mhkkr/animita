@@ -63,7 +63,7 @@ function Evaluation({ records, episode }: { records: Record[], episode: Episode 
             const ratingState = Const.RATING_STATE_LIST.find(RATINGSTATE => RATINGSTATE.id === key);
             return (
               value !== 0 && (
-                <li key={key} className={`min-w-4 py-2 ${ratingState?.bgColor} ${maxValue == value ? "font-bold" : ""}`} style={{ width: value / ratingCount * 100 + "%" }} title={ratingState?.label}>
+                <li key={key} className={`min-w-4 py-2 text-white ${ratingState?.bgColor} ${maxValue == value ? "font-bold" : ""}`} style={{ width: value / ratingCount * 100 + "%" }} title={ratingState?.label}>
                   {value}
                 </li>
               )

@@ -411,7 +411,7 @@ function ReviewSummary({
           return (
             <li
               key={key}
-              className={`min-w-4 py-2 ${ratingState?.bgColor} ${maxValue === value ? "font-bold" : ""}`}
+              className={`min-w-4 py-2 text-white ${ratingState?.bgColor} ${maxValue === value ? "font-bold" : ""}`}
               style={{ width: `${(value / ratingCount) * 100}%` }}
               title={ratingState?.label}
             >
