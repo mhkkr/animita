@@ -24,22 +24,16 @@ PWA に対応しており、スマホアプリのように使うことができ�
 
 ## スクリーンショット
 ### 視聴中
-![視聴中](public/screenshot/top-pc.png)
-### 視聴中（スマホ）
-![視聴中（スマホ）](public/screenshot/top-sp.png)
+<p><img src="public/screenshot/top-pc.png" alt="視聴中" width="72%"> <img src="public/screenshot/top-sp.png" alt="視聴中（スマホ）" width="24%"></p>
+
 ### アニメ詳細
-![アニメ詳細](public/screenshot/anime-pc.png)
-### アニメ詳細（スマホ）
-![アニメ詳細（スマホ）](public/screenshot/anime-sp.png)
+<p><img src="public/screenshot/anime-pc.png" alt="アニメ詳細" width="72%"> <img src="public/screenshot/anime-sp.png" alt="アニメ詳細（スマホ）" width="24%"></p>
+
 ### 記録する
-![記録する](public/screenshot/episode-pc.png)
-### 記録する（スマホ）
-![記録する（スマホ）](public/screenshot/episode-sp.png)
+<p><img src="public/screenshot/episode-pc.png" alt="記録する" width="72%"> <img src="public/screenshot/episode-sp.png" alt="記録する（スマホ）" width="24%"></p>
+
 ### 見つける
-![見つける](public/screenshot/works-pc.png)
-### 見つける（スマホ）
-![見つける（スマホ）](public/screenshot/works-sp.png)
+<p><img src="public/screenshot/works-pc.png" alt="見つける" width="72%"> <img src="public/screenshot/works-sp.png" alt="見つける（スマホ）" width="24%"></p>
+
 ### 履歴
-![履歴](public/screenshot/history-pc.png)
-### 履歴（スマホ）
-![履歴（スマホ）](public/screenshot/history-sp.png)
+<p><img src="public/screenshot/history-pc.png" alt="履歴" width="72%"> <img src="public/screenshot/history-sp.png" alt="履歴（スマホ）" width="24%"></p>
