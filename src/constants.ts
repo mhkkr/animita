@@ -1,7 +1,7 @@
 class Const {
   URL = 'https://animita.vercel.app/';
   TITLE = 'アニみた';
-  DESCRIPTION = '「アニみた」は、Annict が提供する API を利用したユーザークライアントです。すぐ見れるアニメの把握と感想を書きやすくして、ちょっとだけアニメライフの充実に貢献する！';
+  DESCRIPTION = 'アニみたは Annict の Web クライアントです。主に「配信サイト勢向け」に今すぐ見れるアニメと週間予定を分かりやすく提供し、感想を書く一助になれば！と思い開発しました。PWA に対応しており、スマホアプリのように使うことができます。';
 
   EPISODE_TITLE_UNDEFINED = '（未登録）';
 
