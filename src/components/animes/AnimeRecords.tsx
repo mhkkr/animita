@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import { Popover, PopoverPanel, PopoverButton } from '@headlessui/react';
 import type { ViewerUserQuery, Episode, Record } from '~/features/apollo/generated-types';
@@ -25,6 +25,12 @@ import { recordsWithUser } from '~/libs/records';
 import { getSetting } from '~/libs/settings';
 
 import Const from '~/constants';
+
+type AnchorStyle = React.CSSProperties & {
+  anchorName?: string;
+  positionAnchor?: string;
+  positionTryFallbacks?: string;
+};
 
 export default function WrapperRecords({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
   const comments = getSetting("displays", "episode-comments");
@@ -62,6 +68,7 @@ function Records({ records, episode, user }: { records: Record[], episode: Episo
 
 function Record({ record, episode, user }: { record: Record, episode: Episode, user: ViewerUserQuery }) {
   const [mute, setMute] = useState(false);
+  const menuAnchor = `--record-menu-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
   const [recordDeleteId] = useAtom(recordDeleteIdAtom);
   const [recordEditId] = useAtom(recordEditIdAtom);
@@ -95,12 +102,23 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
             </figure>
           )}
           <div className="flex-none ml-auto">
-            <Popover className="relative">
+            <Popover>
               {({ close }) => (
                 <>
+                  <PopoverButton disabled={disabled ? true : false} style={{ anchorName: menuAnchor } as AnchorStyle}>
+                    <Icons id="more_horiz" type="navigation" />
+                  </PopoverButton>
                   <PopoverPanel
-                    transition
-                    className="absolute right-0 top-full mt-2 whitespace-nowrap flex flex-col py-0.5 border dark:border-stone-500 bg-white dark:bg-black rounded-md overflow-hidden shadow-lg origin-top transition duration-200 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                    className="z-[60] w-max whitespace-nowrap flex flex-col py-0.5 border dark:border-stone-500 bg-white dark:bg-black rounded-md overflow-hidden shadow-lg"
+                    style={{
+                      position: "fixed",
+                      positionAnchor: menuAnchor,
+                      top: "calc(anchor(bottom) + 8px)",
+                      right: "anchor(right)",
+                      bottom: "auto",
+                      left: "auto",
+                      positionTryFallbacks: "flip-block",
+                    } as AnchorStyle}
                   >
                     <a className="flex items-center px-2 py-1.5 hover:underline" href={`https://annict.com/@${record.user?.username}`} target="_blank" rel="noopener noreferrer" title="Annict のユーザーページへ">
                       <Icons id="open_in_new" type="link" className="mr-1" />
@@ -116,9 +134,6 @@ function Record({ record, episode, user }: { record: Record, episode: Episode, u
                       <Mute record={record} mute={mute} setMute={setMute} close={close} />
                     )}
                   </PopoverPanel>
-                  <PopoverButton disabled={disabled ? true : false}>
-                    <Icons id="more_horiz" type="navigation" />
-                  </PopoverButton>
                 </>
               )}
             </Popover>

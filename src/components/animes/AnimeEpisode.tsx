@@ -169,7 +169,6 @@ function Contents({
   const showRatingColor = useEpisodeRatingColor();
   const [episodeRatings, setEpisodeRatings] = useEpisodeRatings();
   const viewerRating = recordsReady ? ratingFromRecords : episodeRatings[String(episode.annictId)];
-  const alreadyRated = Boolean(viewerRating);
   const ratingColor = showRatingColor
     ? Const.RATING_STATE_LIST.find((state) => state.id === viewerRating)?.color
     : undefined;
@@ -218,23 +217,23 @@ function Contents({
         <div className="mb-3 flex gap-2 items-center">
           <span className={`shrink-0 ${ratingColor ? `${ratingColor} font-bold` : ""}`}>{episode.numberText}</span>
           <span className={`flex-1 ${ratingColor ? `${ratingColor} font-bold` : ""}`}>{episode.title || Const.EPISODE_TITLE_UNDEFINED}</span>
-            <EpisodeStepLink
-              className={stepClass(prevEpisode, prevStatus?.available)}
-              episodeAnnictId={prevStatus?.available ? prevEpisode?.annictId : undefined}
-              workAnnictId={work.annictId}
-              disabled={!prevStatus?.available}
-            >前</EpisodeStepLink>
-            <EpisodeStepLink
-              className={stepClass(nextEpisode, nextStatus?.available)}
-              episodeAnnictId={nextStatus?.available ? nextEpisode?.annictId : undefined}
-              workAnnictId={work.annictId}
-              disabled={!nextStatus?.available}
-            >次</EpisodeStepLink>
+          <EpisodeStepLink
+            className={stepClass(prevEpisode, prevStatus?.available)}
+            episodeAnnictId={prevStatus?.available ? prevEpisode?.annictId : undefined}
+            workAnnictId={work.annictId}
+            disabled={!prevStatus?.available}
+          >前</EpisodeStepLink>
+          <EpisodeStepLink
+            className={stepClass(nextEpisode, nextStatus?.available)}
+            episodeAnnictId={nextStatus?.available ? nextEpisode?.annictId : undefined}
+            workAnnictId={work.annictId}
+            disabled={!nextStatus?.available}
+          >次</EpisodeStepLink>
           <button onClick={onClose} className="shrink-0" type="button">
             <Icons id="close" type="navigation" className="text-2xl" />
           </button>
         </div>
-        <Form episode={episode} alreadyRated={alreadyRated} viewerAnnictId={viewerAnnictId} />
+        <Form episode={episode} viewerAnnictId={viewerAnnictId} />
       </div>
       <InfoCast work={work} />
       {listsLoading && (

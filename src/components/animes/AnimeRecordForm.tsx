@@ -18,11 +18,9 @@ import { resolveEpisodeRating, useEpisodeRatings, writeEpisodeRating } from '~/l
 
 export default function Form({
   episode,
-  alreadyRated,
   viewerAnnictId,
 }: {
   episode: Episode;
-  alreadyRated: boolean;
   viewerAnnictId?: number | null;
 }) {
   const [recordEditId, setRecordEditId] = useAtom(recordEditIdAtom);
@@ -44,13 +42,6 @@ export default function Form({
       textarea.current?.focus();
     }
   }, [editingRecordId, editingComment, editingRating]);
-
-  useEffect(() => {
-    if (alreadyRated) {
-      return;
-    }
-    textarea.current?.focus();
-  }, [alreadyRated]);
 
   useEffect(() => {
     if (!comment) {
