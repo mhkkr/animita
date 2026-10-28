@@ -288,11 +288,16 @@ export function RecordModal({
     if (!active) return;
 
     setRecordEditId('');
-    const previousOverflow = document.body.style.overflow;
+
+    // const previousHtmlScrollBarGutter = document.documentElement.style.scrollbarGutter;
+    const previousBodyOverflow = document.body.style.overflow;
+    // document.documentElement.style.scrollbarGutter = 'auto';
     document.body.style.overflow = 'hidden';
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      // document.documentElement.style.scrollbarGutter = previousHtmlScrollBarGutter;
+      document.body.style.overflow = previousBodyOverflow;
+
       setRecordEditId('');
     };
   }, [active, episodeAnnictId, setRecordEditId]);
@@ -308,7 +313,7 @@ export function RecordModal({
       role="dialog"
       aria-modal="true"
       aria-label="記録"
-      className="fixed inset-0 z-50 bg-slate-700/70 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-slate-700/70 overflow-y-auto scrollbar-gutter-stable"
     >
       <div className={`min-h-screen relative sm:py-24 sm:px-4 ${waitingForEpisode ? 'py-24 px-4' : ''}`}>
         <button className="absolute inset-0" type="button" aria-label="閉じる" onClick={close} />
