@@ -9,7 +9,7 @@ export default function LayoutContainer({
 }) {
   return (
     <div className="sm:px-4 pb-14 sm:pb-0">
-      <div className="min-h-svh max-w-4xl mx-auto sm:flex">
+      <div className="min-h-screen max-w-4xl mx-auto sm:flex">
         <Header className="w-full sm:w-48" />
         <div className="flex-1 flex flex-col lg:flex-row sm:border-l sm:border-r lg:border-r-0 dark:border-stone-700">
           <main className="flex-1 lg:border-r dark:border-stone-700 pb-12">

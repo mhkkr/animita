@@ -24,6 +24,7 @@ import Records from '~/components/animes/AnimeRecords';
 
 import Const from '~/constants';
 import { useEpisodeRatings, writeEpisodeRating } from '~/libs/episodeRatings';
+import { useEpisodeRatingColor } from '~/libs/useEpisodeRatingColor';
 
 function episodeRecordPath(workAnnictId: number, episodeAnnictId: number) {
   return `/anime/${workAnnictId}/episode/${episodeAnnictId}`;
@@ -159,7 +160,10 @@ function Contents({
     (record) => record.user.annictId === viewerAnnictId && record.ratingState,
   )?.ratingState;
   const alreadyRated = Boolean(viewerRating);
-  const ratingColor = Const.RATING_STATE_LIST.find((state) => state.id === viewerRating)?.color;
+  const showRatingColor = useEpisodeRatingColor();
+  const ratingColor = showRatingColor
+    ? Const.RATING_STATE_LIST.find((state) => state.id === viewerRating)?.color
+    : undefined;
   const [episodeRatings, setEpisodeRatings] = useEpisodeRatings();
 
   useEffect(() => {
@@ -183,7 +187,7 @@ function Contents({
   const nextStatus = nextEpisodeIndex >= 0 ? episodeStatus(libraryEntries, work, nextEpisodeIndex, now) : null;
 
   const stepClass = (target: Episode | null, available?: boolean) => {
-    const ratingBg = target
+    const ratingBg = showRatingColor && target
       ? Const.RATING_STATE_LIST.find((state) => state.id === episodeRatings[String(target.annictId)])?.bgColor
       : undefined;
     const fill = ratingBg
@@ -281,7 +285,7 @@ export function RecordModal({
       aria-label="記録"
       className="fixed inset-0 z-50 bg-slate-700/70 overflow-y-auto"
     >
-      <div className={`min-h-svh relative sm:py-24 sm:px-4 ${el ? 'py-24 px-4' : ''}`}>
+      <div className={`min-h-screen relative sm:py-24 sm:px-4 ${el ? 'py-24 px-4' : ''}`}>
         <button className="absolute inset-0" type="button" aria-label="閉じる" onClick={close} />
 
         <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>

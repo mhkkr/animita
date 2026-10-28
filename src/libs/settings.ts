@@ -15,9 +15,9 @@ export const ANIME_PAGE_STATUS_OPTIONS = Const.STATUS_STATE_LIST.filter(
 const ANIME_PAGE_ALLOWED_STATUSES = new Set(ANIME_PAGE_STATUS_OPTIONS.map((state) => state.id));
 
 const displayChoices = [
-  { id: "invisible", label: "非表示にする" },
-  { id: "record-after-visible", label: "評価するまで非表示にする" },
   { id: "visible", label: "表示する" },
+  { id: "record-after-visible", label: "評価後に表示する" },
+  { id: "invisible", label: "非表示にする" },
 ];
 
 export const displays: Record<DisplayId, { value: typeof displayChoices; default: string }> = {
@@ -78,6 +78,23 @@ export function getSetting(category: "displays", id: DisplayId) {
     return value;
   }
   return displays[id].default;
+}
+
+export function getEpisodeRatingColor() {
+  if (!canUseLocalStorage()) {
+    return true;
+  }
+  const enabled = readSettings().episodeRatingColor;
+  return enabled !== false;
+}
+
+export function setEpisodeRatingColor(enabled: boolean) {
+  if (!canUseLocalStorage()) {
+    return;
+  }
+  const settings = readSettings();
+  settings.episodeRatingColor = enabled;
+  writeSettings(settings);
 }
 
 export function getAnimeListStatuses(): string[] {

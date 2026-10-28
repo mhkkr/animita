@@ -27,13 +27,13 @@ export default function MyMal() {
   return (
     <dl className="flex gap-4 items-center">
       <dt className="flex-none">
-        <p>MyAnimeList</p>
-        <p className="text-xs dark:text-white/70">{malCount}件のデータを取得済み。</p>
+        <p className="-mt-1">MyAnimeList <span className="text-xs dark:text-white/70">({malCount}件)</span></p>
+        <p className="mt-px text-xs dark:text-white/70">画像URLと全話数</p>
       </dt>
       <dd className="ml-auto">
         <button
           onClick={handleClick}
-          className="flex items-center justify-center w-full pr-4 pl-3 py-2 text-white bg-red-500 rounded-lg"
+          className="flex items-center justify-center w-full pr-4 pl-3 py-1.5 text-white bg-red-500 rounded-lg"
           type="button"
         >
           <Icons id="delete" type="form" className="mr-1" />

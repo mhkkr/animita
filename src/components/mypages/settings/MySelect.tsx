@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import ChoiceButtons from "~/components/mypages/settings/ChoiceButtons";
 import { displays, setSetting, getSetting } from "~/libs/settings";
 import type { DisplayId } from "~/types/settings";
 
@@ -12,26 +13,18 @@ export default function MySelect({ label, id }: { label: string, category?: "dis
     setSelect(getSetting("displays", id));
   }, [id]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValuation = event.currentTarget.value;
-    setSetting("displays", id, newValuation);
-    setSelect(newValuation);
+  const handleChange = (next: string) => {
+    setSetting("displays", id, next);
+    setSelect(next);
   };
 
   return (
-    <dl className="flex gap-4 items-center">
-      <dt className="flex-none">{label}</dt>
-      <dd className="ml-auto">
-        <select
-          className="w-full dark:bg-black border dark:border-stone-500 px-1 py-2 rounded"
-          onChange={handleChange}
-          value={select}
-        >
-          {displays[id].value.map((value) => (
-            <option key={value.id} value={value.id}>{value.label}</option>
-          ))}
-        </select>
-      </dd>
-    </dl>
+    <ChoiceButtons
+      label={label}
+      name={`display-${id}`}
+      value={select}
+      options={displays[id].value}
+      onChange={handleChange}
+    />
   );
 }

@@ -63,8 +63,8 @@ const Main = () => {
 
 export default function Login({ status }: { status: string }) {
   return (
-    <>
-      <main className="min-h-svh mx-auto max-w-md flex flex-col justify-center p-4">
+    <div className="min-h-screen bg-zinc-300 dark:bg-slate-700">
+      <main className="min-h-screen mx-auto max-w-md flex flex-col justify-center p-4">
         <div className="w-full my-12 bg-white dark:bg-black rounded-lg shadow-lg">
           <h1 className="mx-auto -mt-12 w-24 h-24 p-4 bg-zinc-300 dark:bg-slate-700 rounded-full overflow-hidden">
             <Image
@@ -82,7 +82,6 @@ export default function Login({ status }: { status: string }) {
           </div>
         </div>
       </main>
-      <div className="fixed inset-0 -z-10 bg-zinc-300 dark:bg-slate-700"></div>
-    </>
+    </div>
   );
 }

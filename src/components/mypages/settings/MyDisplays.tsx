@@ -1,3 +1,4 @@
+import MyEpisodeRatingColor from '~/components/mypages/settings/MyEpisodeRatingColor';
 import MySelect from '~/components/mypages/settings/MySelect';
 
 export default function MyDisplays() {
@@ -5,23 +6,26 @@ export default function MyDisplays() {
     <section>
       <header className="px-4">
         <h1 className="text-lg font-bold">表示</h1>
-        <p className="mt-1 text-sm">他のユーザーの感想・評価を表示するかどうかを決めれます。</p>
       </header>
-      
-      <div className="mt-4 grid gap-4 px-4">
+
+      <div className="mt-4 grid gap-6 px-4">
         <section>
           <h2 className="mb-2 font-bold">エピソード</h2>
           <ul className="grid gap-2">
-            <li><MySelect label="他のユーザーの感想" category="displays" id="episode-comments" /></li>
+            <li><MySelect label="他のユーザーのコメント" category="displays" id="episode-comments" /></li>
             <li><MySelect label="みんなの評価" category="displays" id="episode-evaluation" /></li>
           </ul>
         </section>
         <section>
           <h2 className="mb-2 font-bold">記録</h2>
           <ul className="grid gap-2">
-            <li><MySelect label="他のユーザーの感想" category="displays" id="work-comments" /></li>
+            <li><MySelect label="他のユーザーのコメント" category="displays" id="work-comments" /></li>
             <li><MySelect label="みんなの評価" category="displays" id="work-evaluation" /></li>
           </ul>
+        </section>
+        <section>
+          <h2 className="mb-2 font-bold">エピソード評価色</h2>
+          <MyEpisodeRatingColor />
         </section>
       </div>
     </section>

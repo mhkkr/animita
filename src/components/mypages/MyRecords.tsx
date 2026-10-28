@@ -22,6 +22,7 @@ import DisplayDate from '~/components/dates/DisplayDate';
 import Const from '~/constants';
 import { wasEdited } from '~/libs/function';
 import { useEpisodeRatings, writeEpisodeRating } from '~/libs/episodeRatings';
+import { useEpisodeRatingColor } from '~/libs/useEpisodeRatingColor';
 import type { RatingState } from '~/features/apollo/generated-types';
 
 const ROW_CLASS = 'flex gap-2 px-4 pt-1 pb-1.25 border-b dark:border-stone-700 hover:bg-black/10 hover:dark:bg-white/20';
@@ -81,9 +82,11 @@ function recordRatingsOf(data: ViewerActivitiesData | undefined) {
   return ratings;
 }
 
-function RecordRow({ item }: { item: ActivityRecord }) {
+function RecordRow({ item, showRatingColor }: { item: ActivityRecord; showRatingColor: boolean }) {
   const episode = item.episode;
-  const ratingState = Const.RATING_STATE_LIST.find((state) => state.id === item.ratingState);
+  const ratingState = showRatingColor
+    ? Const.RATING_STATE_LIST.find((state) => state.id === item.ratingState)
+    : undefined;
   return (
     <RecordLink
       className={ROW_CLASS}
@@ -184,10 +187,10 @@ function StatusRow({ item }: { item: ActivityStatus }) {
   );
 }
 
-function ActivityRow({ item }: { item: ActivityItem }) {
+function ActivityRow({ item, showRatingColor }: { item: ActivityItem; showRatingColor: boolean }) {
   switch (item.__typename) {
     case 'Record':
-      return <RecordRow item={item} />;
+      return <RecordRow item={item} showRatingColor={showRatingColor} />;
     case 'MultipleRecord':
       return <MultipleRecordRow item={item} />;
     case 'Review':
@@ -204,6 +207,7 @@ export default function MyRecords() {
   });
   const [moreError, setMoreError] = useState<string | null>(null);
   const [, setEpisodeRatings] = useEpisodeRatings();
+  const showRatingColor = useEpisodeRatingColor();
   const items = itemsOf(data);
   const recordRatings = useMemo(() => recordRatingsOf(data), [data]);
 
@@ -256,7 +260,7 @@ export default function MyRecords() {
       {items.length > 0 && (
         <div className="text-sm">
           {items.map((item) => (
-            <ActivityRow key={`${item.__typename}-${item.annictId}`} item={item} />
+            <ActivityRow key={`${item.__typename}-${item.annictId}`} item={item} showRatingColor={showRatingColor} />
           ))}
         </div>
       )}

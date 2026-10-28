@@ -13,6 +13,7 @@ import { RecordLink } from '~/components/animes/AnimeEpisode';
 
 import Const from '~/constants';
 import { useEpisodeRatings } from '~/libs/episodeRatings';
+import { useEpisodeRatingColor } from '~/libs/useEpisodeRatingColor';
 import { remainingLabel } from '~/libs/remainingTime';
 
 /** 閑話・総集編など、今期話数の対象外 */
@@ -48,6 +49,7 @@ function episodeStatus(libraryEntries: LibraryEntriesData, work: Work, episodeIn
 export default function Episodes({ work, libraryEntries }: { work: Work, libraryEntries?: LibraryEntriesData }) {
   const episodes = (work.episodes?.nodes ? Array.from(work.episodes?.nodes) : []) as Episode[];
   const [episodeRatings] = useEpisodeRatings();
+  const showRatingColor = useEpisodeRatingColor();
   const now = Date.now();
 
   if (episodes.length === 0) {
@@ -68,9 +70,11 @@ export default function Episodes({ work, libraryEntries }: { work: Work, library
         <tbody>
           {episodes.map((episode, episodeIndex) => {
             const status = episodeStatus(libraryEntries, work, episodeIndex, now);
-            const ratingBg = Const.RATING_STATE_LIST.find(
-              (state) => state.id === episodeRatings[String(episode?.annictId)],
-            )?.bgColor;
+            const ratingBg = showRatingColor
+              ? Const.RATING_STATE_LIST.find(
+                (state) => state.id === episodeRatings[String(episode?.annictId)],
+              )?.bgColor
+              : undefined;
             const seasonOrdinal = showSeasonOrdinal && !isSpecialEpisode(episode)
               ? (episode.number as number) - minNumber + 1
               : null;

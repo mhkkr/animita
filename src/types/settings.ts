@@ -8,6 +8,7 @@ export interface Setting {
   anime?: {
     statuses?: string[];
   };
+  episodeRatingColor?: boolean;
 }
 
 export type Category = "displays" | "anime";

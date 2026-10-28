@@ -6,6 +6,13 @@ export type AppUpdate = {
 
 export const updates: AppUpdate[] = [
   {
+    version: '2.3.1',
+    date: '2026/10/28 (水)',
+    comments: [
+      '設定ページを最適化しました。',
+    ]
+  },
+  {
     version: '2.3.0',
     date: '2026/10/27 (火)',
     comments: [

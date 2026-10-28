@@ -16,6 +16,9 @@ export const metadata: Metadata = {
 export default function MyPage() {
   return (
     <div className="*:pt-4 [&>*:not(:first-child)]:mt-4 [&>*:not(:first-child)]:border-t [&>*:not(:first-child)]:dark:border-stone-700">
+        <p className="-mb-4 px-4 py-3! bg-annict-100/70 text-white text-sm tabular-nums">
+          下記の設定はすべてアニみた独自の機能です。値はブラウザのローカルストレージに保存され、外部に公開されません。Annict には影響ありません。
+        </p>
         <MyAnimeStatuses />
         <MyDisplays />
         <MyMute />

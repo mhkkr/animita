@@ -15,6 +15,7 @@ type StoredSettings = {
   anime?: {
     statuses?: string[];
   };
+  episodeRatingColor?: boolean;
 };
 
 function moveToPrefixedKeys() {
@@ -56,7 +57,7 @@ export function migrateLocalStorage() {
     return;
   }
 
-  if (!next.displays && !next.anime) {
+  if (!next.displays && !next.anime && next.episodeRatingColor === undefined) {
     removeLocalStorageItem(Const.STORAGE_SETTINGS);
     return;
   }
@@ -84,6 +85,10 @@ function keepCurrentSettings(input: unknown): StoredSettings {
     if (Object.keys(kept).length > 0) {
       next.displays = kept;
     }
+  }
+
+  if (typeof source.episodeRatingColor === "boolean") {
+    next.episodeRatingColor = source.episodeRatingColor;
   }
 
   const rawAnime = source.anime;
