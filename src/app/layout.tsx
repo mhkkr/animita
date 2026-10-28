@@ -9,7 +9,7 @@ import SessionProviderWrapper from "~/features/oauth/components/Provider";
 import LoginController from "~/features/oauth/components/Controller";
 import { authOptions } from "~/features/oauth/auth";
 
-import Analytics from "~/components/Analytics";
+import { Analytics } from "@vercel/analytics/next";
 import NavigationProgress from "~/components/NavigationProgress";
 import StorageMigration from "~/components/StorageMigration";
 

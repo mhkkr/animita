@@ -24,6 +24,7 @@ import Records from '~/components/animes/AnimeRecords';
 
 import Const from '~/constants';
 import { useEpisodeRatings, writeEpisodeRating } from '~/libs/episodeRatings';
+import { recordsWithUser } from '~/libs/records';
 import { useEpisodeRatingColor } from '~/libs/useEpisodeRatingColor';
 
 function episodeRecordPath(workAnnictId: number, episodeAnnictId: number) {
@@ -143,34 +144,43 @@ function EpisodeStepLink({
 function Contents({
   work,
   episode,
+  records,
+  recordsReady,
+  recordsError,
   user,
+  userError,
   libraryEntries,
   onClose,
 }: {
   work: Work;
   episode: Episode;
-  user: ViewerUserQuery;
+  records: Record[];
+  recordsReady: boolean;
+  recordsError?: { message: string } | null;
+  user?: ViewerUserQuery;
+  userError?: { message: string } | null;
   libraryEntries?: LibraryEntriesData;
   onClose: () => void;
 }) {
-  const records = episode.records?.nodes ? Array.from(episode.records?.nodes) as Record[] : [];
-
-  const viewerAnnictId = user.viewer?.annictId;
-  const viewerRating = records.find(
+  const viewerAnnictId = user?.viewer?.annictId;
+  const ratingFromRecords = records.find(
     (record) => record.user.annictId === viewerAnnictId && record.ratingState,
   )?.ratingState;
-  const alreadyRated = Boolean(viewerRating);
   const showRatingColor = useEpisodeRatingColor();
+  const [episodeRatings, setEpisodeRatings] = useEpisodeRatings();
+  const viewerRating = recordsReady ? ratingFromRecords : episodeRatings[String(episode.annictId)];
+  const alreadyRated = Boolean(viewerRating);
   const ratingColor = showRatingColor
     ? Const.RATING_STATE_LIST.find((state) => state.id === viewerRating)?.color
     : undefined;
-  const [episodeRatings, setEpisodeRatings] = useEpisodeRatings();
 
   useEffect(() => {
     if (!viewerRating) return;
     setEpisodeRatings((current) => writeEpisodeRating(current, episode.annictId, viewerRating));
   }, [episode.annictId, viewerRating, setEpisodeRatings]);
-  const mainRecords = records.filter(record => record?.comment || record?.user.username === user?.viewer?.username);
+  const mainRecords = records.filter((record) => record.comment || record.user.username === user?.viewer?.username);
+  const listsLoading = !recordsError && !userError && (!recordsReady || !user);
+  const listsReady = recordsReady && Boolean(user);
 
   // 前後のエピソードを取得
   const allEpisodes = (work.episodes?.nodes ? Array.from(work.episodes.nodes) : []) as Episode[];
@@ -224,11 +234,23 @@ function Contents({
             <Icons id="close" type="navigation" className="text-2xl" />
           </button>
         </div>
-        {episode && <Form episode={episode} alreadyRated={alreadyRated} viewerAnnictId={viewerAnnictId} />}
+        <Form episode={episode} alreadyRated={alreadyRated} viewerAnnictId={viewerAnnictId} />
       </div>
       <InfoCast work={work} />
-      <Evaluation records={records} episode={episode} user={user} />
-      <Records records={mainRecords} episode={episode} user={user} />
+      {listsLoading && (
+        <div className="border-t p-8 text-center text-3xl text-annict-100 dark:border-stone-700">
+          <RingSpinner />
+        </div>
+      )}
+      {(recordsError || userError) && (
+        <p className="border-t p-4 text-red-500 dark:border-stone-700">{recordsError?.message || userError?.message}</p>
+      )}
+      {listsReady && user && (
+        <>
+          <Evaluation records={records} episode={episode} user={user} />
+          <Records records={mainRecords} episode={episode} user={user} />
+        </>
+      )}
     </>
   );
 }
@@ -249,15 +271,19 @@ export function RecordModal({
   const setRecordEditId = useSetAtom(recordEditIdAtom);
   const active = pathname === episodeRecordPath(annictId, episodeAnnictId);
 
-  const { data: user, loading: ul, error: ue } = useQuery(viewerUserGql, {
+  const listed = work?.episodes?.nodes?.find((item) => item?.annictId === episodeAnnictId) ?? null;
+  const { data: user, error: userError } = useQuery(viewerUserGql, {
     skip: !active,
   });
-  const { data: episodes, loading: el, error: ee } = useQuery(searchEpisodesGql, {
+  const { data: episodes, loading: recordsLoading, error: recordsError } = useQuery(searchEpisodesGql, {
     variables: { annictIds: [episodeAnnictId] },
     skip: !active,
     notifyOnNetworkStatusChange: false,
   });
-  const episode = episodes?.searchEpisodes?.nodes ? (episodes?.searchEpisodes?.nodes[0] as Episode) : null;
+  const fetched = (episodes?.searchEpisodes?.nodes?.[0] ?? null) as Episode | null;
+  const episode = (fetched ?? (listed && work ? { ...listed, work } : null)) as Episode | null;
+  const records = recordsWithUser(fetched?.records?.nodes);
+  const waitingForEpisode = !episode && recordsLoading;
 
   useEffect(() => {
     if (!active) return;
@@ -285,26 +311,39 @@ export function RecordModal({
       aria-label="記録"
       className="fixed inset-0 z-50 bg-slate-700/70 overflow-y-auto"
     >
-      <div className={`min-h-screen relative sm:py-24 sm:px-4 ${el ? 'py-24 px-4' : ''}`}>
+      <div className={`min-h-screen relative sm:py-24 sm:px-4 ${waitingForEpisode ? 'py-24 px-4' : ''}`}>
         <button className="absolute inset-0" type="button" aria-label="閉じる" onClick={close} />
 
-        <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${el ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>
-          {(el || ul) && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
-          {(ee || ue) && <p className="p-4 text-red-500">{ee?.message || ue?.message}</p>}
-
-          {!(el || ee || ul || ue) && <>
-            {episode && user && work ? (
-              <Contents work={work} episode={episode} user={user} libraryEntries={libraryEntries} onClose={close} />
-            ) : (
-              <div className="p-6 dark:text-white/70">
-                <button onClick={close} className="block ml-auto" type="button" aria-label="閉じる">
-                  <Icons id="close" type="navigation" className="text-2xl" />
-                </button>
-                <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
-                <p className="text-center">エピソードがありません！</p>
-              </div>
-            )}
-          </>}
+        <div className={`relative mx-auto bg-white dark:bg-black overflow-hidden sm:max-w-xl sm:rounded-lg sm:shadow-2xl ${waitingForEpisode ? 'max-w-xl rounded-lg shadow-2xl' : ''}`}>
+          {waitingForEpisode && <div className="p-8 text-center text-5xl text-annict-100"><RingSpinner /></div>}
+          {!waitingForEpisode && !episode && (
+            <div className="p-6 dark:text-white/70">
+              <button onClick={close} className="block ml-auto" type="button" aria-label="閉じる">
+                <Icons id="close" type="navigation" className="text-2xl" />
+              </button>
+              {recordsError ? (
+                <p className="text-center text-red-500">{recordsError.message}</p>
+              ) : (
+                <>
+                  <Icons id="unknow" type="notification" className="table mx-auto mb-4 text-2xl" />
+                  <p className="text-center">エピソードがありません！</p>
+                </>
+              )}
+            </div>
+          )}
+          {episode && work && (
+            <Contents
+              work={work}
+              episode={episode}
+              records={records}
+              recordsReady={episodes !== undefined}
+              recordsError={recordsError}
+              user={user}
+              userError={userError}
+              libraryEntries={libraryEntries}
+              onClose={close}
+            />
+          )}
         </div>
       </div>
     </div>

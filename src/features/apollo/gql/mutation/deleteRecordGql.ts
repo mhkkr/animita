@@ -14,11 +14,6 @@ export const deleteRecordGql: TypedDocumentNode<DeleteRecordMutation, DeleteReco
         viewerRecordsCount
         viewerDidTrack
         recordsCount
-				records {
-					nodes {
-						id
-					}
-				}
       }
     }
   }

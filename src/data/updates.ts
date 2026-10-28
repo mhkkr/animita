@@ -6,10 +6,11 @@ export type AppUpdate = {
 
 export const updates: AppUpdate[] = [
   {
-    version: '2.3.1',
+    version: '2.4.0',
     date: '2026/10/28 (水)',
     comments: [
-      '設定ページを最適化しました。',
+      'エピソード記録ページと設定ページを最適化しました。',
+      'Google Analytics から Vercel Analytics へ移行しました。',
     ]
   },
   {

@@ -53,7 +53,7 @@ const Main = () => {
         >{processing ? <span className="mr-2 text-white"><RingSpinner /></span> : ''}Annict と連携する</button>
       </div>
       <ul className="mt-8 text-xs text-gray-500 dark:text-white/70">
-        <li className="mt-1 pl-[1em] indent-[-1em]">※Google Analytics を使用しています（<a className="text-sky-700 hover:underline" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener noreferrer">規約</a>）。</li>
+        <li className="mt-1 pl-[1em] indent-[-1em]">※Vercel Analytics を使用しています（<a className="text-sky-700 hover:underline" href="https://vercel.com/docs/analytics/privacy-policy" target="_blank" rel="noopener noreferrer">規約</a>）。</li>
         <li className="mt-1 pl-[1em] indent-[-1em]">※ソースコードは <a className="text-sky-700 hover:underline" href="https://github.com/mhkkr/animita" target="_blank" rel="noopener noreferrer">GitHub</a> で公開しています。</li>
       </ul>
       <p className="mt-4 text-xs text-gray-500 text-center">by <a className="text-sky-600 hover:underline" href="https://twitter.com/kakera_dev" target="_blank" rel="noopener noreferrer">@kakera_dev</a></p>

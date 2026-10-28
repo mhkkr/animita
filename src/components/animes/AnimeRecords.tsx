@@ -21,13 +21,14 @@ import Twitter from '~/components/animes/AnimeRecordTwitter';
 
 import { wasEdited, getMutedUsers } from '~/libs/function';
 import { compareByRating } from '~/libs/rating';
+import { recordsWithUser } from '~/libs/records';
 import { getSetting } from '~/libs/settings';
 
 import Const from '~/constants';
 
 export default function WrapperRecords({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
   const comments = getSetting("displays", "episode-comments");
-  const mine = records.filter(record => record.user.annictId === user.viewer?.annictId);
+  const mine = recordsWithUser(records).filter((record) => record.user.annictId === user.viewer?.annictId);
 
   if (comments === "invisible") {
     if (mine.length === 0) {
@@ -44,7 +45,7 @@ export default function WrapperRecords({ records, episode, user }: { records: Re
 
 function Records({ records, episode, user }: { records: Record[], episode: Episode, user: ViewerUserQuery }) {
   const mutedUsers = getMutedUsers();
-  const filteredRecords = records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId));
+  const filteredRecords = recordsWithUser(records).filter((record) => !mutedUsers.some((user) => user.annictId === record.user.annictId));
 
   return (
     <ul className="flex flex-wrap text-sm">

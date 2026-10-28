@@ -26,21 +26,21 @@ export default function Delete({
   const [, setEpisodeRatings] = useEpisodeRatings();
 
   const [deleteRecord, { loading, error }] = useMutation(deleteRecordGql, {
-    refetchQueries: ["searchWorks"],
+    refetchQueries: ["searchWorks", "searchEpisodes"],
     update(cache, { data }) {
-      if (!data?.deleteRecord?.episode) return;
-      const episode = data.deleteRecord.episode;
-      
+      const episodeId = data?.deleteRecord?.episode?.id;
+      if (!episodeId) return;
+
+      cache.evict({ id: cache.identify({ __typename: "Record", id: record.id }) });
       cache.modify({
-        id: cache.identify({ id: episode.id, __typename: 'Episode' }),
+        id: cache.identify({ __typename: "Episode", id: episodeId }),
         fields: {
-          recordsCount() {
-            // return episode.recordsCount; // なんか値が変わってない？
-            return episode.records?.nodes?.length ?? 0;
-          }
-        }
+          // Annict の recordsCount は削除後も減らないことがある
+          recordsCount(existing: number = 0) {
+            return Math.max(0, existing - 1);
+          },
+        },
       });
-      
       cache.gc();
     },
     onCompleted() {

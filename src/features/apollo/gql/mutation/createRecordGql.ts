@@ -29,11 +29,6 @@ export const createRecordGql: TypedDocumentNode<CreateRecordMutation, CreateReco
           viewerRecordsCount
           viewerDidTrack
           recordsCount
-          records {
-            nodes {
-              id
-            }
-          }
         }
       }
     }

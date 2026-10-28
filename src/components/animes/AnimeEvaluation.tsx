@@ -8,6 +8,7 @@ import { useAtom } from 'jotai';
 import { muteUpdateAtom } from '~/atoms/muteUpdateAtom';
 
 import { getMutedUsers } from '~/libs/function';
+import { recordsWithUser } from '~/libs/records';
 import { getSetting } from '~/libs/settings';
 
 import Const from '~/constants';
@@ -16,11 +17,15 @@ import Const from '~/constants';
 function Evaluation({ records, episode }: { records: Record[], episode: Episode }) {
   const [muteUpdate] = useAtom(muteUpdateAtom);
   const mutedUsers = getMutedUsers();
-  const [filteredRecords, setFilteredRecords] = useState<Record[]>(records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId)));
+  const [filteredRecords, setFilteredRecords] = useState<Record[]>(() => recordsWithUser(records).filter(
+    (record) => !mutedUsers.some((user) => user.annictId === record.user.annictId),
+  ));
 
   useEffect(() => {
-    const mutedUsers = getMutedUsers();
-    setFilteredRecords(records.filter(record => !mutedUsers.some(user => user.annictId === record.user.annictId)));
+    const muted = getMutedUsers();
+    setFilteredRecords(recordsWithUser(records).filter(
+      (record) => !muted.some((user) => user.annictId === record.user.annictId),
+    ));
   }, [muteUpdate, records]);
 
   let ratingCount = 0;
@@ -82,7 +87,7 @@ export default function WrapperEvaluation({ records, episode, user }: { records:
   if (evaluation === "invisible") {
     return <></>;
   } else if (evaluation === "record-after-visible") {
-    const isMyRecord = records.find(record => record.user.annictId === user.viewer?.annictId);
+    const isMyRecord = recordsWithUser(records).find((record) => record.user.annictId === user.viewer?.annictId);
     if (!isMyRecord) {
       return <></>;
     }

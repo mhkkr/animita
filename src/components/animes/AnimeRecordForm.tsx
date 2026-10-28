@@ -68,7 +68,7 @@ export default function Form({
   };
 
   const [createRecord, { loading: creating, error: createError }] = useMutation(createRecordGql, {
-    refetchQueries: ["searchWorks"],
+    refetchQueries: ["searchWorks", "searchEpisodes"],
     onCompleted() {
       rememberRating();
       setComment('');
@@ -77,6 +77,7 @@ export default function Form({
   });
 
   const [updateRecord, { loading: updating, error: updateError }] = useMutation(updateRecordGql, {
+    refetchQueries: ["searchEpisodes"],
     onCompleted() {
       rememberRating();
       setRecordEditId('');
